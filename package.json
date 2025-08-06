@@ -1,0 +1,22 @@
+{
+  "name": "devoffer",
+  "version": "1.0.0",
+  "description": "A Bot for DevOffer Discord Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devoverid/devoffer.git"
+  },
+  "keywords": [
+    "bot"
+  ],
+  "author": "devoverid",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/devoverid/devoffer/issues"
+  },
+  "homepage": "https://github.com/devoverid/devoffer#readme"
+}
