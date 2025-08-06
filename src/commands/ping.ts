@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: "ping",
   desc: "Ping command",
   exec(msg) {
