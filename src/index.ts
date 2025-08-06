@@ -10,16 +10,13 @@ const client = new Client({
   ]
 })
 
-loadEvents(client)
-// client.on("ready", () => {
-//   console.log(message);
-//   if (message.content === "!ping") message.reply("Pong!")
-//   if (message.content.includes("fine")) message.reply("gua i'm fine😅")
-// })
-// client.on("messageCreate", message => {
-//   console.log(message);
-//   if (message.content === "!ping") message.reply("Pong!")
-//   if (message.content.includes("fine")) message.reply("gua i'm fine😅")
-// })
+console.log("Loading events...")
+
+await loadEvents(client)
+
+console.log("Events loaded")
+  
 
 client.login(process.env.APP_TOKEN);
+
+console.log("Bot is running")
