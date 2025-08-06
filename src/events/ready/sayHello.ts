@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: "ready",
   desc: "Say こんにちは for the first load",
   once: true,
