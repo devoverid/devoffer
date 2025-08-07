@@ -3,7 +3,7 @@ import fs from "fs"
 import path from "path"
 import { Event } from "./event"
 
-export const loadEvents = async (client: Client) => {
+export const registerEvents = async (client: Client) => {
   const eventFolders = fs.readdirSync(__dirname).filter(file => file !== "index.ts")
 
   for (const folder of eventFolders) {
