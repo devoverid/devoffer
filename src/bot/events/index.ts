@@ -13,7 +13,8 @@ export const registerEvents = async (client: Client) => {
       for (const file of files) {
         const filePath = path.join(folderPath, file)
         const { default: event } = await import(filePath) as { default: Event }
-        console.log(`Registering event ${event.name}.${file.split(".")[0]}`)
+        console.log(`Registering event ${event.name}.${file.split(".")[0]}...`)
+
         if (event.once) {
           client.once(event.name, (...args) => event.exec(client, ...args))
         } else {

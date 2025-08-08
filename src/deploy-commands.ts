@@ -15,6 +15,8 @@ for (const folder of commandFolders) {
 	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
+		console.log(`Registering command ${folder}.${file.split(".")[0]}!`)
+
 		const { default: command } = await import(filePath) as { default: Command }
 		if ('data' in command && 'execute' in command) {
 			commands.push(command.data.toJSON());
