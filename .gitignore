@@ -25,4 +25,4 @@ Thumbs.db
 .replit
 .glitch-assets
 
-/generated/prisma
+/db/generated/prisma
