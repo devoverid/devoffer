@@ -30,9 +30,3 @@ export const registerCommands = async (client: Client) => {
     }
   }
 }
-
-declare module "discord.js" {
-  interface Client {
-    commands: Collection<string, Command>
-  }
-}
