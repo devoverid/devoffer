@@ -11,16 +11,15 @@ export interface Command {
 export const registerCommands = async (client: Client) => {
   client.commands = new Collection<string, Command>()
 
-
   const foldersPath = path.join(__dirname, '/');
   const commandFolders = fs.readdirSync(foldersPath).filter((f) => !f.includes('.ts'));
-  
+
   for (const folder of commandFolders) {
     const commandsPath = path.join(foldersPath, folder);
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
-      console.log(`Registering command ${folder}.${file.split(".")[0]}`)
+      console.log(`Registering command ${folder}.${file.split(".")[0]}...`)
 
       try {
         const { default: command } = await import(filePath) as { default: Command }
@@ -30,7 +29,6 @@ export const registerCommands = async (client: Client) => {
       }
     }
   }
-
 }
 
 declare module "discord.js" {

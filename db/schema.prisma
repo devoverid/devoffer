@@ -1,0 +1,28 @@
+datasource db {
+    provider = "postgresql"
+    url = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+  output   = "generated/prisma"
+}
+
+
+model User {
+    id Int @id @default(autoincrement())
+    discord_id String @unique
+    streak_count Int @default(0)
+    streak_start DateTime?
+    last_streak_end DateTime?
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+    checkins Checkin[]
+}
+
+model Checkin {
+    id Int @id @default(autoincrement())
+    user_id Int
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+    user User @relation(fields: [user_id], references: [id])
+}
