@@ -6,4 +6,4 @@ export default {
   exec(client: Client, message: Message) {
     if (message.content === "!ping") message.reply("Pong!")
   }
-}
+} 
