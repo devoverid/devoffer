@@ -1,3 +1,10 @@
+function isDateToday(date: Date): boolean {
+  const today = new Date();
+  return date.getFullYear() === today.getFullYear() &&
+         date.getMonth() === today.getMonth() &&
+         date.getDate() === today.getDate();
+}
+
 const getYesterday = () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -5,4 +12,4 @@ const getYesterday = () => {
     return yesterday;
 }
 
-export { getYesterday }
+export { isDateToday, getYesterday }

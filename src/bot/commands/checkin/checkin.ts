@@ -1,9 +1,10 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
+import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from "discord.js"
 import { Command } from ".."
 import { increaseUserStreak } from "../../../db/queries/user"
 import { prisma } from "../../../db/client"
 import { createCheckin } from "../../../db/queries/checkin"
-import { getYesterday } from "../../../utils/date"
+import { getYesterday, isDateToday } from "../../../utils/date"
+import { FAILED_CHECKIN_ALREADY_CHECKIN_TODAY } from "../../../constants"
 
 export default {
   data: new SlashCommandBuilder()
@@ -60,6 +61,11 @@ export default {
     if (user.checkins.length == 0 || user.checkins[0].created_at < yesterday) {
         // reset streak count
         streak_count = 0
+    }
+
+    if (user.checkins.length && isDateToday(user.checkins[0].created_at)) {
+        await interaction.reply({ content: FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, flags: MessageFlags.Ephemeral });
+        return
     }
 
     const description = interaction.options.getString("description")!
