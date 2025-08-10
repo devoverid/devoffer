@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
 import { Command } from ".."
+import { increaseUserStreak } from "../../../db/queries/user"
 
 export default {
   data: new SlashCommandBuilder()
@@ -60,7 +61,7 @@ export default {
         streak_count = 0
     }
 
-    const description = interaction.options.getString("description")
+    const description = interaction.options.getString("description")!
 
     // do the checkin
     const result = await interaction.client.prisma.checkin.create({
@@ -70,19 +71,12 @@ export default {
                     id: user.id
                 }
             },
-            description: description || "",
+            description,
         }
     })
 
     // update streak count
-    await interaction.client.prisma.user.update({
-        where: {
-            id: user.id
-        },
-        data: {
-            streak_count: ++streak_count,
-        }
-    })
+    await increaseUserStreak(user.id)
 
     await interaction.reply({
         content: `**Check-in success!**\n
