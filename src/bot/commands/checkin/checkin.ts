@@ -3,6 +3,7 @@ import { Command } from ".."
 import { increaseUserStreak } from "../../../db/queries/user"
 import { prisma } from "../../../db/client"
 import { createCheckin } from "../../../db/queries/checkin"
+import { getYesterday } from "../../../utils/date"
 
 export default {
   data: new SlashCommandBuilder()
@@ -54,9 +55,7 @@ export default {
     }
     let streak_count = user.streak_count
 
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    yesterday.setHours(0, 0, 0, 0);
+    const yesterday = getYesterday()
 
     if (user.checkins.length == 0 || user.checkins[0].created_at < yesterday) {
         // reset streak count
