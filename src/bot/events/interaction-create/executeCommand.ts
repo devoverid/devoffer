@@ -6,7 +6,6 @@ export default {
     desc: "Executing a command when an interaction is created",
     async exec(client: Client, interaction: Interaction) {
         if (!interaction.isChatInputCommand()) return;
-
         const command: Command | undefined = interaction.client.commands.get(interaction.commandName)
         if (!command) {
             console.error(`No command matching ${interaction.commandName} was found.`);

@@ -22,7 +22,9 @@ model User {
 model Checkin {
     id Int @id @default(autoincrement())
     user_id Int
+    description String
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
     user User @relation(fields: [user_id], references: [id])
+    @@index([user_id, created_at(sort: Desc)])
 }

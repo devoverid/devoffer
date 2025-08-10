@@ -2,14 +2,17 @@ import "dotenv/config";
 import { Client, GatewayIntentBits } from "discord.js";
 import { registerEvents } from "./bot/events/index"
 import { registerCommands } from "./bot/commands"
+import { prisma } from "./db/client"
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessageReactions
   ]
 })
+client.prisma = prisma
 
 console.log("Starting bot...")
 console.log("Loading events...")

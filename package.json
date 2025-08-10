@@ -4,7 +4,9 @@
   "description": "A Bot for DevOffer Discord Server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "bun src/index.ts",
+    "commands": "bun src/deploy-commands.ts"
   },
   "repository": {
     "type": "git",
