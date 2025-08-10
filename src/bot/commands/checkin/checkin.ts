@@ -63,7 +63,7 @@ export default {
         streak_count = 0
     }
 
-    if (user.checkins.length != 0 && isDateToday(user.checkins[0].created_at)) {
+    if (user.checkins.length && isDateToday(user.checkins[0].created_at)) {
         await interaction.reply({ content: FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, flags: MessageFlags.Ephemeral });
         return
     }
