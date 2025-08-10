@@ -1,6 +1,8 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
 import { Command } from ".."
 import { increaseUserStreak } from "../../../db/queries/user"
+import { prisma } from "../../../db/client"
+import { createCheckin } from "../../../db/queries/checkin"
 
 export default {
   data: new SlashCommandBuilder()
@@ -64,23 +66,17 @@ export default {
     const description = interaction.options.getString("description")!
 
     // do the checkin
-    const result = await interaction.client.prisma.checkin.create({
-        data: {
-            user: {
-                connect: {
-                    id: user.id
-                }
-            },
-            description,
-        }
-    })
+    const result = await prisma.$transaction([
+        createCheckin(user.id, description),
+        increaseUserStreak(user.id)
+    ])
 
-    // update streak count
-    await increaseUserStreak(user.id)
+    const now = new Date()
+
 
     await interaction.reply({
         content: `**Check-in success!**\n
-**Time:** ${result.created_at.toLocaleString('id-ID')}
+**Time:** ${now.toLocaleString('id-ID')}
 **Your streak:** ${streak_count} days
 **Description:**\n${description}`,
     })

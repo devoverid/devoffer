@@ -1,6 +1,6 @@
 import { prisma } from "../client"
 
-export const increaseUserStreak = async (user_id: number) => {
+export const increaseUserStreak = (user_id: number) => {
     return prisma.user.update({
         where: {
             id: user_id
