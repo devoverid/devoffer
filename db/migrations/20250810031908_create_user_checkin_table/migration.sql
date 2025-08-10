@@ -26,7 +26,7 @@ CREATE TABLE "public"."Checkin" (
 CREATE UNIQUE INDEX "User_discord_id_key" ON "public"."User"("discord_id");
 
 -- CreateIndex
-CREATE INDEX "Checkin_user_id_created_at_idx" ON "public"."Checkin"("user_id", "created_at");
+CREATE INDEX "Checkin_user_id_created_at_idx" ON "public"."Checkin"("user_id", "created_at" DESC);
 
 -- AddForeignKey
 ALTER TABLE "public"."Checkin" ADD CONSTRAINT "Checkin_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

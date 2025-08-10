@@ -26,5 +26,5 @@ model Checkin {
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
     user User @relation(fields: [user_id], references: [id])
-    @@index([user_id, created_at])
+    @@index([user_id, created_at(sort: Desc)])
 }
