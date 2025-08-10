@@ -4,7 +4,7 @@ import { increaseUserStreak } from "../../../db/queries/user"
 import { prisma } from "../../../db/client"
 import { createCheckin } from "../../../db/queries/checkin"
 import { getYesterday, isDateToday } from "../../../utils/date"
-import { FAILED_CHECKIN_ALREADY_CHECKIN_TODAY } from "../../../constants"
+import { FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, generateFailedCheckinWrongChannelID } from "../../../constants"
 
 export default {
   data: new SlashCommandBuilder()
@@ -18,6 +18,12 @@ export default {
 
   async execute(interaction: ChatInputCommandInteraction) {
     const discord_id = interaction.user.id
+    
+    const allowedCheckinChannelId = process.env.CHECKIN_ALLOWED_CHANNEL_ID!
+    if (interaction.channelId !== allowedCheckinChannelId) {
+        await interaction.reply({ content: generateFailedCheckinWrongChannelID(interaction, allowedCheckinChannelId), flags: MessageFlags.Ephemeral })
+        return
+    }
 
     let user = await interaction.client.prisma.user.findUnique({
         where: {
