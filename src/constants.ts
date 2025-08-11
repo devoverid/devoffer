@@ -11,11 +11,19 @@ You need to go to ${interaction.guild?.channels.cache.get(allowedCheckinChannelI
 `
 }
 
+export const checkinSuccessMessage = (streak_count: number, description: string, congratsMessage: string) => {
+    const now = new Date()
+    return `**Check-in success!**\n
+**Time:** ${now.toLocaleString('id-ID')}
+**Your streak:** ${streak_count} days
+**Description:**\n${description}${congratsMessage}`
+}
+
 export const advanceRoleMessage = (role: string) => {
     return `\n\n**Congratulations!**\nYou have reached ${role}! :tada:`
 }
 
-export const ROLES = [
+export const GRIND_ROLES = [
     {
         name: "Flameborn",
         id: "1403320928519327755",

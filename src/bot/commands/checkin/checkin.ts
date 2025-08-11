@@ -1,11 +1,11 @@
-import { ChatInputCommandInteraction, GuildMember, GuildMemberRoleManager, MessageFlags, SlashCommandBuilder } from "discord.js"
+import { ChatInputCommandInteraction, GuildMember, MessageFlags, SlashCommandBuilder } from "discord.js"
 import { Command } from ".."
 import { increaseUserStreak } from "../../../db/queries/user"
 import { prisma } from "../../../db/client"
 import { createCheckin } from "../../../db/queries/checkin"
 import { getYesterday, isDateToday } from "../../../utils/date"
-import { advanceRoleMessage, FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, generateFailedCheckinWrongChannelID } from "../../../constants"
-import { addMemberRole, checkStreakCount, resetMemberRoles } from "../../../utils/roles"
+import { advanceRoleMessage, checkinSuccessMessage, FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, generateFailedCheckinWrongChannelID } from "../../../constants"
+import { addMemberGrindRole, getGrinderRoleByStreakCount, resetMemberGrindRoles } from "../../../utils/roles"
 
 export default {
   data: new SlashCommandBuilder()
@@ -69,7 +69,7 @@ export default {
     if (user.checkins.length == 0 || user.checkins[0].created_at < yesterday) {
         // reset streak count
         streak_count = 0
-        resetMemberRoles(member)
+        resetMemberGrindRoles(member)
     }
 
     if (user.checkins.length && isDateToday(user.checkins[0].created_at)) {
@@ -87,21 +87,16 @@ export default {
 
     streak_count = updatedUser.streak_count
     
-    let newRole = checkStreakCount(streak_count)
+    let newRole = getGrinderRoleByStreakCount(streak_count)
     let congratsMessage = ""
     if (newRole) {
-        await resetMemberRoles(member)
-        await addMemberRole(member, newRole.id)
+        await resetMemberGrindRoles(member)
+        await addMemberGrindRole(member, newRole.id)
         congratsMessage = advanceRoleMessage(newRole.name)
     }
 
-    const now = new Date()
-
     await interaction.reply({
-        content: `**Check-in success!**\n
-**Time:** ${now.toLocaleString('id-ID')}
-**Your streak:** ${streak_count} days
-**Description:**\n${description}${congratsMessage}`,
+        content: checkinSuccessMessage(streak_count, description, congratsMessage)
     })
 
     
