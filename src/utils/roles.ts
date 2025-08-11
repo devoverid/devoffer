@@ -1,8 +1,8 @@
-import { GuildMember } from "discord.js"
-import { GRIND_ROLES } from "../constants"
+import { GuildMember, RoleManager } from "discord.js"
+import { getGrindRoles } from "../config/roles"
 
-export const getGrinderRoleByStreakCount = (streak_count: number) => {
-    const role = GRIND_ROLES.find((role) => streak_count == role.threshold)
+export const getGrinderRoleByStreakCount = (roleManager: RoleManager, streak_count: number) => {
+    const role = getGrindRoles(roleManager).find((role) => streak_count == role.threshold)
     return role
 }
 
@@ -11,5 +11,5 @@ export const addMemberGrindRole = async (member: GuildMember, roleId: string) =>
 }
 
 export const resetMemberGrindRoles = async (member: GuildMember) => {
-    await member.roles.remove(GRIND_ROLES.map(r => r.id))
+    await member.roles.remove(getGrindRoles().map(r => r.id))
 }

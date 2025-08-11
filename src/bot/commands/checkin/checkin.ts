@@ -20,7 +20,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const discord_id = interaction.user.id
     const member = interaction.member! as GuildMember
-    
+
     const allowedCheckinChannelId = process.env.CHECKIN_CHANNEL_ID!
     if (interaction.channelId !== allowedCheckinChannelId) {
         await interaction.reply({ content: generateFailedCheckinWrongChannelID(interaction, allowedCheckinChannelId), flags: MessageFlags.Ephemeral })
@@ -87,18 +87,16 @@ export default {
 
     streak_count = updatedUser.streak_count
     
-    let newRole = getGrinderRoleByStreakCount(streak_count)
+    let newRole = getGrinderRoleByStreakCount(interaction.guild!.roles, streak_count)
     let congratsMessage = ""
     if (newRole) {
         await resetMemberGrindRoles(member)
         await addMemberGrindRole(member, newRole.id)
-        congratsMessage = advanceRoleMessage(newRole.name)
+        congratsMessage = advanceRoleMessage(newRole.name!)
     }
 
     await interaction.reply({
         content: checkinSuccessMessage(streak_count, description, congratsMessage)
     })
-
-    
   }
 } as Command
