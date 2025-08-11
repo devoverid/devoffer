@@ -11,6 +11,10 @@ You need to go to ${interaction.guild?.channels.cache.get(allowedCheckinChannelI
 `
 }
 
+export const advanceRoleMessage = (role: string) => {
+    return `\n\n**Congratulations!**\nYou have reached ${role}! :tada:`
+}
+
 export const ROLES = [
     {
         name: "Flameborn",

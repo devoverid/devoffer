@@ -4,7 +4,7 @@ import { increaseUserStreak } from "../../../db/queries/user"
 import { prisma } from "../../../db/client"
 import { createCheckin } from "../../../db/queries/checkin"
 import { getYesterday, isDateToday } from "../../../utils/date"
-import { FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, generateFailedCheckinWrongChannelID } from "../../../constants"
+import { advanceRoleMessage, FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, generateFailedCheckinWrongChannelID } from "../../../constants"
 import { addMemberRole, checkStreakCount, resetMemberRoles } from "../../../utils/roles"
 
 export default {
@@ -19,6 +19,7 @@ export default {
 
   async execute(interaction: ChatInputCommandInteraction) {
     const discord_id = interaction.user.id
+    const member = interaction.member! as GuildMember
     
     const allowedCheckinChannelId = process.env.CHECKIN_CHANNEL_ID!
     if (interaction.channelId !== allowedCheckinChannelId) {
@@ -68,7 +69,7 @@ export default {
     if (user.checkins.length == 0 || user.checkins[0].created_at < yesterday) {
         // reset streak count
         streak_count = 0
-        resetMemberRoles(interaction.member! as GuildMember)
+        resetMemberRoles(member)
     }
 
     if (user.checkins.length && isDateToday(user.checkins[0].created_at)) {
@@ -87,10 +88,12 @@ export default {
     streak_count = updatedUser.streak_count
     
     let newRole = checkStreakCount(streak_count)
+    let congratsMessage = ""
     if (newRole) {
-        await addMemberRole(interaction.member! as GuildMember, newRole.id)
+        await resetMemberRoles(member)
+        await addMemberRole(member, newRole.id)
+        congratsMessage = advanceRoleMessage(newRole.name)
     }
-
 
     const now = new Date()
 
@@ -98,7 +101,7 @@ export default {
         content: `**Check-in success!**\n
 **Time:** ${now.toLocaleString('id-ID')}
 **Your streak:** ${streak_count} days
-**Description:**\n${description}`,
+**Description:**\n${description}${congratsMessage}`,
     })
 
     

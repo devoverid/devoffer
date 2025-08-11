@@ -10,8 +10,6 @@ export const addMemberRole = async (member: GuildMember, roleId: string) => {
     return await member.roles.add(roleId)
 }
 
-export const resetMemberRoles =  (member: GuildMember) => {
-    ROLES.forEach(r => {
-        member.roles.remove(r.id)
-    })    
+export const resetMemberRoles = async (member: GuildMember) => {
+    await member.roles.remove(ROLES.map(r => r.id))
 }
