@@ -19,7 +19,7 @@ export default {
   async execute(interaction: ChatInputCommandInteraction) {
     const discord_id = interaction.user.id
     
-    const allowedCheckinChannelId = process.env.CHECKIN_ALLOWED_CHANNEL_ID!
+    const allowedCheckinChannelId = process.env.CHECKIN_CHANNEL_ID!
     if (interaction.channelId !== allowedCheckinChannelId) {
         await interaction.reply({ content: generateFailedCheckinWrongChannelID(interaction, allowedCheckinChannelId), flags: MessageFlags.Ephemeral })
         return
