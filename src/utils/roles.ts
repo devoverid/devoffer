@@ -1,4 +1,4 @@
-import { GuildMember, GuildMemberRoleManager, Role } from "discord.js"
+import { GuildMember } from "discord.js"
 import { GRIND_ROLES } from "../constants"
 
 export const getGrinderRoleByStreakCount = (streak_count: number) => {
