@@ -1,10 +1,11 @@
-import { ChatInputCommandInteraction, MessageFlags, SlashCommandBuilder } from "discord.js"
+import { ChatInputCommandInteraction, GuildMember, MessageFlags, SlashCommandBuilder } from "discord.js"
 import { Command } from ".."
 import { increaseUserStreak } from "../../../db/queries/user"
 import { prisma } from "../../../db/client"
 import { createCheckin } from "../../../db/queries/checkin"
 import { getYesterday, isDateToday } from "../../../utils/date"
-import { FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, generateFailedCheckinWrongChannelID } from "../../../constants"
+import { advanceRoleMessage, checkinSuccessMessage, FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, generateFailedCheckinWrongChannelID } from "../../../constants"
+import { addMemberGrindRole, getGrinderRoleByStreakCount, resetMemberGrindRoles } from "../../../utils/roles"
 
 export default {
   data: new SlashCommandBuilder()
@@ -18,7 +19,8 @@ export default {
 
   async execute(interaction: ChatInputCommandInteraction) {
     const discord_id = interaction.user.id
-    
+    const member = interaction.member! as GuildMember
+
     const allowedCheckinChannelId = process.env.CHECKIN_CHANNEL_ID!
     if (interaction.channelId !== allowedCheckinChannelId) {
         await interaction.reply({ content: generateFailedCheckinWrongChannelID(interaction, allowedCheckinChannelId), flags: MessageFlags.Ephemeral })
@@ -67,6 +69,7 @@ export default {
     if (user.checkins.length == 0 || user.checkins[0].created_at < yesterday) {
         // reset streak count
         streak_count = 0
+        resetMemberGrindRoles(member)
     }
 
     if (user.checkins.length && isDateToday(user.checkins[0].created_at)) {
@@ -77,21 +80,23 @@ export default {
     const description = interaction.options.getString("description")!
 
     // do the checkin
-    const result = await prisma.$transaction([
+    const [_, updatedUser] = await prisma.$transaction([
         createCheckin(user.id, description),
         increaseUserStreak(user.id)
     ])
 
-    const now = new Date()
-
+    streak_count = updatedUser.streak_count
+    
+    let newRole = getGrinderRoleByStreakCount(interaction.guild!.roles, streak_count)
+    let congratsMessage = ""
+    if (newRole) {
+        await resetMemberGrindRoles(member)
+        await addMemberGrindRole(member, newRole.id)
+        congratsMessage = advanceRoleMessage(newRole.name!)
+    }
 
     await interaction.reply({
-        content: `**Check-in success!**\n
-**Time:** ${now.toLocaleString('id-ID')}
-**Your streak:** ${streak_count} days
-**Description:**\n${description}`,
+        content: checkinSuccessMessage(streak_count, description, congratsMessage)
     })
-
-    
   }
 } as Command
