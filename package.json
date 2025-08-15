@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "bun src/index.ts",
-    "commands": "bun src/deploy-commands.ts"
+    "commands": "bun src/deploy-commands.ts",
+    "prisma": "bunx prisma generate --schema db/schema.prisma"
   },
   "repository": {
     "type": "git",
