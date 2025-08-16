@@ -26,8 +26,6 @@ services:
       - POSTGRES_USER=${DB_USER:-postgres}
       - POSTGRES_PASSWORD=${DB_PASS:-postgres}
       - POSTGRES_DB=${DB_NAME:-devoffer}
-    ports:
-      - ${DB_PORT:-5432}:5432
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
