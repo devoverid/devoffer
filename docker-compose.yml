@@ -1,0 +1,35 @@
+version: "3"
+services:
+  app:
+    build: .
+    image: zuramai/devoffer:latest
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    environment:
+      # for prisma schema
+      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASS:-postgres}@db:5432/${DB_NAME:-devoffer}
+      - NODE_ENV=production
+    volumes:
+      - ./db:/app/db
+      - ./src:/app/src
+      - ./prisma.config.ts:/app/prisma.config.ts
+      - ./package.json:/app/package.json
+    command: bun run start
+    depends_on:
+      - db
+  db:
+    image: postgres:17
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASS:-postgres}
+      - POSTGRES_DB=${DB_NAME:-devoffer}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+volumes:
+  db_data:

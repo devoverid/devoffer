@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Client, GatewayIntentBits } from "discord.js";
 import { registerEvents } from "./bot/events/index"
 import { registerCommands } from "./bot/commands"
