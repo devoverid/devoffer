@@ -1,9 +1,8 @@
 version: "3"
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
+    image: zuramai/devoffer:latest
     ports:
       - 3000:3000
     env_file:
