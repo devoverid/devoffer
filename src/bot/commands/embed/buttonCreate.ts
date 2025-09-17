@@ -1,7 +1,7 @@
 import { ChannelType, PermissionFlagsBits, SlashCommandBuilder, ChatInputCommandInteraction, TextChannel, ButtonStyle, MessageFlags } from "discord.js";
-import { Command } from "..";
 import { ActionRowBuilder, ButtonBuilder, EmbedBuilder, roleMention } from "@discordjs/builders";
 import { parseHexColor } from "../../../utils/color";
+import { Command } from "../command";
 
 export default {
   data: new SlashCommandBuilder()
