@@ -1,7 +1,7 @@
 import { REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes } from 'discord.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { Command } from './bot/commands';
+import { Command } from './bot/commands/command';
 
 const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 // Grab all the command folders from the commands directory you created earlier
