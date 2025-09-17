@@ -1,12 +1,7 @@
 import { ChatInputCommandInteraction, Client, Collection, SlashCommandBuilder } from "discord.js"
 import fs from "fs"
 import path from "path"
-
-export interface Command {
-  data: SlashCommandBuilder
-  execute: (interaction: ChatInputCommandInteraction) => Promise<void>
-}
-
+import { Command } from "./command"
 
 export const registerCommands = async (client: Client) => {
   client.commands = new Collection<string, Command>()
