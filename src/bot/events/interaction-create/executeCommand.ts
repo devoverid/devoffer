@@ -1,9 +1,9 @@
-import { Client, Interaction, MessageFlags } from "discord.js"
+import { Client, Events, Interaction, MessageFlags } from "discord.js"
 import { Command } from "../../commands/command";
 import { Event } from "../event";
 
 export default {
-    name: "interactionCreate",
+    name: Events.InteractionCreate,
     desc: "Executing a command when an interaction is created",
     async exec(client: Client, interaction: Interaction) {
         if (!interaction.isChatInputCommand()) return;
