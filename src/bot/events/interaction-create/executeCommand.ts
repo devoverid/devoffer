@@ -1,5 +1,6 @@
-import { Client, Interaction, Message, MessageFlags } from "discord.js"
+import { Client, Interaction, MessageFlags } from "discord.js"
 import { Command } from "../../commands/command";
+import { Event } from "../event";
 
 export default {
     name: "interactionCreate",
@@ -23,4 +24,4 @@ export default {
             }
         }
     }
-}
+} as Event
