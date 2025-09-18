@@ -4,6 +4,14 @@ import { getModuleName, readFiles } from "../../utils/io"
 import path from "path"
 import { log } from "../../utils/logger"
 
+export class EventError extends Error {
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.name = "EventError";
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
 export const EVENT_PATH = path.basename(__dirname)
 const files = readFiles(__dirname)
 
@@ -21,8 +29,9 @@ export const registerEvents = async (client: Client) => {
           event.exec(client, ...args)
         })
       }
-    } catch (err) {
-      log.error(`Failed to register event ${fileName}: ${err}`);
+    } catch (err: any) {
+      const msg = err instanceof EventError ? err.message : "❌ Something went wrong when importing the event."
+      log.error(`Failed to register an event: ${msg}`)
     }
   }
 }

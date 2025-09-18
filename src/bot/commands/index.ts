@@ -4,6 +4,14 @@ import { getModuleName, readFiles } from "../../utils/io"
 import path from "path"
 import { log } from "../../utils/logger"
 
+export class CommandError extends Error {
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options);
+    this.name = "CommandError";
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
 export const COMMAND_PATH = path.basename(__dirname)
 const files = readFiles(__dirname)
 
@@ -17,8 +25,9 @@ export const registerCommands = async (client: Client) => {
     try {
       const { default: command } = await import(file) as { default: Command }
       client.commands.set(command.data.name, command);
-    } catch (err) {
-      log.error(`The command at ${file} is missing a required "data" or "execute" property.`);
+    } catch (err: any) {
+      const msg = err instanceof CommandError ? err.message : "❌ Something went wrong when importing the command."
+      log.error(`Failed to register a command: ${msg}`);
     }
   }
 }
