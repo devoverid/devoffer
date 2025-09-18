@@ -5,7 +5,7 @@ import { generateCustomId } from "../../../utils/io";
 import { COMMAND_PATH } from "..";
 import { DUMMY } from "../../../utils/placeholder";
 
-export const EMBED_BUTTON_CREATE_ID = generateCustomId(COMMAND_PATH, __filename)
+export const COMMAND_EMBED_BUTTON_CREATE_ID = generateCustomId(COMMAND_PATH, __filename)
 
 export default {
   data: new SlashCommandBuilder()
@@ -24,7 +24,7 @@ export default {
     const color = interaction.options.getString("color") ?? ""
 
     const modal = new ModalBuilder()
-      .setCustomId(`${EMBED_BUTTON_CREATE_ID}:${channel.id}:${role.id}:${encodeURIComponent(buttonName)}:${encodeURIComponent(color)}`)
+      .setCustomId(`${COMMAND_EMBED_BUTTON_CREATE_ID}:${channel.id}:${role.id}:${encodeURIComponent(buttonName)}:${encodeURIComponent(color)}`)
       .setTitle("Create Embed with Button")
     const titleInput = new TextInputBuilder()
       .setCustomId("title")
