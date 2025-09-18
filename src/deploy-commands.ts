@@ -1,6 +1,6 @@
 import { REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes } from 'discord.js';
 import { Command } from './bot/commands/command';
-import { getRootPath, readFiles } from './utils/io';
+import { getModuleName, readFiles } from './utils/io';
 import path from 'path';
 import { log } from './utils/logger';
 
@@ -11,7 +11,7 @@ const files = readFiles(root)
 
 log.base("🚀 Deploying commands...")
 for (const file of files) {
-	const fileName = getRootPath(root, file)
+	const fileName = getModuleName(root, file)
 	log.info(`Registering command ${fileName}...`)
 
 	try {
