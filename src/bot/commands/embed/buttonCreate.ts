@@ -1,82 +1,58 @@
-import { ChannelType, PermissionFlagsBits, SlashCommandBuilder, ChatInputCommandInteraction, TextChannel, ButtonStyle, MessageFlags } from "discord.js";
-import { ActionRowBuilder, ButtonBuilder, EmbedBuilder, roleMention } from "@discordjs/builders";
-import { parseHexColor } from "../../../utils/color";
+import { ChannelType, PermissionFlagsBits, SlashCommandBuilder, ChatInputCommandInteraction, TextChannel, TextInputStyle } from "discord.js";
+import { ActionRowBuilder, ModalBuilder, TextInputBuilder } from "@discordjs/builders";
 import { Command } from "../command";
+import { generateCustomId } from "../../../utils/io";
+import { COMMAND_PATH } from "..";
+import { DUMMY } from "../../../utils/placeholder";
+
+export const EMBED_BUTTON_CREATE_ID = generateCustomId(COMMAND_PATH, __filename)
 
 export default {
   data: new SlashCommandBuilder()
     .setName("embed-button-create")
     .setDescription("Create an embed in a channel w/ a role-grant button.")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-    .addChannelOption(opt =>
-      opt
-        .setName("channel")
-        .setDescription("Channel in which to post the embed.")
-        .addChannelTypes(ChannelType.GuildText)
-        .setRequired(true)
-    )
-    .addStringOption(opt =>
-      opt.setName("title").setDescription("Title of the embed.").setRequired(true)
-    )
-    .addStringOption(opt =>
-      opt.setName("description").setDescription("Description of the embed. Discord markdown accepted. Use '<nl>' for new lines.").setRequired(true)
-    )
-    .addStringOption(opt =>
-      opt.setName("button-name").setDescription("Text to display on the button—make it catchy.").setRequired(true)
-    )
-    .addRoleOption(opt =>
-      opt.setName("role").setDescription("Select the role you want users to receive when they click the button.").setRequired(true)
-    )
-    .addStringOption(opt =>
-      opt.setName("color").setDescription("Hex color like #00AAFF")
-    )
-    .addStringOption(opt =>
-      opt.setName("footer").setDescription("Footer text")
-    ),
+    .addChannelOption(opt => opt.setName("channel").setDescription("Post channel.").addChannelTypes(ChannelType.GuildText).setRequired(true))
+    .addStringOption(opt => opt.setName("button-name").setDescription("Text to display on the button-make it catchy.").setRequired(true))
+    .addRoleOption(opt => opt.setName("role").setDescription("Role to toggle.").setRequired(true))
+    .addStringOption(opt => opt.setName("color").setDescription("Hex like #FF7518.")),
 
   async execute(interaction: ChatInputCommandInteraction) {
-    await interaction.deferReply()
-
     const channel = interaction.options.getChannel("channel", true) as TextChannel
-    const title = interaction.options.getString("title", true)
-    const description = interaction.options.getString("description", true)
     const buttonName = interaction.options.getString("button-name", true)
     const role = interaction.options.getRole("role", true)
-    const colorInput = interaction.options.getString("color")
-    const color = parseHexColor(colorInput)
-    const footer = interaction.options.getString("footer")
+    const color = interaction.options.getString("color") ?? ""
 
-    const bot = await interaction.guild!.members.fetchMe()
-    if (!bot.permissions.has(PermissionFlagsBits.ManageRoles)) {
-      await interaction.editReply("❌ I need **Manage Roles** permission to assign that role.")
-      return
-    }
+    const modal = new ModalBuilder()
+      .setCustomId(`${EMBED_BUTTON_CREATE_ID}:${channel.id}:${role.id}:${encodeURIComponent(buttonName)}:${encodeURIComponent(color)}`)
+      .setTitle("Create Embed with Button")
+    const titleInput = new TextInputBuilder()
+      .setCustomId("title")
+      .setLabel("Title")
+      .setPlaceholder(DUMMY.TTILE)
+      .setStyle(TextInputStyle.Short)
+      .setMaxLength(256)
+      .setRequired(true)
+    const descInput = new TextInputBuilder()
+      .setCustomId("description")
+      .setLabel("Description")
+      .setPlaceholder(DUMMY.DESC)
+      .setStyle(TextInputStyle.Paragraph)
+      .setRequired(true)
+    const footerInput = new TextInputBuilder()
+      .setCustomId("footer")
+      .setLabel("Footer (optional)")
+      .setPlaceholder(DUMMY.FOOTER)
+      .setValue(DUMMY.FOOTER)
+      .setStyle(TextInputStyle.Short)
+      .setRequired(false)
 
-    const botTop = bot.roles.highest.position
-    if ("position" in role && role.position >= botTop) {
-      await interaction.editReply("❌ I can’t manage that role because it is higher or equal to my top role.")
-      return
-    }
-
-    const embed = new EmbedBuilder()
-      .setTitle(title)
-      .setDescription(description)
-      .setTimestamp(new Date())
-    if (color) embed.setColor(color)
-    if (footer) embed.setFooter({ text: footer })
-
-    const customId = `role-assign:${interaction.guildId}:${role.id}`
-    const button = new ButtonBuilder()
-      .setCustomId(customId)
-      .setLabel(buttonName)
-      .setStyle(ButtonStyle.Primary)
-
-    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button)
-    const sent = await channel.send({ embeds: [embed], components: [row] })
-
-    await interaction.editReply(
-      `✅ Embed posted in <#${channel.id}> with a **${buttonName}** button.\n` +
-      `Clicking it will toggle ${roleMention(role.id)}. [Jump to message](${sent.url})`
+    modal.addComponents(
+      new ActionRowBuilder<TextInputBuilder>().addComponents(titleInput),
+      new ActionRowBuilder<TextInputBuilder>().addComponents(descInput),
+      new ActionRowBuilder<TextInputBuilder>().addComponents(footerInput),
     )
+
+    await interaction.showModal(modal)
   }
 } as Command
