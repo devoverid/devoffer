@@ -29,7 +29,7 @@ export default {
     const titleInput = new TextInputBuilder()
       .setCustomId("title")
       .setLabel("Title")
-      .setPlaceholder(DUMMY.TTILE)
+      .setPlaceholder(DUMMY.TITLE)
       .setStyle(TextInputStyle.Short)
       .setMaxLength(256)
       .setRequired(true)

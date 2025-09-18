@@ -1,5 +1,5 @@
 export interface PlaceholderDummy {
-  TTILE: string;
+  TITLE: string;
   DESC: string;
   COLOR: string;
   FOOTER: string;
