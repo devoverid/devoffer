@@ -2,6 +2,7 @@ import { Client, GatewayIntentBits } from "discord.js";
 import { registerEvents } from "./bot/events/index"
 import { registerCommands } from "./bot/commands"
 import { prisma } from "./db/client"
+import { log } from "./utils/logger";
 
 const client = new Client({
   intents: [
@@ -13,14 +14,14 @@ const client = new Client({
 })
 client.prisma = prisma
 
-console.log("Starting bot...")
-console.log("Loading events...")
+log.base("🚀 Starting bot...")
+log.check(`Loading events...`)
 await registerEvents(client)
-console.log("Events loaded~")
+log.success("Events loaded~")
 
-console.log("Loading commands...")
+log.check(`Loading commands...`)
 await registerCommands(client)
-console.log("Commands loaded~")  
+log.success("Commands loaded~")
 
 client.login(process.env.APP_TOKEN);
-console.log("Bot is running!")
+log.base("🚀 Bot is running!")
