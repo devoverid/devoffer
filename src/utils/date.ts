@@ -1,15 +1,15 @@
-function isDateToday(date: Date): boolean {
+export const isDateToday = (date: Date): boolean => {
   const today = new Date();
   return date.getFullYear() === today.getFullYear() &&
-         date.getMonth() === today.getMonth() &&
-         date.getDate() === today.getDate();
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate();
 }
 
-const getYesterday = () => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    yesterday.setHours(0, 0, 0, 0);
-    return yesterday;
+export const getYesterday = () => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+  return yesterday;
 }
 
-export { isDateToday, getYesterday }
+export const timestamp = (): string => new Date().toISOString()
