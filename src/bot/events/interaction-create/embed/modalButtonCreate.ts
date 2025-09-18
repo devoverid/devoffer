@@ -1,8 +1,8 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, Interaction, MessageFlags, PermissionFlagsBits, roleMention } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, Interaction, roleMention } from "discord.js"
 import { Event } from "../../event"
 import { parseHexColor } from "../../../../utils/color"
 import { COMMAND_EMBED_BUTTON_CREATE_ID } from "../../../commands/embed/buttonCreate"
-import { getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../utils/discord"
+import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../utils/discord"
 import { EVENT_EMBED_BUTTON_CREATE_ID } from "./buttonCreate"
 import { log } from "../../../../utils/logger"
 import { ERR } from "./messages"
@@ -56,15 +56,14 @@ export default {
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button)
       const sent = await channel.send({ embeds: [embed], components: [row] })
 
-      await interaction.reply({
-        content: `✅ Posted in <#${channel.id}>. Clicking will toggle ${roleMention(role.id)}. [Jump](${sent.url})!`
-      })
+      await discordReply(
+        interaction,
+        `✅ Posted in <#${channel.id}>. Clicking will toggle ${roleMention(role.id)}. [Jump](${sent.url})!`,
+        false,
+      )
     } catch (err: any) {
-      if (err instanceof ModalButtonCreateError) {
-        await interaction.reply({ content: err.message, flags: MessageFlags.Ephemeral })
-      } else {
-        log.error(`Failed to handle ${COMMAND_EMBED_BUTTON_CREATE_ID}: ${ERR.UnexpectedModal}`)
-      }
+      if (err instanceof ModalButtonCreateError) await discordReply(interaction, err.message)
+      else log.error(`Failed to handle ${COMMAND_EMBED_BUTTON_CREATE_ID}: ${ERR.UnexpectedModal}`)
     }
   }
 } as Event

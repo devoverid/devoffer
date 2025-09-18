@@ -1,8 +1,8 @@
-import { Events, GuildMember, Interaction, MessageFlags } from "discord.js"
+import { Events, GuildMember, Interaction } from "discord.js"
 import { Event } from "../../event"
 import { generateCustomId } from "../../../../utils/io"
 import { EVENT_PATH } from "../.."
-import { getDiscordBot, getDiscordRole } from "../../../../utils/discord"
+import { discordReply, getDiscordBot, getDiscordRole } from "../../../../utils/discord"
 import { log } from "../../../../utils/logger"
 import { ERR, MSG } from "./messages"
 import { assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from "./validators"
@@ -39,13 +39,10 @@ export default {
       assertMemberHasRole(member, role)
 
       await member.roles.add(role)
-      await interaction.reply({ content: MSG.Granted(role.id), flags: MessageFlags.Ephemeral })
+      await discordReply(interaction, MSG.Granted(role.id))
     } catch (err: any) {
-      if (err instanceof ButtonCreateError) {
-        await interaction.reply({ content: err.message, flags: MessageFlags.Ephemeral })
-      } else {
-        log.error(`Failed to handle ${EVENT_EMBED_BUTTON_CREATE_ID}: ${ERR.UnexpectedButton}`)
-      }
+      if (err instanceof ButtonCreateError) await discordReply(interaction, err.message)
+      else log.error(`Failed to handle ${EVENT_EMBED_BUTTON_CREATE_ID}: ${ERR.UnexpectedButton}`)
     }
   }
 } as Event
