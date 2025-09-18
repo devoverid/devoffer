@@ -3,13 +3,17 @@ import { ModalButtonCreateError } from "./modalButtonCreate"
 import { ERR, MSG } from "./messages"
 import { ButtonCreateError } from "./buttonCreate"
 import { memberHasRole } from "../../../../utils/discord"
+import { parseHexColor } from "../../../../utils/color"
 
 export const getModalCustomId = (interaction: Interaction, customId: string) => {
   const [prefix, guildId, channelId, roleId, buttonNameEnc, colorEnc] = customId.split(":")
+  const buttonName = decodeURIComponent(buttonNameEnc)
+  const color = parseHexColor(decodeURIComponent(colorEnc))
+
   if (!channelId) throw new ModalButtonCreateError(ERR.ChannelNotFound)
   if (!roleId) throw new ModalButtonCreateError(ERR.RoleMissing)
   if (interaction.guildId !== guildId) throw new ButtonCreateError(ERR.NotGuild)
-  return { prefix, guildId, channelId, roleId, buttonNameEnc, colorEnc }
+  return { prefix, guildId, channelId, roleId, buttonName, color }
 }
 
 export const getButtonCustomId = (interaction: Interaction, customId: string) => {

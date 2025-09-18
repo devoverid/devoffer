@@ -25,7 +25,7 @@ export default {
     if (!interaction.customId.startsWith(COMMAND_EMBED_BUTTON_CREATE_ID)) throw new ModalButtonCreateError(ERR.InvalidModal)
 
     try {
-      const { channelId, roleId, buttonNameEnc, colorEnc } = getModalCustomId(interaction, interaction.customId)
+      const { channelId, roleId, buttonName, color } = getModalCustomId(interaction, interaction.customId)
 
       const channel = await getDiscordChannel(interaction, channelId)
       assertTextChannel(channel)
@@ -39,9 +39,6 @@ export default {
 
       const title = interaction.fields.getTextInputValue("title")
       const description = interaction.fields.getTextInputValue("description")
-      const buttonName = decodeURIComponent(buttonNameEnc || "")
-      const colorInput = decodeURIComponent(colorEnc || "")
-      const color = parseHexColor(colorInput)
       const footer = interaction.fields.getTextInputValue("footer")
 
       const embed = new EmbedBuilder().setTitle(title).setDescription(description).setTimestamp(new Date())
