@@ -12,7 +12,7 @@ export const registerCommands = async (client: Client) => {
 
   for (const file of files) {
     const fileName = getRootPath(root, file)
-    log.info(`Registering event ${fileName}...`)
+    log.info(`Registering command ${fileName}...`)
 
     try {
       const { default: command } = await import(file) as { default: Command }

@@ -3,28 +3,23 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Command } from './bot/commands/command';
 import { log } from './utils/logger';
+import { getRootPath, readFiles } from './utils/io';
 
 const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 // Grab all the command folders from the commands directory you created earlier
-const foldersPath = path.join(__dirname, 'bot/commands');
-const commandFolders = fs.readdirSync(foldersPath).filter((f) => !f.includes('.ts'));
+const root = path.join(__dirname, 'bot/commands')
+const files = readFiles(root)
 
 log.base("🚀 Deploying commands...")
-for (const folder of commandFolders) {
-	// Grab all the command files from the commands directory you created earlier
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
-	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		log.info(`Registering command ${folder}.${file.split(".")[0]}!`)
+for (const file of files) {
+	const fileName = getRootPath(root, file)
+	log.info(`Registering command ${fileName}...`)
 
-		const { default: command } = await import(filePath) as { default: Command }
-		if ('data' in command && 'execute' in command) {
-			commands.push(command.data.toJSON());
-		} else {
-			log.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-		}
+	const { default: command } = await import(file) as { default: Command }
+	if ('data' in command && 'execute' in command) {
+		commands.push(command.data.toJSON());
+	} else {
+		log.warn(`[WARNING] The command at ${file} is missing a required "data" or "execute" property.`);
 	}
 }
 
