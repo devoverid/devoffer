@@ -8,3 +8,5 @@ export const getDiscordRole = async (interaction: Interaction, id: string): Prom
 
 export const getDiscordBot = async (interaction: Interaction): Promise<GuildMember> =>
   interaction.guild!.members.me as GuildMember ?? await interaction.guild!.members.fetchMe()
+
+export const memberHasRole = (member: GuildMember, role: Role): boolean => member.roles.cache.has(role.id)

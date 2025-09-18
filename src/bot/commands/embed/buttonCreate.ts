@@ -24,7 +24,7 @@ export default {
     const color = interaction.options.getString("color") ?? ""
 
     const modal = new ModalBuilder()
-      .setCustomId(`${COMMAND_EMBED_BUTTON_CREATE_ID}:${channel.id}:${role.id}:${encodeURIComponent(buttonName)}:${encodeURIComponent(color)}`)
+      .setCustomId(`${COMMAND_EMBED_BUTTON_CREATE_ID}:${interaction.guildId}:${channel.id}:${role.id}:${encodeURIComponent(buttonName)}:${encodeURIComponent(color)}`)
       .setTitle("Create Embed with Button")
     const titleInput = new TextInputBuilder()
       .setCustomId("title")

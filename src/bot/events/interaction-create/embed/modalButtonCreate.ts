@@ -5,6 +5,8 @@ import { COMMAND_EMBED_BUTTON_CREATE_ID } from "../../../commands/embed/buttonCr
 import { getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../utils/discord"
 import { EVENT_EMBED_BUTTON_CREATE_ID } from "./buttonCreate"
 import { log } from "../../../../utils/logger"
+import { ERR } from "./messages"
+import { assertBotCanPost, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "./validators"
 
 export class ModalButtonCreateError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
@@ -19,19 +21,21 @@ export default {
   desc: "Handles modal submissions for creating an embed with a role-grant button.",
   async exec(_, interaction: Interaction) {
     if (!interaction.isModalSubmit()) return
-    if (!interaction.inCachedGuild()) return
-    if (!interaction.customId.startsWith(COMMAND_EMBED_BUTTON_CREATE_ID)) return
+    if (!interaction.inCachedGuild()) throw new ModalButtonCreateError(ERR.NotGuild)
+    if (!interaction.customId.startsWith(COMMAND_EMBED_BUTTON_CREATE_ID)) throw new ModalButtonCreateError(ERR.InvalidModal)
 
     try {
-      const [, channelId, roleId, buttonNameEnc, colorEnc] = interaction.customId.split(":")
+      const { channelId, roleId, buttonNameEnc, colorEnc } = getModalCustomId(interaction, interaction.customId)
 
       const channel = await getDiscordChannel(interaction, channelId)
+      assertTextChannel(channel)
+
       const role = await getDiscordRole(interaction, roleId)
-      if (!channel || !role) throw new ModalButtonCreateError("❌ Channel or role not found.")
-      if (!role.editable) throw new ModalButtonCreateError("❌ I can’t manage that role. Please check role hierarchy.")
+      assertRole(role)
 
       const bot = await getDiscordBot(interaction)
-      if (!bot.permissions.has(PermissionFlagsBits.ManageRoles)) throw new ModalButtonCreateError("❌ I don’t have **Manage Roles**.")
+      assertRoleManageable(interaction.guild, bot, role)
+      assertBotCanPost(channel, bot)
 
       const title = interaction.fields.getTextInputValue("title")
       const description = interaction.fields.getTextInputValue("description")
@@ -53,12 +57,14 @@ export default {
       const sent = await channel.send({ embeds: [embed], components: [row] })
 
       await interaction.reply({
-        content: `✅ Posted in <#${channel.id}>. Clicking will toggle ${roleMention(role.id)}. [Jump](${sent.url})`
+        content: `✅ Posted in <#${channel.id}>. Clicking will toggle ${roleMention(role.id)}. [Jump](${sent.url})!`
       })
     } catch (err: any) {
-      const msg = err instanceof ModalButtonCreateError ? err.message : "❌ Something went wrong while handling the embed modal create."
-      await interaction.reply({ content: msg, flags: MessageFlags.Ephemeral })
-      log.error(`Failed to handle ${COMMAND_EMBED_BUTTON_CREATE_ID}: ${msg}`)
+      if (err instanceof ModalButtonCreateError) {
+        await interaction.reply({ content: err.message, flags: MessageFlags.Ephemeral })
+      } else {
+        log.error(`Failed to handle ${COMMAND_EMBED_BUTTON_CREATE_ID}: ${ERR.UnexpectedModal}`)
+      }
     }
   }
 } as Event

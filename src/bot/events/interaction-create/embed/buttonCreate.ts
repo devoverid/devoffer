@@ -1,15 +1,17 @@
-import { Events, GuildMember, Interaction, MessageFlags, PermissionFlagsBits } from "discord.js"
+import { Events, GuildMember, Interaction, MessageFlags } from "discord.js"
 import { Event } from "../../event"
 import { generateCustomId } from "../../../../utils/io"
 import { EVENT_PATH } from "../.."
 import { getDiscordBot, getDiscordRole } from "../../../../utils/discord"
 import { log } from "../../../../utils/logger"
+import { ERR, MSG } from "./messages"
+import { assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from "./validators"
 
 export class ButtonCreateError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
-    super(message, options);
-    this.name = "ButtonCreateError";
-    Object.setPrototypeOf(this, new.target.prototype);
+    super(message, options)
+    this.name = "ButtonCreateError"
+    Object.setPrototypeOf(this, new.target.prototype)
   }
 }
 
@@ -20,33 +22,30 @@ export default {
   desc: "Handles role assignment button interactions and toggles roles for users.",
   async exec(_, interaction: Interaction) {
     if (!interaction.isButton()) return
-    if (!interaction.customId.startsWith(EVENT_EMBED_BUTTON_CREATE_ID)) return
+    if (!interaction.customId.startsWith(EVENT_EMBED_BUTTON_CREATE_ID)) throw new ButtonCreateError(ERR.InvalidButton)
 
     try {
-      const [_, guildId, roleId] = interaction.customId.split(":")
-
-      if (interaction.guildId !== guildId) throw new ButtonCreateError("⚠️ This button isn’t valid for this server.")
+      const { roleId } = getButtonCustomId(interaction, interaction.customId)
 
       const member = interaction.member! as GuildMember
-      if (!member || !("roles" in member)) throw new ButtonCreateError("⚠️ Couldn’t resolve your member record.")
-
-      const bot = await getDiscordBot(interaction)
-      if (!bot.permissions.has(PermissionFlagsBits.ManageRoles)) throw new ButtonCreateError("❌ I don’t have **Manage Roles**.")
+      assertMember(member)
 
       const role = await getDiscordRole(interaction, roleId)
-      if (!role) throw new ButtonCreateError("⚠️ The role no longer exists.")
+      assertRole(role)
 
-      if (role.position >= bot.roles.highest.position) throw new ButtonCreateError("❌ I can’t manage that role (it’s above my highest role).")
+      const bot = await getDiscordBot(interaction)
+      assertRoleManageable(interaction.guild!, bot, role)
 
-      const hasRole = member.roles.cache.has(role.id)
-      if (hasRole) throw new ButtonCreateError("❌ You already have the ${role} role.")
+      assertMemberHasRole(member, role)
 
       await member.roles.add(role)
-      await interaction.reply({ content: `✅ Granted ${role} to you.`, flags: MessageFlags.Ephemeral })
+      await interaction.reply({ content: MSG.Granted(role.id), flags: MessageFlags.Ephemeral })
     } catch (err: any) {
-      const msg = err instanceof ButtonCreateError ? err.message : "❌ Something went wrong while handling the embed button create."
-      await interaction.reply({ content: msg, flags: MessageFlags.Ephemeral })
-      log.error(`Failed to handle ${EVENT_EMBED_BUTTON_CREATE_ID}: ${msg}`)
+      if (err instanceof ButtonCreateError) {
+        await interaction.reply({ content: err.message, flags: MessageFlags.Ephemeral })
+      } else {
+        log.error(`Failed to handle ${EVENT_EMBED_BUTTON_CREATE_ID}: ${ERR.UnexpectedButton}`)
+      }
     }
   }
 } as Event
