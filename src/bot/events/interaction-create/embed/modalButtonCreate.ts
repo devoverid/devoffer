@@ -1,6 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, Interaction, roleMention } from "discord.js"
 import { Event } from "../../event"
-import { parseHexColor } from "../../../../utils/color"
 import { COMMAND_EMBED_BUTTON_CREATE_ID } from "../../../commands/embed/buttonCreate"
 import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../utils/discord"
 import { EVENT_EMBED_BUTTON_CREATE_ID } from "./buttonCreate"
