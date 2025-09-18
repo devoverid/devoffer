@@ -22,6 +22,4 @@ export const ERR = {
 export const MSG = {
   Granted: (roleId: string) => `✅ Granted ${roleMention(roleId)} to you.`,
   Revoked: (roleId: string) => `❌ You already have the ${roleMention(roleId)} role.`,
-  AlreadyHas: (roleId: string) => `ℹ️ You already have ${roleMention(roleId)}.`,
-  AlreadyMissing: (roleId: string) => `ℹ️ You don’t have ${roleMention(roleId)} yet.`,
 }
