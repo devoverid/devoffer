@@ -2,7 +2,7 @@ import { Events, GuildMember, Interaction, MessageFlags, PermissionFlagsBits } f
 import { Event } from "../../event"
 import { generateCustomId } from "../../../../utils/io"
 import { EVENT_PATH } from "../.."
-import { getDiscordRole } from "../../../../utils/discord"
+import { getDiscordBot, getDiscordRole } from "../../../../utils/discord"
 import { log } from "../../../../utils/logger"
 
 export class ButtonCreateError extends Error {
@@ -30,7 +30,7 @@ export default {
       const member = interaction.member! as GuildMember
       if (!member || !("roles" in member)) throw new ButtonCreateError("⚠️ Couldn’t resolve your member record.")
 
-      const bot = await interaction.guild!.members.fetchMe()
+      const bot = await getDiscordBot(interaction)
       if (!bot.permissions.has(PermissionFlagsBits.ManageRoles)) throw new ButtonCreateError("❌ I don’t have **Manage Roles**.")
 
       const role = await getDiscordRole(interaction, roleId)

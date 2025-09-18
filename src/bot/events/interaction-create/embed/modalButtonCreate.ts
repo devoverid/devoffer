@@ -2,7 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, Int
 import { Event } from "../../event"
 import { parseHexColor } from "../../../../utils/color"
 import { COMMAND_EMBED_BUTTON_CREATE_ID } from "../../../commands/embed/buttonCreate"
-import { getDiscordChannel, getDiscordRole } from "../../../../utils/discord"
+import { getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../utils/discord"
 import { EVENT_EMBED_BUTTON_CREATE_ID } from "./buttonCreate"
 import { log } from "../../../../utils/logger"
 
@@ -28,9 +28,10 @@ export default {
       const channel = await getDiscordChannel(interaction, channelId)
       const role = await getDiscordRole(interaction, roleId)
       if (!channel || !role) throw new ModalButtonCreateError("❌ Channel or role not found.")
+      if (!role.editable) throw new ModalButtonCreateError("❌ I can’t manage that role. Please check role hierarchy.")
 
-      const bot = interaction.guild.members.me ?? await interaction.guild.members.fetchMe()
-      if (!bot.permissions.has(PermissionFlagsBits.ManageRoles) || !role.editable) throw new ModalButtonCreateError("❌ I can’t manage that role. Check permissions & role hierarchy.")
+      const bot = await getDiscordBot(interaction)
+      if (!bot.permissions.has(PermissionFlagsBits.ManageRoles)) throw new ModalButtonCreateError("❌ I don’t have **Manage Roles**.")
 
       const title = interaction.fields.getTextInputValue("title")
       const description = interaction.fields.getTextInputValue("description")
