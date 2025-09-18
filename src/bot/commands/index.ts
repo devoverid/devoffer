@@ -18,7 +18,7 @@ export const registerCommands = async (client: Client) => {
       const { default: command } = await import(file) as { default: Command }
       client.commands.set(command.data.name, command);
     } catch (err) {
-      log.warn(`[WARNING] The command at ${file} is missing a required "data" or "execute" property.`);
+      log.error(`The command at ${file} is missing a required "data" or "execute" property.`);
     }
   }
 }

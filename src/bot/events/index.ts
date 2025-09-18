@@ -13,12 +13,16 @@ export const registerEvents = async (client: Client) => {
     const fileName = getRootPath(root, file)
     log.info(`Registering event ${fileName}...`)
 
-    if (event.once) {
-      client.once(event.name, (...args) => event.exec(client, ...args))
-    } else {
-      client.on(event.name, (...args) => {
-        event.exec(client, ...args)
-      })
+    try {
+      if (event.once) {
+        client.once(event.name, (...args) => event.exec(client, ...args))
+      } else {
+        client.on(event.name, (...args) => {
+          event.exec(client, ...args)
+        })
+      }
+    } catch (err) {
+      log.error(`Failed to register event ${fileName}: ${err}`);
     }
   }
 }
