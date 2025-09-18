@@ -6,9 +6,9 @@ import { log } from "../../utils/logger"
 
 export class EventError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
-    super(message, options);
-    this.name = "EventError";
-    Object.setPrototypeOf(this, new.target.prototype);
+    super(message, options)
+    this.name = "EventError"
+    Object.setPrototypeOf(this, new.target.prototype)
   }
 }
 

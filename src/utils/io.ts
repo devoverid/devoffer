@@ -1,19 +1,20 @@
 import fs from "fs"
 import { resolve } from "path"
 
+const EXCLUDED_FILES = new Set(["index.ts", "messages.ts", "validators.ts"])
+const EXCLUDED_PATTERNS: RegExp[] = [/\.d\.ts$/]
+
+const isExcluded = (fileName: string) => EXCLUDED_FILES.has(fileName) || EXCLUDED_PATTERNS.some(rx => rx.test(fileName))
+
 export const readFiles = (dirPath: string, files: string[] = []) => {
-  const paths = fs.readdirSync(dirPath)
+  const paths = fs.readdirSync(dirPath, { withFileTypes: true })
 
   for (const path of paths) {
-    if (path !== "index.ts" && !path.endsWith(".d.ts")) {
-      const basePath: string = resolve(dirPath, path)
-      const pathStat = fs.statSync(basePath)
-      pathStat.isDirectory()
-        ? readFiles(basePath, files)
-        : files.push(basePath)
-    }
-  }
+    const basePath = resolve(dirPath, path.name)
 
+    if (path.isDirectory()) readFiles(basePath, files)
+    else if (!isExcluded(path.name)) files.push(basePath)
+  }
   return files
 }
 

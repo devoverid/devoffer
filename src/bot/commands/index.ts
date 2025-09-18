@@ -6,9 +6,9 @@ import { log } from "../../utils/logger"
 
 export class CommandError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
-    super(message, options);
-    this.name = "CommandError";
-    Object.setPrototypeOf(this, new.target.prototype);
+    super(message, options)
+    this.name = "CommandError"
+    Object.setPrototypeOf(this, new.target.prototype)
   }
 }
 
@@ -24,10 +24,10 @@ export const registerCommands = async (client: Client) => {
 
     try {
       const { default: command } = await import(file) as { default: Command }
-      client.commands.set(command.data.name, command);
+      client.commands.set(command.data.name, command)
     } catch (err: any) {
       const msg = err instanceof CommandError ? err.message : "❌ Something went wrong when importing the command."
-      log.error(`Failed to register a command: ${msg}`);
+      log.error(`Failed to register a command: ${msg}`)
     }
   }
 }
