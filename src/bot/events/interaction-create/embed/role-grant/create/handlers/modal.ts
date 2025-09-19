@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, Interaction, roleMention } from "discord.js"
 import { Event } from "../../../../../event"
-import { COMMAND_EMBED_ID } from "../../../../../../commands/embed/role-grant/create/button"
+import { COMMAND_EMBED_ID } from "../../../../../../commands/embed/role-grant/create"
 import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../../../../utils/discord"
 import { EVENT_EMBED_ID } from "./button"
 import { log } from "../../../../../../../utils/logger"

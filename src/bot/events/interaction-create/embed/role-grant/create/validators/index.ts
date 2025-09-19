@@ -1,7 +1,7 @@
 import { ChannelType, Guild, GuildMember, Interaction, PermissionFlagsBits, Role, TextChannel } from "discord.js"
-import { RoleGrantModalError } from "../components/modal"
+import { RoleGrantModalError } from "../handlers/modal"
 import { ERR, MSG } from "../messages"
-import { RoleGrantButtonError } from "../components/button"
+import { RoleGrantButtonError } from "../handlers/button"
 import { memberHasRole } from "../../../../../../../utils/discord"
 import { parseHexColor } from "../../../../../../../utils/color"
 
