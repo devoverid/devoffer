@@ -1,11 +1,12 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, Interaction, roleMention } from "discord.js"
+import { EVENT_EMBED_ID } from "./button"
+import { ERR } from "../messages"
+import { assertBotCanPost, assertModal, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "../validators"
 import { Event } from "../../../../../event"
 import { COMMAND_EMBED_ID } from "../../../../../../commands/embed/role-grant/create"
 import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../../../../utils/discord"
-import { EVENT_EMBED_ID } from "./button"
 import { log } from "../../../../../../../utils/logger"
-import { ERR } from "../messages"
-import { assertBotCanPost, assertModal, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "../validators"
+import { encodeSnowflake, getCustomId } from "../../../../../../../utils/component"
 
 export class EmbedRoleGrantModalError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
@@ -45,8 +46,13 @@ export default {
       if (color) embed.setColor(color)
       if (footer) embed.setFooter({ text: footer })
 
+      const buttonCustomId = getCustomId([
+        EVENT_EMBED_ID,
+        encodeSnowflake(interaction.guildId),
+        encodeSnowflake(role.id),
+      ])
       const button = new ButtonBuilder()
-        .setCustomId(`${EVENT_EMBED_ID}:${interaction.guildId}:${role.id}`)
+        .setCustomId(buttonCustomId)
         .setLabel(buttonName)
         .setStyle(ButtonStyle.Primary)
 

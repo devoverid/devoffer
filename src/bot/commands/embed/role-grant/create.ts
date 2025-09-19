@@ -1,11 +1,11 @@
 import { ChannelType, PermissionFlagsBits, SlashCommandBuilder, ChatInputCommandInteraction, TextChannel, TextInputStyle } from "discord.js";
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder } from "@discordjs/builders";
-import { Command } from "../../command";
-import { getCustomId } from "../../../../utils/io";
 import { COMMAND_PATH } from "../..";
+import { Command } from "../../command";
+import { encodeSnowflake, generateCustomId, getCustomId } from "../../../../utils/component";
 import { DUMMY } from "../../../../utils/placeholder";
 
-export const COMMAND_EMBED_ID = getCustomId(COMMAND_PATH, __filename)
+export const COMMAND_EMBED_ID = generateCustomId(COMMAND_PATH, __filename)
 
 export default {
   data: new SlashCommandBuilder()
@@ -23,8 +23,16 @@ export default {
     const role = interaction.options.getRole("role", true)
     const color = interaction.options.getString("color") ?? ""
 
+    const modalCustomId = getCustomId([
+      COMMAND_EMBED_ID,
+      encodeSnowflake(interaction.guildId!),
+      encodeSnowflake(channel.id),
+      encodeSnowflake(role.id),
+      encodeURIComponent(buttonName),
+      encodeURIComponent(color),
+    ])
     const modal = new ModalBuilder()
-      .setCustomId(`${COMMAND_EMBED_ID}:${interaction.guildId}:${channel.id}:${role.id}:${encodeURIComponent(buttonName)}:${encodeURIComponent(color)}`)
+      .setCustomId(modalCustomId)
       .setTitle("Create Embed with Role-Grant Button")
     const titleInput = new TextInputBuilder()
       .setCustomId("title")

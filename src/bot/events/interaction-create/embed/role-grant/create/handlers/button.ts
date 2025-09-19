@@ -1,11 +1,11 @@
 import { Events, GuildMember, Interaction } from "discord.js"
-import { Event } from "../../../../../event"
-import { getCustomId } from "../../../../../../../utils/io"
-import { EVENT_PATH } from "../../../../.."
-import { discordReply, getDiscordBot, getDiscordRole } from "../../../../../../../utils/discord"
-import { log } from "../../../../../../../utils/logger"
 import { ERR, MSG } from "../messages"
 import { assertButton, assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from "../validators"
+import { EVENT_PATH } from "../../../../.."
+import { Event } from "../../../../../event"
+import { generateCustomId } from "../../../../../../../utils/component"
+import { discordReply, getDiscordBot, getDiscordRole } from "../../../../../../../utils/discord"
+import { log } from "../../../../../../../utils/logger"
 
 export class EmbedRoleGrantButtonError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
@@ -15,7 +15,7 @@ export class EmbedRoleGrantButtonError extends Error {
   }
 }
 
-export const EVENT_EMBED_ID = getCustomId(EVENT_PATH, __filename)
+export const EVENT_EMBED_ID = generateCustomId(EVENT_PATH, __filename)
 
 export default {
   name: Events.InteractionCreate,

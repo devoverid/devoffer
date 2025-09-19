@@ -19,15 +19,3 @@ export const readFiles = (dirPath: string, files: string[] = []) => {
 }
 
 export const getModuleName = (rootName: string, file: string): string => file.split(rootName).pop()!.split(".").shift() || file
-
-export const getCustomId = (rootName: string, file: string): string => 
-  getModuleName(rootName, file)
-  .split("/")
-  .filter(Boolean)
-  .map(item =>
-    item
-      .split("-")
-      .map(word => word[0]?.toUpperCase() ?? "")
-      .join("")
-  )
-  .join("-")

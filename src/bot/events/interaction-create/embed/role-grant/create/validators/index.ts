@@ -4,6 +4,7 @@ import { ERR, MSG } from "../messages"
 import { EmbedRoleGrantButtonError } from "../handlers/button"
 import { memberHasRole } from "../../../../../../../utils/discord"
 import { parseHexColor } from "../../../../../../../utils/color"
+import { decodeSnowflake } from "../../../../../../../utils/component"
 
 export const assertModal = (modalId: string, id: string) => {
   if (!modalId.startsWith(id)) throw new EmbedRoleGrantModalError(ERR.InvalidModal)
@@ -14,7 +15,10 @@ export const assertButton = (buttonId: string, id: string) => {
 }
 
 export const getModalCustomId = (interaction: Interaction, customId: string) => {
-  const [prefix, guildId, channelId, roleId, buttonNameEnc, colorEnc] = customId.split(":")
+  const [prefix, guildIdEnc, channelIdEnc, roleIdEnc, buttonNameEnc, colorEnc] = customId.split(":")
+  const guildId = decodeSnowflake(guildIdEnc)
+  const channelId = decodeSnowflake(channelIdEnc)
+  const roleId = decodeSnowflake(roleIdEnc)
   const buttonName = decodeURIComponent(buttonNameEnc)
   const color = parseHexColor(decodeURIComponent(colorEnc))
 
@@ -25,7 +29,10 @@ export const getModalCustomId = (interaction: Interaction, customId: string) => 
 }
 
 export const getButtonCustomId = (interaction: Interaction, customId: string) => {
-  const [prefix, guildId, roleId] = customId.split(":")
+  const [prefix, guildIdEnc, roleIdEnc] = customId.split(":")
+  const guildId = decodeSnowflake(guildIdEnc)
+  const roleId = decodeSnowflake(roleIdEnc)
+  
   if (!guildId) throw new EmbedRoleGrantButtonError(ERR.GuildMissing)
   if (!roleId) throw new EmbedRoleGrantButtonError(ERR.RoleMissing)
   if (interaction.guildId !== guildId) throw new EmbedRoleGrantButtonError(ERR.NotGuild)
