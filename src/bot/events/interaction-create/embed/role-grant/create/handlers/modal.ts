@@ -7,10 +7,10 @@ import { log } from "../../../../../../../utils/logger"
 import { ERR } from "../messages"
 import { assertBotCanPost, assertModal, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "../validators"
 
-export class RoleGrantModalError extends Error {
+export class EmbedRoleGrantModalError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
-    this.name = "RoleGrantModalError";
+    this.name = "EmbedRoleGrantModalError";
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
@@ -22,7 +22,7 @@ export default {
     if (!interaction.isModalSubmit()) return
 
     try {
-      if (!interaction.inCachedGuild()) throw new RoleGrantModalError(ERR.NotGuild)
+      if (!interaction.inCachedGuild()) throw new EmbedRoleGrantModalError(ERR.NotGuild)
       assertModal(interaction.customId, COMMAND_EMBED_ID)
 
       const { channelId, roleId, buttonName, color } = getModalCustomId(interaction, interaction.customId)
@@ -59,7 +59,7 @@ export default {
         false,
       )
     } catch (err: any) {
-      if (err instanceof RoleGrantModalError) await discordReply(interaction, err.message)
+      if (err instanceof EmbedRoleGrantModalError) await discordReply(interaction, err.message)
       else log.error(`Failed to handle ${COMMAND_EMBED_ID}: ${ERR.UnexpectedModal}`)
     }
   }

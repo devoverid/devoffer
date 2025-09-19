@@ -9,7 +9,7 @@ export const COMMAND_EMBED_ID = generateCustomId(COMMAND_PATH, __filename)
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("create-role-grant-embed")
+    .setName("create-embed-role-grant")
     .setDescription("Create an embed in a channel w/ a role-grant button.")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addChannelOption(opt => opt.setName("channel").setDescription("Post channel.").addChannelTypes(ChannelType.GuildText).setRequired(true))
