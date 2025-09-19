@@ -1,11 +1,11 @@
 import { ChannelType, PermissionFlagsBits, SlashCommandBuilder, ChatInputCommandInteraction, TextChannel, TextInputStyle } from "discord.js";
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder } from "@discordjs/builders";
 import { Command } from "../../command";
-import { getModuleName } from "../../../../utils/io";
+import { getCustomId } from "../../../../utils/io";
 import { COMMAND_PATH } from "../..";
 import { DUMMY } from "../../../../utils/placeholder";
 
-export const COMMAND_EMBED_ID = getModuleName(COMMAND_PATH, __filename)
+export const COMMAND_EMBED_ID = getCustomId(COMMAND_PATH, __filename)
 
 export default {
   data: new SlashCommandBuilder()
