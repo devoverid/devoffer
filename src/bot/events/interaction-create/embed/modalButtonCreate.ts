@@ -1,16 +1,16 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, Interaction, roleMention } from "discord.js"
 import { Event } from "../../event"
-import { COMMAND_EMBED_BUTTON_CREATE_ID } from "../../../commands/embed/buttonCreate"
+import { COMMAND_EMBED_ID } from "../../../commands/embed/buttonCreate"
 import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../utils/discord"
-import { EVENT_EMBED_BUTTON_CREATE_ID } from "./buttonCreate"
+import { EVENT_EMBED_ID } from "./buttonCreate"
 import { log } from "../../../../utils/logger"
 import { ERR } from "./messages"
 import { assertBotCanPost, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "./validators"
 
-export class ModalButtonCreateError extends Error {
+export class RoleGrantModalError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
-    this.name = "ModalButtonCreateError";
+    this.name = "RoleGrantModalError";
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
@@ -20,8 +20,8 @@ export default {
   desc: "Handles modal submissions for creating an embed with a role-grant button.",
   async exec(_, interaction: Interaction) {
     if (!interaction.isModalSubmit()) return
-    if (!interaction.inCachedGuild()) throw new ModalButtonCreateError(ERR.NotGuild)
-    if (!interaction.customId.startsWith(COMMAND_EMBED_BUTTON_CREATE_ID)) throw new ModalButtonCreateError(ERR.InvalidModal)
+    if (!interaction.inCachedGuild()) throw new RoleGrantModalError(ERR.NotGuild)
+    if (!interaction.customId.startsWith(COMMAND_EMBED_ID)) throw new RoleGrantModalError(ERR.InvalidModal)
 
     try {
       const { channelId, roleId, buttonName, color } = getModalCustomId(interaction, interaction.customId)
@@ -45,7 +45,7 @@ export default {
       if (footer) embed.setFooter({ text: footer })
 
       const button = new ButtonBuilder()
-        .setCustomId(`${EVENT_EMBED_BUTTON_CREATE_ID}:${interaction.guildId}:${role.id}`)
+        .setCustomId(`${EVENT_EMBED_ID}:${interaction.guildId}:${role.id}`)
         .setLabel(buttonName)
         .setStyle(ButtonStyle.Primary)
 
@@ -58,8 +58,8 @@ export default {
         false,
       )
     } catch (err: any) {
-      if (err instanceof ModalButtonCreateError) await discordReply(interaction, err.message)
-      else log.error(`Failed to handle ${COMMAND_EMBED_BUTTON_CREATE_ID}: ${ERR.UnexpectedModal}`)
+      if (err instanceof RoleGrantModalError) await discordReply(interaction, err.message)
+      else log.error(`Failed to handle ${COMMAND_EMBED_ID}: ${ERR.UnexpectedModal}`)
     }
   }
 } as Event

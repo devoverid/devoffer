@@ -1,7 +1,7 @@
 import { ChannelType, Guild, GuildMember, Interaction, PermissionFlagsBits, Role, TextChannel } from "discord.js"
-import { ModalButtonCreateError } from "./modalButtonCreate"
+import { RoleGrantModalError } from "./modalButtonCreate"
 import { ERR, MSG } from "./messages"
-import { ButtonCreateError } from "./buttonCreate"
+import { RoleGrantButtonError } from "./buttonCreate"
 import { memberHasRole } from "../../../../utils/discord"
 import { parseHexColor } from "../../../../utils/color"
 
@@ -10,38 +10,38 @@ export const getModalCustomId = (interaction: Interaction, customId: string) => 
   const buttonName = decodeURIComponent(buttonNameEnc)
   const color = parseHexColor(decodeURIComponent(colorEnc))
 
-  if (!channelId) throw new ModalButtonCreateError(ERR.ChannelNotFound)
-  if (!roleId) throw new ModalButtonCreateError(ERR.RoleMissing)
-  if (interaction.guildId !== guildId) throw new ButtonCreateError(ERR.NotGuild)
+  if (!channelId) throw new RoleGrantModalError(ERR.ChannelNotFound)
+  if (!roleId) throw new RoleGrantModalError(ERR.RoleMissing)
+  if (interaction.guildId !== guildId) throw new RoleGrantModalError(ERR.NotGuild)
   return { prefix, guildId, channelId, roleId, buttonName, color }
 }
 
 export const getButtonCustomId = (interaction: Interaction, customId: string) => {
   const [prefix, guildId, roleId] = customId.split(":")
-  if (!guildId) throw new ButtonCreateError(ERR.GuildMissing)
-  if (!roleId) throw new ButtonCreateError(ERR.RoleMissing)
-  if (interaction.guildId !== guildId) throw new ButtonCreateError(ERR.NotGuild)
+  if (!guildId) throw new RoleGrantButtonError(ERR.GuildMissing)
+  if (!roleId) throw new RoleGrantButtonError(ERR.RoleMissing)
+  if (interaction.guildId !== guildId) throw new RoleGrantButtonError(ERR.NotGuild)
 
   return { prefix, guildId, roleId }
 }
 
 export const assertMember = (member: GuildMember) => {
-  if (!member || !("roles" in member)) throw new ButtonCreateError(ERR.NoMember)
+  if (!member || !("roles" in member)) throw new RoleGrantButtonError(ERR.NoMember)
 }
 
 export const assertMemberHasRole = (member: GuildMember, role: Role) => {
   const hasRole = memberHasRole(member, role)
-  if (hasRole) throw new ButtonCreateError(MSG.Revoked(role.id))
+  if (hasRole) throw new RoleGrantButtonError(MSG.Revoked(role.id))
 }
 
 export const assertRoleManageable = (guild: Guild, bot: GuildMember, role: Role) => {
-  if (!bot.permissions.has(PermissionFlagsBits.ManageRoles)) throw new ModalButtonCreateError(ERR.NoManageRoles)
-  if (role.managed || role.id === guild.roles.everyone.id) throw new ModalButtonCreateError(ERR.RoleUneditable)
-  if (bot.roles.highest.comparePositionTo(role) <= 0) throw new ModalButtonCreateError(ERR.MemberAboveMe)
+  if (!bot.permissions.has(PermissionFlagsBits.ManageRoles)) throw new RoleGrantModalError(ERR.NoManageRoles)
+  if (role.managed || role.id === guild.roles.everyone.id) throw new RoleGrantModalError(ERR.RoleUneditable)
+  if (bot.roles.highest.comparePositionTo(role) <= 0) throw new RoleGrantModalError(ERR.MemberAboveMe)
 }
 
 export const assertTextChannel = (channel: TextChannel) => {
-  if (!channel || channel.type !== ChannelType.GuildText) throw new ModalButtonCreateError(ERR.ChannelNotFound)
+  if (!channel || channel.type !== ChannelType.GuildText) throw new RoleGrantModalError(ERR.ChannelNotFound)
 }
 
 export const assertBotCanPost = (channel: TextChannel, me: GuildMember) => {
@@ -50,10 +50,10 @@ export const assertBotCanPost = (channel: TextChannel, me: GuildMember) => {
     PermissionFlagsBits.SendMessages,
     PermissionFlagsBits.EmbedLinks,
   ])
-  if (!can) throw new ModalButtonCreateError(ERR.CannotPost)
+  if (!can) throw new RoleGrantModalError(ERR.CannotPost)
 }
 
 export const assertRole = (role: Role) => {
-  if (!role) throw new ModalButtonCreateError(ERR.RoleNotFound)
-  if (!role.editable) throw new ModalButtonCreateError(ERR.RoleUneditable)
+  if (!role) throw new RoleGrantModalError(ERR.RoleNotFound)
+  if (!role.editable) throw new RoleGrantModalError(ERR.RoleUneditable)
 }

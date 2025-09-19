@@ -5,11 +5,11 @@ import { generateCustomId } from "../../../utils/io";
 import { COMMAND_PATH } from "..";
 import { DUMMY } from "../../../utils/placeholder";
 
-export const COMMAND_EMBED_BUTTON_CREATE_ID = generateCustomId(COMMAND_PATH, __filename)
+export const COMMAND_EMBED_ID = generateCustomId(COMMAND_PATH, __filename)
 
 export default {
   data: new SlashCommandBuilder()
-    .setName("embed-button-create")
+    .setName("create-role-grant-embed")
     .setDescription("Create an embed in a channel w/ a role-grant button.")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addChannelOption(opt => opt.setName("channel").setDescription("Post channel.").addChannelTypes(ChannelType.GuildText).setRequired(true))
@@ -24,8 +24,8 @@ export default {
     const color = interaction.options.getString("color") ?? ""
 
     const modal = new ModalBuilder()
-      .setCustomId(`${COMMAND_EMBED_BUTTON_CREATE_ID}:${interaction.guildId}:${channel.id}:${role.id}:${encodeURIComponent(buttonName)}:${encodeURIComponent(color)}`)
-      .setTitle("Create Embed with Button")
+      .setCustomId(`${COMMAND_EMBED_ID}:${interaction.guildId}:${channel.id}:${role.id}:${encodeURIComponent(buttonName)}:${encodeURIComponent(color)}`)
+      .setTitle("Create Embed with Role-Grant Button")
     const titleInput = new TextInputBuilder()
       .setCustomId("title")
       .setLabel("Title")
