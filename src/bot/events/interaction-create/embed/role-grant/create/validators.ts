@@ -1,9 +1,9 @@
 import { ChannelType, Guild, GuildMember, Interaction, PermissionFlagsBits, Role, TextChannel } from "discord.js"
-import { RoleGrantModalError } from "./modalButtonCreate"
+import { RoleGrantModalError } from "./modal"
 import { ERR, MSG } from "./messages"
-import { RoleGrantButtonError } from "./buttonCreate"
-import { memberHasRole } from "../../../../utils/discord"
-import { parseHexColor } from "../../../../utils/color"
+import { RoleGrantButtonError } from "./button"
+import { memberHasRole } from "../../../../../../utils/discord"
+import { parseHexColor } from "../../../../../../utils/color"
 
 export const getModalCustomId = (interaction: Interaction, customId: string) => {
   const [prefix, guildId, channelId, roleId, buttonNameEnc, colorEnc] = customId.split(":")
