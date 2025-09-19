@@ -13,15 +13,13 @@ export default {
     .setDescription("Create an embed in a channel w/ a role-grant button.")
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .addChannelOption(opt => opt.setName("channel").setDescription("Post channel.").addChannelTypes(ChannelType.GuildText).setRequired(true))
-    .addStringOption(opt => opt.setName("button-name").setDescription("Text to display on the button-make it catchy.").setRequired(true))
     .addRoleOption(opt => opt.setName("role").setDescription("Role to toggle.").setRequired(true))
-    .addStringOption(opt => opt.setName("color").setDescription("Hex like #FF7518.")),
+    .addStringOption(opt => opt.setName("button-name").setDescription("Text to display on the button-make it catchy.").setRequired(true)),
 
   async execute(interaction: ChatInputCommandInteraction) {
     const channel = interaction.options.getChannel("channel", true) as TextChannel
     const buttonName = interaction.options.getString("button-name", true)
     const role = interaction.options.getRole("role", true)
-    const color = interaction.options.getString("color") ?? ""
 
     const modalCustomId = getCustomId([
       COMMAND_EMBED_ID,
@@ -29,8 +27,8 @@ export default {
       encodeSnowflake(channel.id),
       encodeSnowflake(role.id),
       encodeURIComponent(buttonName),
-      encodeURIComponent(color),
     ])
+    console.log(modalCustomId)
     const modal = new ModalBuilder()
       .setCustomId(modalCustomId)
       .setTitle("Create Embed with Role-Grant Button")
@@ -47,6 +45,13 @@ export default {
       .setPlaceholder(DUMMY.DESC)
       .setStyle(TextInputStyle.Paragraph)
       .setRequired(true)
+    const colorInput = new TextInputBuilder()
+      .setCustomId("color")
+      .setLabel("Color (optional)")
+      .setPlaceholder(DUMMY.COLOR)
+      .setValue(DUMMY.COLOR)
+      .setStyle(TextInputStyle.Short)
+      .setRequired(false)
     const footerInput = new TextInputBuilder()
       .setCustomId("footer")
       .setLabel("Footer (optional)")
@@ -58,6 +63,7 @@ export default {
     modal.addComponents(
       new ActionRowBuilder<TextInputBuilder>().addComponents(titleInput),
       new ActionRowBuilder<TextInputBuilder>().addComponents(descInput),
+      new ActionRowBuilder<TextInputBuilder>().addComponents(colorInput),
       new ActionRowBuilder<TextInputBuilder>().addComponents(footerInput),
     )
 

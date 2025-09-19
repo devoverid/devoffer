@@ -7,6 +7,7 @@ import { COMMAND_EMBED_ID } from "../../../../../../commands/embed/role-grant/cr
 import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../../../../utils/discord"
 import { log } from "../../../../../../../utils/logger"
 import { encodeSnowflake, getCustomId } from "../../../../../../../utils/component"
+import { parseHexColor } from "../../../../../../../utils/color"
 
 export class EmbedRoleGrantModalError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
@@ -26,7 +27,7 @@ export default {
       if (!interaction.inCachedGuild()) throw new EmbedRoleGrantModalError(ERR.NotGuild)
       assertModal(interaction.customId, COMMAND_EMBED_ID)
 
-      const { channelId, roleId, buttonName, color } = getModalCustomId(interaction, interaction.customId)
+      const { channelId, roleId, buttonName } = getModalCustomId(interaction, interaction.customId)
 
       const channel = await getDiscordChannel(interaction, channelId)
       assertTextChannel(channel)
@@ -40,6 +41,7 @@ export default {
 
       const title = interaction.fields.getTextInputValue("title")
       const description = interaction.fields.getTextInputValue("description")
+      const color = parseHexColor(interaction.fields.getTextInputValue("color"))
       const footer = interaction.fields.getTextInputValue("footer")
 
       const embed = new EmbedBuilder().setTitle(title).setDescription(description).setTimestamp(new Date())
