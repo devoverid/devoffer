@@ -1,7 +1,7 @@
 import { ChannelType, Guild, GuildMember, Interaction, PermissionFlagsBits, Role, TextChannel } from "discord.js"
-import { EmbedRoleGrantModalError } from "../handlers/modal"
-import { ERR, MSG } from "../messages"
-import { EmbedRoleGrantButtonError } from "../handlers/button"
+import { EmbedRoleGrantModalError } from "../handlers/role-grant-create-modal"
+import { ERR, MSG } from "../messages/role-grant-create"
+import { EmbedRoleGrantButtonError } from "../handlers/role-grant-create-button"
 import { memberHasRole } from "@utils/discord"
 import { decodeSnowflakes } from "@utils/component"
 

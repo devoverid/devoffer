@@ -1,6 +1,6 @@
 import { Events, GuildMember, Interaction } from "discord.js"
-import { ERR, MSG } from "../messages"
-import { assertButton, assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from "../validators"
+import { ERR, MSG } from "../messages/role-grant-create"
+import { assertButton, assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from "../validators/role-grant-create"
 import { EVENT_PATH } from "@events/index"
 import { Event } from "@events/event"
 import { generateCustomId } from "@utils/component"
