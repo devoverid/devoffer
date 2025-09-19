@@ -1,11 +1,11 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, Interaction, roleMention } from "discord.js"
-import { Event } from "../../../../event"
-import { COMMAND_EMBED_ID } from "../../../../../commands/embed/role-grant/create/button"
-import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../../../utils/discord"
+import { Event } from "../../../../../event"
+import { COMMAND_EMBED_ID } from "../../../../../../commands/embed/role-grant/create/button"
+import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../../../../utils/discord"
 import { EVENT_EMBED_ID } from "./button"
-import { log } from "../../../../../../utils/logger"
-import { ERR } from "./messages"
-import { assertBotCanPost, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "./validators"
+import { log } from "../../../../../../../utils/logger"
+import { ERR } from "../messages"
+import { assertBotCanPost, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "../validators"
 
 export class RoleGrantModalError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
