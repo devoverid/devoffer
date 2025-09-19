@@ -1,6 +1,6 @@
 import { Events, GuildMember, Interaction } from "discord.js"
 import { Event } from "../../../../../event"
-import { generateCustomId } from "../../../../../../../utils/io"
+import { getModuleName } from "../../../../../../../utils/io"
 import { EVENT_PATH } from "../../../../.."
 import { discordReply, getDiscordBot, getDiscordRole } from "../../../../../../../utils/discord"
 import { log } from "../../../../../../../utils/logger"
@@ -15,7 +15,7 @@ export class EmbedRoleGrantButtonError extends Error {
   }
 }
 
-export const EVENT_EMBED_ID = generateCustomId(EVENT_PATH, __filename)
+export const EVENT_EMBED_ID = getModuleName(EVENT_PATH, __filename)
 
 export default {
   name: Events.InteractionCreate,
