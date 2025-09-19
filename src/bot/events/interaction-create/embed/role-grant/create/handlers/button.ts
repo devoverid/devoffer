@@ -29,14 +29,14 @@ export default {
 
       const { roleId } = getButtonCustomId(interaction, interaction.customId)
 
-      const member = interaction.member! as GuildMember
+      const member = interaction.member as GuildMember
       assertMember(member)
 
       const role = await getDiscordRole(interaction, roleId)
       assertRole(role)
 
       const bot = await getDiscordBot(interaction)
-      assertRoleManageable(interaction.guild!, bot, role)
+      assertRoleManageable(interaction.guild, bot, role)
 
       assertMemberHasRole(member, role)
 

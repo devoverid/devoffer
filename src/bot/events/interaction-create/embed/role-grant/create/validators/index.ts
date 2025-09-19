@@ -3,7 +3,7 @@ import { EmbedRoleGrantModalError } from "../handlers/modal"
 import { ERR, MSG } from "../messages"
 import { EmbedRoleGrantButtonError } from "../handlers/button"
 import { memberHasRole } from "@utils/discord"
-import { decodeSnowflake } from "@utils/component"
+import { decodeSnowflakes } from "@utils/component"
 
 export const assertModal = (modalId: string, id: string) => {
   if (!modalId.startsWith(id)) throw new EmbedRoleGrantModalError(ERR.InvalidModal)
@@ -14,10 +14,7 @@ export const assertButton = (buttonId: string, id: string) => {
 }
 
 export const getModalCustomId = (interaction: Interaction, customId: string) => {
-  const [prefix, guildIdEnc, channelIdEnc, roleIdEnc, buttonNameEnc] = customId.split(":")
-  const guildId = decodeSnowflake(guildIdEnc)
-  const channelId = decodeSnowflake(channelIdEnc)
-  const roleId = decodeSnowflake(roleIdEnc)
+  const [prefix, guildId, channelId, roleId, buttonNameEnc] = decodeSnowflakes(customId)
   const buttonName = decodeURIComponent(buttonNameEnc)
 
   if (!channelId) throw new EmbedRoleGrantModalError(ERR.ChannelNotFound)
@@ -27,9 +24,7 @@ export const getModalCustomId = (interaction: Interaction, customId: string) => 
 }
 
 export const getButtonCustomId = (interaction: Interaction, customId: string) => {
-  const [prefix, guildIdEnc, roleIdEnc] = customId.split(":")
-  const guildId = decodeSnowflake(guildIdEnc)
-  const roleId = decodeSnowflake(roleIdEnc)
+  const [prefix, guildId, roleId] = decodeSnowflakes(customId)
 
   if (!guildId) throw new EmbedRoleGrantButtonError(ERR.GuildMissing)
   if (!roleId) throw new EmbedRoleGrantButtonError(ERR.RoleMissing)

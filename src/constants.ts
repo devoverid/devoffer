@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js"
 
 export const CUSTOM_ID_SEPARATOR = ":"
+export const SNOWFLAKE_MARKER = "S#"
 export const ALPHABETS = "0123456789abcdefghijklmnopqrstuvwxyz"
 
 export const FAILED_CHECKIN_ALREADY_CHECKIN_TODAY = `**Check-in failed**\n
