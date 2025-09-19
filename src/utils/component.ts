@@ -1,4 +1,4 @@
-import { ALPHABETS, CUSTOM_ID_SEPARATOR } from "../constants";
+import { ALPHABETS, CUSTOM_ID_SEPARATOR } from "@constants";
 import { DiscordCustomIdMetadata } from "../types/discord-component";
 import { getModuleName } from "./io";
 

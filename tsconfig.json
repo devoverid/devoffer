@@ -4,7 +4,14 @@
         "target": "esnext",
         "moduleResolution": "Bundler",
         "strict": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "paths": {
+            "@constants": ["./src/constants.ts"],
+            "@db/*": ["./src/db/*"],
+            "@commands/*": ["./src/bot/commands/*"],
+            "@events/*": ["./src/bot/events/*"],
+            "@utils/*": ["./src/utils/*"],
+        }
     },
     "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }

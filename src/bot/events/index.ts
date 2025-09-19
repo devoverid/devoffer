@@ -1,8 +1,8 @@
 import { Client } from "discord.js"
-import { Event } from "./event"
-import { getModuleName, readFiles } from "../../utils/io"
+import { Event } from "@events/event"
+import { getModuleName, readFiles } from "@utils/io"
 import path from "path"
-import { log } from "../../utils/logger"
+import { log } from "@utils/logger"
 
 export class EventError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {

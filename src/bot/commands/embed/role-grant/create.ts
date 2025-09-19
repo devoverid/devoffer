@@ -1,9 +1,9 @@
 import { ChannelType, PermissionFlagsBits, SlashCommandBuilder, ChatInputCommandInteraction, TextChannel, TextInputStyle } from "discord.js";
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder } from "@discordjs/builders";
-import { COMMAND_PATH } from "../..";
-import { Command } from "../../command";
-import { encodeSnowflake, generateCustomId, getCustomId } from "../../../../utils/component";
-import { DUMMY } from "../../../../utils/placeholder";
+import { COMMAND_PATH } from "@commands/index";
+import { Command } from "@commands/command";
+import { encodeSnowflake, generateCustomId, getCustomId } from "@utils/component";
+import { DUMMY } from "@utils/placeholder";
 
 export const COMMAND_EMBED_ID = generateCustomId(COMMAND_PATH, __filename)
 

@@ -2,8 +2,8 @@ import { ChannelType, Guild, GuildMember, Interaction, PermissionFlagsBits, Role
 import { EmbedRoleGrantModalError } from "../handlers/modal"
 import { ERR, MSG } from "../messages"
 import { EmbedRoleGrantButtonError } from "../handlers/button"
-import { memberHasRole } from "../../../../../../../utils/discord"
-import { decodeSnowflake } from "../../../../../../../utils/component"
+import { memberHasRole } from "@utils/discord"
+import { decodeSnowflake } from "@utils/component"
 
 export const assertModal = (modalId: string, id: string) => {
   if (!modalId.startsWith(id)) throw new EmbedRoleGrantModalError(ERR.InvalidModal)

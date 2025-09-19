@@ -1,8 +1,8 @@
 import { Client, GatewayIntentBits } from "discord.js";
-import { registerEvents } from "./bot/events/index"
-import { registerCommands } from "./bot/commands"
-import { prisma } from "./db/client"
-import { log } from "./utils/logger";
+import { registerEvents } from "@events/index"
+import { registerCommands } from "@commands/index"
+import { prisma } from "@db/client"
+import { log } from "@utils/logger";
 
 const client = new Client({
   intents: [

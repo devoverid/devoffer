@@ -1,11 +1,11 @@
 import { Events, GuildMember, Interaction } from "discord.js"
 import { ERR, MSG } from "../messages"
 import { assertButton, assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from "../validators"
-import { EVENT_PATH } from "../../../../.."
-import { Event } from "../../../../../event"
-import { generateCustomId } from "../../../../../../../utils/component"
-import { discordReply, getDiscordBot, getDiscordRole } from "../../../../../../../utils/discord"
-import { log } from "../../../../../../../utils/logger"
+import { EVENT_PATH } from "@events/index"
+import { Event } from "@events/event"
+import { generateCustomId } from "@utils/component"
+import { discordReply, getDiscordBot, getDiscordRole } from "@utils/discord"
+import { log } from "@utils/logger"
 
 export class EmbedRoleGrantButtonError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {

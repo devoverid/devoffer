@@ -1,4 +1,4 @@
-import { prisma } from "../client"
+import { prisma } from "@db/client"
 
 export const increaseUserStreak = (user_id: number) => {
     return prisma.user.update({

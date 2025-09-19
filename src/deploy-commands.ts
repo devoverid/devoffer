@@ -1,8 +1,8 @@
 import { REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes } from 'discord.js';
-import { Command } from './bot/commands/command';
-import { getModuleName, readFiles } from './utils/io';
+import { Command } from '@commands/command';
+import { getModuleName, readFiles } from '@utils/io';
 import path from 'path';
-import { log } from './utils/logger';
+import { log } from '@utils/logger';
 
 const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 // Grab all the command folders from the commands directory you created earlier

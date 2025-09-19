@@ -2,12 +2,12 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, Int
 import { EVENT_EMBED_ID } from "./button"
 import { ERR } from "../messages"
 import { assertBotCanPost, assertModal, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "../validators"
-import { Event } from "../../../../../event"
-import { COMMAND_EMBED_ID } from "../../../../../../commands/embed/role-grant/create"
-import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "../../../../../../../utils/discord"
-import { log } from "../../../../../../../utils/logger"
-import { encodeSnowflake, getCustomId } from "../../../../../../../utils/component"
-import { parseHexColor } from "../../../../../../../utils/color"
+import { Event } from "@events/event"
+import { COMMAND_EMBED_ID } from "@commands/embed/role-grant/create"
+import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "@utils/discord"
+import { log } from "@utils/logger"
+import { encodeSnowflake, getCustomId } from "@utils/component"
+import { parseHexColor } from "@utils/color"
 
 export class EmbedRoleGrantModalError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
