@@ -5,7 +5,7 @@ import { discordReply, getDiscordBot, getDiscordChannel, getDiscordRole } from "
 import { EVENT_EMBED_ID } from "./button"
 import { log } from "../../../../../../../utils/logger"
 import { ERR } from "../messages"
-import { assertBotCanPost, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "../validators"
+import { assertBotCanPost, assertModal, assertRole, assertRoleManageable, assertTextChannel, getModalCustomId } from "../validators"
 
 export class RoleGrantModalError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
@@ -20,10 +20,11 @@ export default {
   desc: "Handles modal submissions for creating an embed with a role-grant button.",
   async exec(_, interaction: Interaction) {
     if (!interaction.isModalSubmit()) return
-    if (!interaction.inCachedGuild()) throw new RoleGrantModalError(ERR.NotGuild)
-    if (!interaction.customId.startsWith(COMMAND_EMBED_ID)) throw new RoleGrantModalError(ERR.InvalidModal)
 
     try {
+      if (!interaction.inCachedGuild()) throw new RoleGrantModalError(ERR.NotGuild)
+      assertModal(interaction.customId, COMMAND_EMBED_ID)
+
       const { channelId, roleId, buttonName, color } = getModalCustomId(interaction, interaction.customId)
 
       const channel = await getDiscordChannel(interaction, channelId)

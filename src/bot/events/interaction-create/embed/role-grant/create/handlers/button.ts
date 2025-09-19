@@ -5,7 +5,7 @@ import { EVENT_PATH } from "../../../../.."
 import { discordReply, getDiscordBot, getDiscordRole } from "../../../../../../../utils/discord"
 import { log } from "../../../../../../../utils/logger"
 import { ERR, MSG } from "../messages"
-import { assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from "../validators"
+import { assertButton, assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from "../validators"
 
 export class RoleGrantButtonError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
@@ -22,9 +22,11 @@ export default {
   desc: "Handles role assignment button interactions and toggles roles for users.",
   async exec(_, interaction: Interaction) {
     if (!interaction.isButton()) return
-    if (!interaction.customId.startsWith(EVENT_EMBED_ID)) throw new RoleGrantButtonError(ERR.InvalidButton)
 
     try {
+      if (!interaction.inCachedGuild()) throw new RoleGrantButtonError(ERR.NotGuild)
+      assertButton(interaction.customId, EVENT_EMBED_ID)
+
       const { roleId } = getButtonCustomId(interaction, interaction.customId)
 
       const member = interaction.member! as GuildMember

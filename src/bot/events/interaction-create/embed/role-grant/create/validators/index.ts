@@ -5,6 +5,14 @@ import { RoleGrantButtonError } from "../handlers/button"
 import { memberHasRole } from "../../../../../../../utils/discord"
 import { parseHexColor } from "../../../../../../../utils/color"
 
+export const assertModal = (modalId: string, id: string) => {
+  if (!modalId.startsWith(id)) throw new RoleGrantModalError(ERR.InvalidModal)
+}
+
+export const assertButton = (buttonId: string, id: string) => {
+  if (!buttonId.startsWith(id)) throw new RoleGrantButtonError(ERR.InvalidButton)
+}
+
 export const getModalCustomId = (interaction: Interaction, customId: string) => {
   const [prefix, guildId, channelId, roleId, buttonNameEnc, colorEnc] = customId.split(":")
   const buttonName = decodeURIComponent(buttonNameEnc)
