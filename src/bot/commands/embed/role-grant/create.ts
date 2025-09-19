@@ -28,7 +28,6 @@ export default {
       encodeSnowflake(role.id),
       encodeURIComponent(buttonName),
     ])
-    console.log(modalCustomId)
     const modal = new ModalBuilder()
       .setCustomId(modalCustomId)
       .setTitle("Create Embed with Role-Grant Button")
