@@ -1,4 +1,4 @@
-import { prisma } from "../client"
+import { prisma } from "@db/client"
 
 export const createCheckin = (user_id: number, description: string) => {
     return prisma.checkin.create({

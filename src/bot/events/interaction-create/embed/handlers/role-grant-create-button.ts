@@ -1,0 +1,50 @@
+import { Events, GuildMember, Interaction } from "discord.js"
+import { ERR, MSG } from "../messages/role-grant-create"
+import { assertButton, assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from "../validators/role-grant-create"
+import { EVENT_PATH } from "@events/index"
+import { Event } from "@events/event"
+import { generateCustomId } from "@utils/component"
+import { discordReply, getDiscordBot, getDiscordRole } from "@utils/discord"
+import { log } from "@utils/logger"
+
+export class EmbedRoleGrantButtonError extends Error {
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message, options)
+    this.name = "EmbedRoleGrantButtonError"
+    Object.setPrototypeOf(this, new.target.prototype)
+  }
+}
+
+export const EVENT_EMBED_ID = generateCustomId(EVENT_PATH, __filename)
+
+export default {
+  name: Events.InteractionCreate,
+  desc: "Handles role assignment button interactions and toggles roles for users.",
+  async exec(_, interaction: Interaction) {
+    if (!interaction.isButton()) return
+
+    try {
+      if (!interaction.inCachedGuild()) throw new EmbedRoleGrantButtonError(ERR.NotGuild)
+      assertButton(interaction.customId, EVENT_EMBED_ID)
+
+      const { roleId } = getButtonCustomId(interaction, interaction.customId)
+
+      const member = interaction.member as GuildMember
+      assertMember(member)
+
+      const role = await getDiscordRole(interaction, roleId)
+      assertRole(role)
+
+      const bot = await getDiscordBot(interaction)
+      assertRoleManageable(interaction.guild, bot, role)
+
+      assertMemberHasRole(member, role)
+
+      await member.roles.add(role)
+      await discordReply(interaction, MSG.Granted(role.id))
+    } catch (err: any) {
+      if (err instanceof EmbedRoleGrantButtonError) await discordReply(interaction, err.message)
+      else log.error(`Failed to handle ${EVENT_EMBED_ID}: ${ERR.UnexpectedButton}`)
+    }
+  }
+} as Event

@@ -1,28 +1,28 @@
 import { REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes } from 'discord.js';
-import fs from 'node:fs';
-import path from 'node:path';
-import { Command } from './bot/commands';
+import { Command } from '@commands/command';
+import { getModuleName, readFiles } from '@utils/io';
+import path from 'path';
+import { log } from '@utils/logger';
 
 const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 // Grab all the command folders from the commands directory you created earlier
-const foldersPath = path.join(__dirname, 'bot/commands');
-const commandFolders = fs.readdirSync(foldersPath).filter((f) => !f.includes('.ts'));
+const root = path.join(__dirname, 'bot/commands')
+const files = readFiles(root)
 
-for (const folder of commandFolders) {
-	// Grab all the command files from the commands directory you created earlier
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
-	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		console.log(`Registering command ${folder}.${file.split(".")[0]}!`)
+log.base("🚀 Deploying commands...")
+for (const file of files) {
+	const fileName = getModuleName(root, file)
+	log.info(`Registering command ${fileName}...`)
 
-		const { default: command } = await import(filePath) as { default: Command }
+	try {
+		const { default: command } = await import(file) as { default: Command }
 		if ('data' in command && 'execute' in command) {
 			commands.push(command.data.toJSON());
 		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+			log.error(`The command at ${file} is missing a required "data" or "execute" property.`);
 		}
+	} catch (err) {
+		log.error(`Failed to import command at ${file}: ${err}`);
 	}
 }
 
@@ -32,7 +32,7 @@ const rest = new REST().setToken(process.env.APP_TOKEN!);
 // and deploy your commands!
 (async () => {
 	try {
-		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+		log.check(`Started refreshing ${commands.length} application (/) commands...`);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
@@ -40,9 +40,10 @@ const rest = new REST().setToken(process.env.APP_TOKEN!);
 			{ body: commands },
 		);
 
-		console.log(`Successfully reloaded ${(data as unknown[]).length} application (/) commands.`);
+		log.success(`Successfully reloaded ${(data as unknown[]).length} application (/) commands~`);
+		log.base("🚀 Commands deployed!")
 	} catch (error) {
 		// And of course, make sure you catch and log any errors!
-		console.error(error);
+		log.error(`Error while deploying commands: ${error}`);
 	}
 })();

@@ -1,11 +1,11 @@
 import { ChatInputCommandInteraction, GuildMember, MessageFlags, SlashCommandBuilder } from "discord.js"
-import { Command } from ".."
-import { increaseUserStreak } from "../../../db/queries/user"
-import { prisma } from "../../../db/client"
-import { createCheckin } from "../../../db/queries/checkin"
-import { getYesterday, isDateToday } from "../../../utils/date"
-import { advanceRoleMessage, checkinSuccessMessage, FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, generateFailedCheckinWrongChannelID } from "../../../constants"
-import { addMemberGrindRole, getGrinderRoleByStreakCount, resetMemberGrindRoles } from "../../../utils/roles"
+import { Command } from "@commands/command"
+import { increaseUserStreak } from "@db/queries/user"
+import { prisma } from "@db/client"
+import { createCheckin } from "@db/queries/checkin"
+import { getYesterday, isDateToday } from "@utils/date"
+import { advanceRoleMessage, checkinSuccessMessage, FAILED_CHECKIN_ALREADY_CHECKIN_TODAY, generateFailedCheckinWrongChannelID } from "@constants"
+import { addMemberGrindRole, getGrinderRoleByStreakCount, resetMemberGrindRoles } from "@utils/roles"
 
 export default {
   data: new SlashCommandBuilder()
