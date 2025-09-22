@@ -26,5 +26,8 @@
     "@prisma/client": "6.13.0",
     "discord.js": "^14.21.0",
     "prisma": "^6.13.0"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^5.3.0"
   }
 }
