@@ -1,8 +1,8 @@
-import { Client } from "discord.js"
+import type { Client } from 'discord.js'
 
 export interface Event {
-  name: string
-  desc: string
-  once?: boolean
-  exec: (client: Client, ...args: any[]) => void
+    name: string
+    desc: string
+    once?: boolean
+    exec: (client: Client, ...args: any[]) => void
 }

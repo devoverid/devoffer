@@ -1,11 +1,10 @@
-import { Collection } from "discord.js";
-import { PrismaClient } from "../../db/generated/prisma";
-import { Command } from "@commands";
+import type { Command } from '@commands'
+import type { Collection } from 'discord.js'
+import type { PrismaClient } from '../../db/generated/prisma'
 
-declare module "discord.js" {
+declare module 'discord.js' {
     interface Client {
-      prisma: PrismaClient,
-      commands: Collection<string, Command>
-  }
+        prisma: PrismaClient
+        commands: Collection<string, Command>
+    }
 }
-  

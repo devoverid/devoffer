@@ -1,17 +1,17 @@
 {
     "compilerOptions": {
-        "module": "esnext",
         "target": "esnext",
+        "module": "esnext",
         "moduleResolution": "Bundler",
-        "strict": true,
-        "skipLibCheck": true,
         "paths": {
             "@constants": ["./src/constants.ts"],
             "@db/*": ["./src/db/*"],
             "@commands/*": ["./src/bot/commands/*"],
             "@events/*": ["./src/bot/events/*"],
-            "@utils/*": ["./src/utils/*"],
-        }
+            "@utils/*": ["./src/utils/*"]
+        },
+        "strict": true,
+        "skipLibCheck": true
     },
     "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }

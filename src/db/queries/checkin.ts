@@ -1,14 +1,14 @@
-import { prisma } from "@db/client"
+import { prisma } from '@db/client'
 
-export const createCheckin = (user_id: number, description: string) => {
+export function createCheckin(user_id: number, description: string) {
     return prisma.checkin.create({
         data: {
             user: {
                 connect: {
-                    id: user_id
-                }
+                    id: user_id,
+                },
             },
             description,
-        }
+        },
     })
 }
