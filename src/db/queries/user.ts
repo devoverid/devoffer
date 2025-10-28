@@ -1,14 +1,14 @@
-import { prisma } from "@db/client"
+import { prisma } from '@db/client'
 
-export const increaseUserStreak = (user_id: number) => {
+export function increaseUserStreak(user_id: number) {
     return prisma.user.update({
         where: {
-            id: user_id
+            id: user_id,
         },
         data: {
             streak_count: {
-                increment: 1
-            }
-        }
+                increment: 1,
+            },
+        },
     })
 }

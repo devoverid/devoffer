@@ -1,4 +1,4 @@
-import { PrismaClient } from "../../db/generated/prisma";
+import { PrismaClient } from '../../db/generated/prisma'
 
 // singleton
-export const prisma = new PrismaClient();
+export const prisma = new PrismaClient()

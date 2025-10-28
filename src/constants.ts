@@ -1,8 +1,8 @@
-import { ChatInputCommandInteraction } from "discord.js"
+import type { ChatInputCommandInteraction } from 'discord.js'
 
-export const CUSTOM_ID_SEPARATOR = ":"
-export const SNOWFLAKE_MARKER = "S#"
-export const ALPHABETS = "0123456789abcdefghijklmnopqrstuvwxyz"
+export const CUSTOM_ID_SEPARATOR = ':'
+export const SNOWFLAKE_MARKER = 'S#'
+export const ALPHABETS = '0123456789abcdefghijklmnopqrstuvwxyz'
 
 export const FAILED_CHECKIN_ALREADY_CHECKIN_TODAY = `**Check-in failed**\n
 You already did checkin today\n
@@ -15,7 +15,7 @@ You need to go to ${interaction.guild?.channels.cache.get(allowedCheckinChannelI
 `
 }
 
-export const checkinSuccessMessage = (streak_count: number, description: string, congratsMessage: string) => {
+export function checkinSuccessMessage(streak_count: number, description: string, congratsMessage: string) {
     const now = new Date()
     return `**Check-in success!**\n
 **Time:** ${now.toLocaleString('id-ID')}
@@ -23,6 +23,6 @@ export const checkinSuccessMessage = (streak_count: number, description: string,
 **Description:**\n${description}${congratsMessage}`
 }
 
-export const advanceRoleMessage = (role: string) => {
+export function advanceRoleMessage(role: string) {
     return `\n\n**Congratulations!**\nYou have reached ${role}! :tada:`
 }

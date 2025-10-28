@@ -1,33 +1,33 @@
 {
-  "name": "devoffer",
-  "version": "1.0.0",
-  "description": "A Bot for DevOffer Discord Server",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "bun src/index.ts",
-    "commands": "bun src/deploy-commands.ts",
-    "prisma": "bunx prisma generate --schema db/schema.prisma"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/devoverid/devoffer.git"
-  },
-  "keywords": [
-    "bot"
-  ],
-  "author": "devoverid",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/devoverid/devoffer/issues"
-  },
-  "homepage": "https://github.com/devoverid/devoffer#readme",
-  "dependencies": {
-    "@prisma/client": "6.13.0",
-    "discord.js": "^14.21.0",
-    "prisma": "^6.13.0"
-  },
-  "devDependencies": {
-    "@antfu/eslint-config": "^5.3.0"
-  }
+    "name": "devoffer",
+    "version": "1.0.0",
+    "description": "A Bot for DevOffer Discord Server",
+    "author": "devoverid",
+    "license": "ISC",
+    "homepage": "https://github.com/devoverid/devoffer#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/devoverid/devoffer.git"
+    },
+    "bugs": {
+        "url": "https://github.com/devoverid/devoffer/issues"
+    },
+    "keywords": [
+        "bot"
+    ],
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "bun src/index.ts",
+        "commands": "bun src/deploy-commands.ts",
+        "prisma": "bunx prisma generate --schema db/schema.prisma"
+    },
+    "dependencies": {
+        "@prisma/client": "6.13.0",
+        "discord.js": "^14.21.0",
+        "prisma": "^6.13.0"
+    },
+    "devDependencies": {
+        "@antfu/eslint-config": "^5.3.0"
+    }
 }
