@@ -1,6 +1,6 @@
 import type { Guild, GuildMember, Role, TextChannel } from 'discord.js'
 import { ChannelType, PermissionFlagsBits } from 'discord.js'
-import { assertMemberHasRole } from '.'
+import { isMemberHasRole } from '.'
 import { DiscordBaseError } from './error'
 import { DiscordMessage } from './message'
 
@@ -48,8 +48,7 @@ export class DiscordAssert extends DiscordMessage {
     }
 
     static assertMemberHasRole(member: GuildMember, role: Role) {
-        const hasRole = assertMemberHasRole(member, role)
-        if (hasRole)
+        if (isMemberHasRole(member, role))
             throw new DiscordAssertError(this.roleRevoked(role.id))
     }
 }

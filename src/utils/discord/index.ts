@@ -13,7 +13,7 @@ export async function getBot(interaction: Interaction): Promise<GuildMember> {
     return interaction.guild!.members.me as GuildMember ?? await interaction.guild!.members.fetchMe()
 }
 
-export const assertMemberHasRole = (member: GuildMember, role: Role): boolean => member.roles.cache.has(role.id)
+export const isMemberHasRole = (member: GuildMember, role: Role): boolean => member.roles.cache.has(role.id)
 
 export function sendReply(interaction: Interaction, content: string, ephemeral: boolean = true) {
     if (!interaction.isRepliable())
