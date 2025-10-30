@@ -45,7 +45,7 @@ export default {
             await sendReply(interaction, RoleGrantCreate.roleGranted(role.id))
         }
         catch (err: any) {
-            if (err instanceof EmbedRoleGrantButtonError)
+            if (err instanceof DiscordBaseError)
                 await sendReply(interaction, err.message)
             else log.error(`Failed to handle ${EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID}: ${RoleGrantCreate.ERR.UnexpectedButton}: ${err}`)
         }
