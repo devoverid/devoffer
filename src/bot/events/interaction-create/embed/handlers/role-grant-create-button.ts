@@ -2,21 +2,19 @@ import type { Event } from '@events/event'
 import type { GuildMember, Interaction } from 'discord.js'
 import { EVENT_PATH } from '@events/index'
 import { generateCustomId } from '@utils/component'
-import { discordReply, getDiscordBot, getDiscordRole } from '@utils/discord'
+import { getBot, getRole, sendReply } from '@utils/discord'
+import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { Events } from 'discord.js'
-import { ERR, MSG } from '../messages/role-grant-create'
-import { assertButton, assertMember, assertMemberHasRole, assertRole, assertRoleManageable, getButtonCustomId } from '../validators/role-grant-create'
+import { RoleGrantCreate } from '../validators/role-grant-create'
 
-export class EmbedRoleGrantButtonError extends Error {
+export class EmbedRoleGrantButtonError extends DiscordBaseError {
     constructor(message: string, options?: { cause?: unknown }) {
-        super(message, options)
-        this.name = 'EmbedRoleGrantButtonError'
-        Object.setPrototypeOf(this, new.target.prototype)
+        super('EmbedRoleGrantButtonError', message, options)
     }
 }
 
-export const EVENT_EMBED_ID = generateCustomId(EVENT_PATH, __filename)
+export const EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID = generateCustomId(EVENT_PATH, __filename)
 
 export default {
     name: Events.InteractionCreate,
@@ -27,29 +25,29 @@ export default {
 
         try {
             if (!interaction.inCachedGuild())
-                throw new EmbedRoleGrantButtonError(ERR.NotGuild)
-            assertButton(interaction.customId, EVENT_EMBED_ID)
+                throw new EmbedRoleGrantButtonError(RoleGrantCreate.ERR.NotGuild)
+            RoleGrantCreate.assertButton(interaction.customId, EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID)
 
-            const { roleId } = getButtonCustomId(interaction, interaction.customId)
+            const { roleId } = RoleGrantCreate.getButtonId(interaction, interaction.customId)
 
             const member = interaction.member as GuildMember
-            assertMember(member)
+            RoleGrantCreate.assertMember(member)
 
-            const role = await getDiscordRole(interaction, roleId)
-            assertRole(role)
+            const role = await getRole(interaction, roleId)
+            RoleGrantCreate.assertRole(role)
 
-            const bot = await getDiscordBot(interaction)
-            assertRoleManageable(interaction.guild, bot, role)
+            const bot = await getBot(interaction)
+            RoleGrantCreate.assertRoleManageable(interaction.guild, bot, role)
 
-            assertMemberHasRole(member, role)
+            RoleGrantCreate.assertMemberHasRole(member, role)
 
             await member.roles.add(role)
-            await discordReply(interaction, MSG.Granted(role.id))
+            await sendReply(interaction, RoleGrantCreate.roleGranted(role.id))
         }
         catch (err: any) {
             if (err instanceof EmbedRoleGrantButtonError)
-                await discordReply(interaction, err.message)
-            else log.error(`Failed to handle ${EVENT_EMBED_ID}: ${ERR.UnexpectedButton}`)
+                await sendReply(interaction, err.message)
+            else log.error(`Failed to handle ${EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID}: ${RoleGrantCreate.ERR.UnexpectedButton}: ${err}`)
         }
     },
 } as Event

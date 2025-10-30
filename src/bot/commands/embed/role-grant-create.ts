@@ -6,7 +6,7 @@ import { encodeSnowflake, generateCustomId, getCustomId } from '@utils/component
 import { DUMMY } from '@utils/placeholder'
 import { ChannelType, PermissionFlagsBits, SlashCommandBuilder, TextInputStyle } from 'discord.js'
 
-export const COMMAND_EMBED_ID = generateCustomId(COMMAND_PATH, __filename)
+export const COMMAND_EMBED_ROLE_GRANT_CREATE_ID = generateCustomId(COMMAND_PATH, __filename)
 
 export default {
     data: new SlashCommandBuilder()
@@ -23,7 +23,7 @@ export default {
         const role = interaction.options.getRole('role', true)
 
         const modalCustomId = getCustomId([
-            COMMAND_EMBED_ID,
+            COMMAND_EMBED_ROLE_GRANT_CREATE_ID,
             encodeSnowflake(interaction.guildId!),
             encodeSnowflake(channel.id),
             encodeSnowflake(role.id),
