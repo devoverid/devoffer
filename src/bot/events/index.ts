@@ -32,7 +32,7 @@ export async function registerEvents(client: Client) {
             }
         }
         catch (err: any) {
-            const msg = err instanceof EventError ? err.message : '❌ Something went wrong when importing the event.'
+            const msg = err instanceof EventError ? err.message : '❌ Something went wrong when importing the event'
             log.error(`Failed to register an event: ${msg}`)
         }
     }
