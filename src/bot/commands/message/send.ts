@@ -20,18 +20,18 @@ const FILE_COUNT = 5
 export default {
     data: new SlashCommandBuilder()
         .setName('send-message')
-        .setDescription('Send a message (optionally with attachments) as the bot')
+        .setDescription('Send a message (optionally with attachments) as the bot.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addStringOption(opt =>
             opt.setName('message')
-                .setDescription('Text to send')
+                .setDescription('Text to send.')
                 .setRequired(false),
         )
-        .addAttachmentOption(opt => opt.setName('file1').setDescription('Attachment 1').setRequired(false))
-        .addAttachmentOption(opt => opt.setName('file2').setDescription('Attachment 2').setRequired(false))
-        .addAttachmentOption(opt => opt.setName('file3').setDescription('Attachment 3').setRequired(false))
-        .addAttachmentOption(opt => opt.setName('file4').setDescription('Attachment 4').setRequired(false))
-        .addAttachmentOption(opt => opt.setName('file5').setDescription('Attachment 5').setRequired(false)),
+        .addAttachmentOption(opt => opt.setName('attachment-1').setDescription('Attachment 1').setRequired(false))
+        .addAttachmentOption(opt => opt.setName('attachment-2').setDescription('Attachment 2').setRequired(false))
+        .addAttachmentOption(opt => opt.setName('attachment-3').setDescription('Attachment 3').setRequired(false))
+        .addAttachmentOption(opt => opt.setName('attachment-4').setDescription('Attachment 4').setRequired(false))
+        .addAttachmentOption(opt => opt.setName('attachment-5').setDescription('Attachment 5').setRequired(false)),
 
     async execute(interaction: ChatInputCommandInteraction) {
         const content = interaction.options.getString('message') ?? ''
