@@ -23,7 +23,7 @@ export function sendReply(interaction: Interaction, content: string, ephemeral: 
     if (ephemeral)
         payloads.flags = MessageFlags.Ephemeral
 
-    if (interaction.replied)
+    if (interaction.replied || interaction.deferred)
         return interaction.followUp(payloads)
 
     return interaction.reply(payloads)
