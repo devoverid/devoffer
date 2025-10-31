@@ -28,7 +28,7 @@ export async function registerCommands(client: Client) {
             client.commands.set(command.data.name, command)
         }
         catch (err: any) {
-            const msg = err instanceof CommandError ? err.message : '❌ Something went wrong when importing the command.'
+            const msg = err instanceof CommandError ? err.message : '❌ Something went wrong when importing the command'
             log.error(`Failed to register a command: ${msg}`)
         }
     }
