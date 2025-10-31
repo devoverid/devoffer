@@ -1,5 +1,5 @@
 import type { Command } from '@commands/command'
-import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
+import type { TextChannel } from 'discord.js'
 import { COMMAND_PATH } from '@commands/index'
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder } from '@discordjs/builders'
 import { encodeSnowflake, generateCustomId, getCustomId } from '@utils/component'
@@ -17,7 +17,7 @@ export default {
         .addRoleOption(opt => opt.setName('role').setDescription('Role to grant.').setRequired(true))
         .addStringOption(opt => opt.setName('button-name').setDescription('Text to display on the button-make it catchy.').setRequired(true)),
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    async execute(interaction) {
         const channel = interaction.options.getChannel('channel', true) as TextChannel
         const buttonName = interaction.options.getString('button-name', true)
         const role = interaction.options.getRole('role', true)

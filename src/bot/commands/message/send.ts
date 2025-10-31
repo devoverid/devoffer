@@ -1,5 +1,5 @@
 import type { Command } from '@commands/command'
-import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
+import type { TextChannel } from 'discord.js'
 import { getAttachments, sendReply } from '@utils/discord'
 import { formatList } from '@utils/text'
 import { PermissionFlagsBits, PermissionsBitField, SlashCommandBuilder } from 'discord.js'
@@ -33,7 +33,7 @@ export default {
         .addAttachmentOption(opt => opt.setName('attachment-4').setDescription('Attachment 4').setRequired(false))
         .addAttachmentOption(opt => opt.setName('attachment-5').setDescription('Attachment 5').setRequired(false)),
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    async execute(interaction) {
         const content = interaction.options.getString('message') ?? ''
         const channel = interaction.channel as TextChannel
         const channelPerms = channel.permissionsFor(interaction.client.user!)!
