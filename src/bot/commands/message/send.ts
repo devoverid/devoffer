@@ -1,6 +1,6 @@
 import type { Command } from '@commands/command'
 import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
-import { discordReply, getAttachments } from '@utils/discord'
+import { getAttachments, sendReply } from '@utils/discord'
 import { formatList } from '@utils/text'
 import { PermissionFlagsBits, PermissionsBitField, SlashCommandBuilder } from 'discord.js'
 
@@ -44,7 +44,7 @@ export default {
         const missing = requiredPerms.filter(p => !channelPerms.has(p))
         if (missing.length) {
             const missingNames = missing.map(p => PERM_LABELS.get(p) ?? 'Unknown Permission')
-            return await discordReply(
+            return await sendReply(
                 interaction,
                 `I’m missing **${formatList(missingNames)}** in this channel.`,
                 true,
@@ -57,6 +57,6 @@ export default {
             allowedMentions: { parse: [] },
         })
 
-        await discordReply(interaction, `✅ Sent! [Jump to message](${sent.url})`, true)
+        await sendReply(interaction, `✅ Sent! [Jump to message](${sent.url})`, true)
     },
 } as Command
