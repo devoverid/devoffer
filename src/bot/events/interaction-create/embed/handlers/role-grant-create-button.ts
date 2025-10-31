@@ -18,7 +18,7 @@ export const EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID = generateCustomId(EVENT_PA
 
 export default {
     name: Events.InteractionCreate,
-    desc: 'Handles role assignment button interactions and toggles roles for users.',
+    desc: 'Handles role assignment button interactions and adds a role for users.',
     async exec(_, interaction: Interaction) {
         if (!interaction.isButton())
             return

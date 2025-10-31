@@ -62,7 +62,7 @@ export default {
 
             await sendReply(
                 interaction,
-                `✅ Posted in <#${channel.id}>. Clicking will toggle ${roleMention(role.id)}. [Jump](${sent.url})!`,
+                `✅ Posted in <#${channel.id}>. Clicking will add ${roleMention(role.id)}. [Jump](${sent.url})!`,
                 false,
             )
         }

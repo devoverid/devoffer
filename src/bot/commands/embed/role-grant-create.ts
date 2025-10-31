@@ -14,7 +14,7 @@ export default {
         .setDescription('Create an embed in a channel w/ a role-grant button.')
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addChannelOption(opt => opt.setName('channel').setDescription('Post channel.').addChannelTypes(ChannelType.GuildText).setRequired(true))
-        .addRoleOption(opt => opt.setName('role').setDescription('Role to toggle.').setRequired(true))
+        .addRoleOption(opt => opt.setName('role').setDescription('Role to grant.').setRequired(true))
         .addStringOption(opt => opt.setName('button-name').setDescription('Text to display on the button-make it catchy.').setRequired(true)),
 
     async execute(interaction: ChatInputCommandInteraction) {
