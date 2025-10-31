@@ -1,4 +1,4 @@
-import type { GuildMember, Interaction, InteractionReplyOptions, MessagePayload, Role, TextChannel } from 'discord.js'
+import type { Attachment, ChatInputCommandInteraction, GuildMember, Interaction, InteractionReplyOptions, MessagePayload, Role, TextChannel } from 'discord.js'
 import { MessageFlags } from 'discord.js'
 
 export async function getDiscordChannel(interaction: Interaction, id: string): Promise<TextChannel> {
@@ -27,4 +27,16 @@ export function discordReply(interaction: Interaction, content: string, ephemera
         return interaction.followUp(payloads)
 
     return interaction.reply(payloads)
+}
+
+export function getAttachments(interaction: ChatInputCommandInteraction, fileCount: number): Attachment[] {
+    const files: Attachment[] = []
+
+    for (let i = 0; i <= fileCount; i++) {
+        const file = interaction.options.getAttachment(`file${i}`)
+        if (file)
+            files.push(file)
+    }
+
+    return files
 }
