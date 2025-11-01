@@ -26,6 +26,7 @@ export default {
         try {
             if (!interaction.inCachedGuild())
                 throw new EmbedRoleGrantButtonError(RoleGrantCreate.ERR.NotGuild)
+
             RoleGrantCreate.assertButton(interaction.customId, EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID)
 
             const { roleId } = RoleGrantCreate.getButtonId(interaction, interaction.customId)

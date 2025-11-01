@@ -26,6 +26,7 @@ export default {
         try {
             if (!interaction.inCachedGuild())
                 throw new EmbedRoleGrantModalError(RoleGrantCreate.ERR.NotGuild)
+
             RoleGrantCreate.assertModal(interaction.customId, COMMAND_EMBED_ROLE_GRANT_CREATE_ID)
 
             const { channelId, roleId, buttonName } = RoleGrantCreate.getModalId(interaction, interaction.customId)
