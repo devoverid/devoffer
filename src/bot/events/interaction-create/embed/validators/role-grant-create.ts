@@ -22,7 +22,7 @@ export class RoleGrantCreate extends RoleGrantCreateMessage {
         if (!channelId)
             throw new EmbedRoleGrantModalError(this.ERR.ChannelNotFound)
         if (!roleId)
-            throw new EmbedRoleGrantModalError(this.ERR.RoleMissing)
+            throw new EmbedRoleGrantModalError(this.ERR.RoleMissing(roleId))
         if (interaction.guildId !== guildId)
             throw new EmbedRoleGrantModalError(this.ERR.NotGuild)
 
@@ -35,7 +35,7 @@ export class RoleGrantCreate extends RoleGrantCreateMessage {
         if (!guildId)
             throw new EmbedRoleGrantButtonError(this.ERR.GuildMissing)
         if (!roleId)
-            throw new EmbedRoleGrantButtonError(this.ERR.RoleMissing)
+            throw new EmbedRoleGrantButtonError(this.ERR.RoleMissing(roleId))
         if (interaction.guildId !== guildId)
             throw new EmbedRoleGrantButtonError(this.ERR.NotGuild)
 
