@@ -30,7 +30,7 @@ export default {
             if (!interaction.inCachedGuild())
                 throw new CheckinError(Checkin.ERR.NotGuild)
 
-            const description = interaction.options.getString('description')!
+            const description = interaction.options.getString('description', true)
 
             const discordUserId: string = interaction.user.id
             const member = interaction.member as GuildMember
