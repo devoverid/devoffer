@@ -7,7 +7,7 @@ import { PermissionFlagsBits, PermissionsBitField, SlashCommandBuilder } from 'd
 const BASE_PERMS = [
     PermissionsBitField.Flags.SendMessages,
     PermissionsBitField.Flags.ViewChannel,
-] as const
+]
 
 const PERM_LABELS = new Map<bigint, string>([
     [PermissionsBitField.Flags.SendMessages, 'Send Messages'],
@@ -33,7 +33,7 @@ export default {
         .addAttachmentOption(opt => opt.setName('attachment-4').setDescription('Attachment 4').setRequired(false))
         .addAttachmentOption(opt => opt.setName('attachment-5').setDescription('Attachment 5').setRequired(false)),
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    async execute(_, interaction: ChatInputCommandInteraction) {
         const content = interaction.options.getString('message') ?? ''
         const channel = interaction.channel as TextChannel
         const channelPerms = channel.permissionsFor(interaction.client.user!)!

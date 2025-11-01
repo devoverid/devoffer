@@ -17,7 +17,7 @@ export default {
         .addRoleOption(opt => opt.setName('role').setDescription('Role to grant.').setRequired(true))
         .addStringOption(opt => opt.setName('button-name').setDescription('Text to display on the button-make it catchy.').setRequired(true)),
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    async execute(_, interaction: ChatInputCommandInteraction) {
         const channel = interaction.options.getChannel('channel', true) as TextChannel
         const buttonName = interaction.options.getString('button-name', true)
         const role = interaction.options.getRole('role', true)
