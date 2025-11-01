@@ -1,6 +1,6 @@
 import type { Event } from '@events/event'
 import type { Interaction } from 'discord.js'
-import { COMMAND_EMBED_ROLE_GRANT_CREATE_ID } from '@commands/embed/role-grant-create'
+import { COMMAND_EMBED_ROLE_GRANT_CREATE_ID } from '@commands/embed/handlers/role-grant-create'
 import { parseHexColor } from '@utils/color'
 import { encodeSnowflake, getCustomId } from '@utils/component'
 import { getBot, getChannel, getRole, sendReply } from '@utils/discord'
