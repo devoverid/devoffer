@@ -37,6 +37,7 @@ export default {
             const user = await Checkin.getOrCreateUser(client.prisma, discordUserId)
 
             await Checkin.assertAllowedChannel(interaction)
+            Checkin.assertMember(member)
             Checkin.assertMemberGrindRoles(member)
             Checkin.assertCheckinToday(user)
 
@@ -61,7 +62,7 @@ export default {
         catch (err: any) {
             if (err instanceof DiscordBaseError)
                 await sendReply(interaction, err.message)
-            else log.error(`Failed to handle Checkin: ${Checkin.ERR.UnexpectedCheckin}: ${err}`)
+            else log.error(`Failed to handle: ${Checkin.ERR.UnexpectedCheckin}: ${err}`)
         }
     },
 } as Command

@@ -30,16 +30,13 @@ export default {
             RoleGrantCreate.assertButton(interaction.customId, EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID)
 
             const { roleId } = RoleGrantCreate.getButtonId(interaction, interaction.customId)
-
             const member = interaction.member as GuildMember
-            RoleGrantCreate.assertMember(member)
-
             const role = await getRole(interaction, roleId)
-            RoleGrantCreate.assertRole(role)
-
             const bot = await getBot(interaction)
-            RoleGrantCreate.assertRoleManageable(interaction.guild, bot, role)
 
+            RoleGrantCreate.assertMember(member)
+            RoleGrantCreate.assertRole(role)
+            RoleGrantCreate.assertRoleManageable(interaction.guild, bot, role)
             RoleGrantCreate.assertMemberHasRole(member, role)
 
             await member.roles.add(role)
