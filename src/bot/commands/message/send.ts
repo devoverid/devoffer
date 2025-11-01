@@ -1,13 +1,13 @@
 import type { Command } from '@commands/command'
 import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
-import { discordReply, getAttachments } from '@utils/discord'
+import { getAttachments, sendReply } from '@utils/discord'
 import { formatList } from '@utils/text'
 import { PermissionFlagsBits, PermissionsBitField, SlashCommandBuilder } from 'discord.js'
 
 const BASE_PERMS = [
     PermissionsBitField.Flags.SendMessages,
     PermissionsBitField.Flags.ViewChannel,
-] as const
+]
 
 const PERM_LABELS = new Map<bigint, string>([
     [PermissionsBitField.Flags.SendMessages, 'Send Messages'],
@@ -33,7 +33,7 @@ export default {
         .addAttachmentOption(opt => opt.setName('attachment-4').setDescription('Attachment 4').setRequired(false))
         .addAttachmentOption(opt => opt.setName('attachment-5').setDescription('Attachment 5').setRequired(false)),
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    async execute(_, interaction: ChatInputCommandInteraction) {
         const content = interaction.options.getString('message') ?? ''
         const channel = interaction.channel as TextChannel
         const channelPerms = channel.permissionsFor(interaction.client.user!)!
@@ -44,7 +44,7 @@ export default {
         const missing = requiredPerms.filter(p => !channelPerms.has(p))
         if (missing.length) {
             const missingNames = missing.map(p => PERM_LABELS.get(p) ?? 'Unknown Permission')
-            return await discordReply(
+            return await sendReply(
                 interaction,
                 `I’m missing **${formatList(missingNames)}** in this channel.`,
                 true,
@@ -57,6 +57,6 @@ export default {
             allowedMentions: { parse: [] },
         })
 
-        await discordReply(interaction, `✅ Sent! [Jump to message](${sent.url})`, true)
+        await sendReply(interaction, `✅ Sent! [Jump to message](${sent.url})`, true)
     },
 } as Command

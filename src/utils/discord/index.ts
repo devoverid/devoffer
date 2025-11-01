@@ -13,22 +13,6 @@ export async function getBot(interaction: Interaction): Promise<GuildMember> {
     return interaction.guild!.members.me as GuildMember ?? await interaction.guild!.members.fetchMe()
 }
 
-export const isMemberHasRole = (member: GuildMember, role: Role): boolean => member.roles.cache.has(role.id)
-
-export function sendReply(interaction: Interaction, content: string, ephemeral: boolean = true) {
-    if (!interaction.isRepliable())
-        return
-
-    const payloads: string | MessagePayload | InteractionReplyOptions = { content }
-    if (ephemeral)
-        payloads.flags = MessageFlags.Ephemeral
-
-    if (interaction.replied)
-        return interaction.followUp(payloads)
-
-    return interaction.reply(payloads)
-}
-
 export function getAttachments(interaction: ChatInputCommandInteraction, fileCount: number): Attachment[] {
     const files: Attachment[] = []
 
@@ -39,6 +23,22 @@ export function getAttachments(interaction: ChatInputCommandInteraction, fileCou
     }
 
     return files
+}
+
+export const isMemberHasRole = (member: GuildMember, role: Role): boolean => member.roles.cache.has(role.id)
+
+export function sendReply(interaction: Interaction, content: string, ephemeral: boolean = true) {
+    if (!interaction.isRepliable())
+        return
+
+    const payloads: string | MessagePayload | InteractionReplyOptions = { content }
+    if (ephemeral)
+        payloads.flags = MessageFlags.Ephemeral
+
+    if (interaction.replied || interaction.deferred)
+        return interaction.followUp(payloads)
+
+    return interaction.reply(payloads)
 }
 
 export * from './assert'

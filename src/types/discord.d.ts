@@ -1,6 +1,6 @@
 import type { Command } from '@commands'
+import type { PrismaClient } from '@generatedDB/client'
 import type { Collection } from 'discord.js'
-import type { PrismaClient } from '../../db/generated/prisma'
 
 declare module 'discord.js' {
     interface Client {

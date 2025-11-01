@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import type { Logger } from '../types/log'
+import type { Logger } from '@type/log'
 import { timestamp } from './date'
 
 export const log: Logger = {

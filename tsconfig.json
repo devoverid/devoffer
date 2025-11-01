@@ -6,9 +6,12 @@
         "paths": {
             "@constants": ["./src/constants.ts"],
             "@db/*": ["./src/db/*"],
+            "@generatedDB/*": ["./db/generated/prisma/*"],
             "@commands/*": ["./src/bot/commands/*"],
             "@events/*": ["./src/bot/events/*"],
-            "@utils/*": ["./src/utils/*"]
+            "@utils/*": ["./src/utils/*"],
+            "@type/*": ["./src/types/*"],
+            "@config/*": ["./src/config/*"]
         },
         "strict": true,
         "skipLibCheck": true

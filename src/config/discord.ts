@@ -1,10 +1,15 @@
 import type { RoleManager } from 'discord.js'
 
-interface GrindRole {
+export const CHECKIN_CHANNEL = '1405165987288059944'
+
+export interface GrindRole {
     name?: string
     id: string
     threshold: number
 }
+
+export const GRINDER_ROLE = '1403320523756146768'
+export const FLAMEWARDEN_ROLE = '1403022712938561668'
 
 const GRIND_ROLES: GrindRole[] = [
     {
@@ -46,5 +51,6 @@ export function getGrindRoles(roleManager?: RoleManager) {
             }
         })
     }
+
     return GRIND_ROLES
 }

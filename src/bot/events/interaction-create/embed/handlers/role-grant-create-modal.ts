@@ -26,6 +26,7 @@ export default {
         try {
             if (!interaction.inCachedGuild())
                 throw new EmbedRoleGrantModalError(RoleGrantCreate.ERR.NotGuild)
+
             RoleGrantCreate.assertModal(interaction.customId, COMMAND_EMBED_ROLE_GRANT_CREATE_ID)
 
             const { channelId, roleId, buttonName } = RoleGrantCreate.getModalId(interaction, interaction.customId)
@@ -62,7 +63,7 @@ export default {
 
             await sendReply(
                 interaction,
-                `✅ Posted in <#${channel.id}>. Clicking will toggle ${roleMention(role.id)}. [Jump](${sent.url})!`,
+                `✅ Posted in <#${channel.id}>. Clicking will add ${roleMention(role.id)}. [Jump](${sent.url})!`,
                 false,
             )
         }

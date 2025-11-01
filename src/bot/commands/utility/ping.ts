@@ -7,7 +7,7 @@ export default {
         .setName('ping')
         .setDescription('Replies with pong!'),
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    async execute(_, interaction: ChatInputCommandInteraction) {
         await interaction.reply('Pong!')
     },
 } as Command

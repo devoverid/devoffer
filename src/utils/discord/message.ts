@@ -1,3 +1,4 @@
+import type { GrindRole } from '@config/discord'
 import { roleMention } from 'discord.js'
 
 export class DiscordMessage {
@@ -8,10 +9,18 @@ export class DiscordMessage {
         NoManageRoles: '❌ I’m missing the **Manage Roles** permission',
         RoleUneditable: '❌ I can’t manage that role (check role hierarchy/managed role/@everyone)',
         MemberAboveMe: '❌ I can’t change roles for this member (their highest role is at/above mine)',
-        RoleNotFound: '❌ Role not found',
-        RoleMissing: '❌ The role no longer exists',
+        RoleNotFound: '❌ The role no longer exists',
+        RoleMissing(roleId: string) {
+            return `❌ Missing role: ${roleMention(roleId)}`
+        },
         GuildMissing: '❌ The guild could not be found',
         CannotPost: '❌ I can’t post in that channel',
+    }
+
+    static readonly MSG = {
+        ReachNewGrindRole(role: GrindRole) {
+            return `🎉 You have reached a new grind role: ${roleMention(role.id)}~`
+        },
     }
 
     static roleGranted(roleId: string): string {
