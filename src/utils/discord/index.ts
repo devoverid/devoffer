@@ -13,6 +13,18 @@ export async function getBot(interaction: Interaction): Promise<GuildMember> {
     return interaction.guild!.members.me as GuildMember ?? await interaction.guild!.members.fetchMe()
 }
 
+export function getAttachments(interaction: ChatInputCommandInteraction, fileCount: number): Attachment[] {
+    const files: Attachment[] = []
+
+    for (let i = 0; i <= fileCount; i++) {
+        const file = interaction.options.getAttachment(`file${i}`)
+        if (file)
+            files.push(file)
+    }
+
+    return files
+}
+
 export const isMemberHasRole = (member: GuildMember, role: Role): boolean => member.roles.cache.has(role.id)
 
 export function sendReply(interaction: Interaction, content: string, ephemeral: boolean = true) {
@@ -27,18 +39,6 @@ export function sendReply(interaction: Interaction, content: string, ephemeral: 
         return interaction.followUp(payloads)
 
     return interaction.reply(payloads)
-}
-
-export function getAttachments(interaction: ChatInputCommandInteraction, fileCount: number): Attachment[] {
-    const files: Attachment[] = []
-
-    for (let i = 0; i <= fileCount; i++) {
-        const file = interaction.options.getAttachment(`file${i}`)
-        if (file)
-            files.push(file)
-    }
-
-    return files
 }
 
 export * from './assert'

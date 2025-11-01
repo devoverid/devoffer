@@ -1,4 +1,4 @@
-import type { PlaceholderDummy } from '../types/placeholder'
+import type { PlaceholderDummy } from '@type/placeholder'
 
 export const DUMMY: PlaceholderDummy = {
     TITLE: 'Important Announcement',

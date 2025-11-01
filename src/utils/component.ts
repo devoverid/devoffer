@@ -1,4 +1,4 @@
-import type { DiscordCustomIdMetadata } from '../types/discord-component'
+import type { DiscordCustomIdMetadata } from '@type/discord-component'
 import { ALPHABETS, CUSTOM_ID_SEPARATOR, SNOWFLAKE_MARKER } from '@constants'
 import { getModuleName } from './io'
 
