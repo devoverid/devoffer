@@ -1,5 +1,5 @@
 import type { Guild, GuildMember, Role, TextChannel } from 'discord.js'
-import { ChannelType, PermissionFlagsBits } from 'discord.js'
+import { ChannelType, PermissionFlagsBits, PermissionsBitField } from 'discord.js'
 import { isMemberHasRole } from '.'
 import { DiscordBaseError } from './error'
 import { DiscordMessage } from './message'
@@ -11,6 +11,20 @@ class DiscordAssertError extends DiscordBaseError {
 }
 
 export class DiscordAssert extends DiscordMessage {
+    static BASE_PERMS: bigint[] = [
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.ViewChannel,
+    ]
+
+    static PERM_LABELS = new Map<bigint, string>(
+        Object.entries(PermissionsBitField.Flags).map(([key, value]) => [
+            value,
+            key.replace(/([a-z])([A-Z])/g, '$1 $2')
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, c => c.toUpperCase()),
+        ]),
+    )
+
     static assertMember(member: GuildMember) {
         if (!member || !('roles' in member))
             throw new DiscordAssertError(this.ERR.NoMember)
@@ -50,5 +64,13 @@ export class DiscordAssert extends DiscordMessage {
     static assertMemberHasRole(member: GuildMember, role: Role) {
         if (isMemberHasRole(member, role))
             throw new DiscordAssertError(this.roleRevoked(role.id))
+    }
+
+    static assertMissPerms(missedPerms: bigint[]) {
+        if (missedPerms.length) {
+            const missingNames = missedPerms.map(p => this.PERM_LABELS.get(p) ?? 'Unknown Permission')
+
+            throw new DiscordAssertError(this.ERR.RoleMissing(missingNames))
+        }
     }
 }
