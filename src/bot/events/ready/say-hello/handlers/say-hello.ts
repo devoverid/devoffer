@@ -1,5 +1,5 @@
 import type { Event } from '@events/event'
-import type { Client, Interaction } from 'discord.js'
+import type { Client } from 'discord.js'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { SayHello } from '../validators/say-hello'
@@ -14,11 +14,8 @@ export default {
     name: 'ready',
     desc: 'Say こんにちは for the first load',
     once: true,
-    exec(client: Client, interaction: Interaction) {
+    exec(client: Client) {
         try {
-            if (!interaction.inCachedGuild())
-                throw new SayHelloError(SayHello.ERR.NotGuild)
-
             console.warn(`こんにちは、${client.user?.tag}`)
         }
         catch (err: any) {
