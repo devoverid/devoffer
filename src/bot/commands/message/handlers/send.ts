@@ -1,21 +1,16 @@
 import type { Command } from '@commands/command'
 import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
-import { getAttachments, sendReply } from '@utils/discord'
-import { formatList } from '@utils/text'
-import { PermissionFlagsBits, PermissionsBitField, SlashCommandBuilder } from 'discord.js'
+import { getAttachments, getBotPerms, getMissPerms, sendReply } from '@utils/discord'
+import { DiscordBaseError } from '@utils/discord/error'
+import { log } from '@utils/logger'
+import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
+import { Send } from '../validators/send'
 
-const BASE_PERMS = [
-    PermissionsBitField.Flags.SendMessages,
-    PermissionsBitField.Flags.ViewChannel,
-]
-
-const PERM_LABELS = new Map<bigint, string>([
-    [PermissionsBitField.Flags.SendMessages, 'Send Messages'],
-    [PermissionsBitField.Flags.ViewChannel, 'View Channel'],
-    [PermissionsBitField.Flags.AttachFiles, 'Attach Files'],
-])
-
-const FILE_COUNT = 5
+export class SendError extends DiscordBaseError {
+    constructor(message: string, options?: { cause?: unknown }) {
+        super('SendError', message, options)
+    }
+}
 
 export default {
     data: new SlashCommandBuilder()
@@ -34,29 +29,29 @@ export default {
         .addAttachmentOption(opt => opt.setName('attachment-5').setDescription('Attachment 5').setRequired(false)),
 
     async execute(_, interaction: ChatInputCommandInteraction) {
-        const content = interaction.options.getString('message') ?? ''
-        const channel = interaction.channel as TextChannel
-        const channelPerms = channel.permissionsFor(interaction.client.user!)!
+        try {
+            const message = interaction.options.getString('message') ?? ''
+            const channel = interaction.channel as TextChannel
+            const channelPerms = getBotPerms(interaction, channel)
 
-        const attachments = getAttachments(interaction, FILE_COUNT)
-        const requiredPerms = attachments.length ? [...BASE_PERMS, PermissionsBitField.Flags.AttachFiles] : [...BASE_PERMS]
+            const attachments = getAttachments(interaction, Send.FILE_COUNT)
+            const requiredPerms = Send.getPermsWithAttachments(attachments)
+            const missedPerms = getMissPerms(channelPerms, requiredPerms)
 
-        const missing = requiredPerms.filter(p => !channelPerms.has(p))
-        if (missing.length) {
-            const missingNames = missing.map(p => PERM_LABELS.get(p) ?? 'Unknown Permission')
-            return await sendReply(
-                interaction,
-                `I’m missing **${formatList(missingNames)}** in this channel.`,
-                true,
-            )
+            Send.assertMissPerms(missedPerms)
+
+            await channel.send({
+                content: message.length ? message : undefined,
+                files: attachments.length ? attachments : undefined,
+                allowedMentions: { parse: [] },
+            })
+
+            await sendReply(interaction, `✅ Message sent!`)
         }
-
-        const sent = await channel.send({
-            content: content.length ? content : undefined,
-            files: attachments.length ? attachments : undefined,
-            allowedMentions: { parse: [] },
-        })
-
-        await sendReply(interaction, `✅ Sent! [Jump to message](${sent.url})`, true)
+        catch (err: any) {
+            if (err instanceof DiscordBaseError)
+                await sendReply(interaction, err.message)
+            else log.error(`Failed to handle: ${Send.ERR.UnexpectedSend}: ${err}`)
+        }
     },
 } as Command
