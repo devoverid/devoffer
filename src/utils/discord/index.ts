@@ -17,7 +17,7 @@ export function getAttachments(interaction: ChatInputCommandInteraction, fileCou
     const files: Attachment[] = []
 
     for (let i = 0; i <= fileCount; i++) {
-        const file = interaction.options.getAttachment(`file${i}`)
+        const file = interaction.options.getAttachment(`attachment-${i}`)
         if (file)
             files.push(file)
     }
