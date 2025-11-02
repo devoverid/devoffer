@@ -1,6 +1,6 @@
-import type { Guild, GuildMember, Role, TextChannel } from 'discord.js'
+import type { ChatInputCommandInteraction, Guild, GuildMember, Interaction, Role, TextChannel } from 'discord.js'
 import { ChannelType, PermissionFlagsBits, PermissionsBitField } from 'discord.js'
-import { isMemberHasRole } from '.'
+import { getBotPerms, getMissPerms, isMemberHasRole } from '.'
 import { DiscordBaseError } from './error'
 import { DiscordMessage } from './message'
 
@@ -66,7 +66,10 @@ export class DiscordAssert extends DiscordMessage {
             throw new DiscordAssertError(this.roleRevoked(role.id))
     }
 
-    static assertMissPerms(missedPerms: bigint[]) {
+    static assertMissPerms(interaction: Interaction | ChatInputCommandInteraction, channel: TextChannel) {
+        const channelPerms = getBotPerms(interaction, channel)
+        const missedPerms = getMissPerms(channelPerms, this.BASE_PERMS)
+
         if (missedPerms.length) {
             const missingNames = missedPerms.map(p => this.PERM_LABELS.get(p) ?? 'Unknown Permission')
 

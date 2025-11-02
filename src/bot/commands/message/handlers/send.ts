@@ -1,6 +1,6 @@
 import type { Command } from '@commands/command'
 import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
-import { getAttachments, getBotPerms, getMissPerms, sendReply } from '@utils/discord'
+import { getAttachments, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
@@ -30,15 +30,14 @@ export default {
 
     async execute(_, interaction: ChatInputCommandInteraction) {
         try {
+            if (!interaction.inCachedGuild())
+                throw new SendError(Send.ERR.NotGuild)
+
             const message = interaction.options.getString('message') ?? ''
             const channel = interaction.channel as TextChannel
-            const channelPerms = getBotPerms(interaction, channel)
+            Send.assertMissPerms(interaction, channel)
 
             const attachments = getAttachments(interaction, Send.FILE_COUNT)
-            const requiredPerms = Send.getPermsWithAttachments(attachments)
-            const missedPerms = getMissPerms(channelPerms, requiredPerms)
-
-            Send.assertMissPerms(missedPerms)
 
             await channel.send({
                 content: message.length ? message : undefined,
