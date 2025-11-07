@@ -1,5 +1,5 @@
 import type { Event } from '@events/event'
-import type { GuildMember, Interaction } from 'discord.js'
+import type { GuildMember, Interaction, TextChannel } from 'discord.js'
 import { EVENT_PATH } from '@events/index'
 import { generateCustomId } from '@utils/component'
 import { getBot, getRole, sendReply } from '@utils/discord'
@@ -28,6 +28,9 @@ export default {
                 throw new EmbedRoleGrantButtonError(RoleGrantCreate.ERR.NotGuild)
 
             RoleGrantCreate.assertButton(interaction.customId, EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID)
+
+            const channel = interaction.channel as TextChannel
+            RoleGrantCreate.assertMissPerms(interaction, channel)
 
             const { roleId } = RoleGrantCreate.getButtonId(interaction, interaction.customId)
             const member = interaction.member as GuildMember

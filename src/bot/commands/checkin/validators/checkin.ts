@@ -4,13 +4,17 @@ import type { User } from '@type/user'
 import type { ChatInputCommandInteraction, Guild, GuildMember, Interaction } from 'discord.js'
 import { CHECKIN_CHANNEL, getGrindRoles, GRINDER_ROLE } from '@config/discord'
 import { isDateToday } from '@utils/date'
-import { getChannel, sendReply } from '@utils/discord'
+import { DiscordAssert, getChannel, sendReply } from '@utils/discord'
 import { attachNewGrindRole, getGrindRoleByStreakCount } from '@utils/discord/roles'
 import { userMention } from 'discord.js'
 import { CheckinError } from '../handlers/checkin'
 import { CheckinMessage } from '../messages/checkin'
 
 export class Checkin extends CheckinMessage {
+    static override BASE_PERMS = [
+        ...DiscordAssert.BASE_PERMS,
+    ]
+
     static async assertAllowedChannel(interaction: Interaction) {
         const channelId = CHECKIN_CHANNEL
         const channel = await getChannel(interaction, channelId)

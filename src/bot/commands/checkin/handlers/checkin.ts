@@ -1,6 +1,6 @@
 import type { Command } from '@commands/command'
 import type { User } from '@type/user'
-import type { ChatInputCommandInteraction, Client, GuildMember } from 'discord.js'
+import type { ChatInputCommandInteraction, Client, GuildMember, TextChannel } from 'discord.js'
 import { createCheckin } from '@db/queries/checkin'
 import { increaseUserStreak } from '@db/queries/user'
 import { sendReply } from '@utils/discord'
@@ -31,6 +31,8 @@ export default {
                 throw new CheckinError(Checkin.ERR.NotGuild)
 
             const description = interaction.options.getString('description', true)
+            const channel = interaction.channel as TextChannel
+            Checkin.assertMissPerms(interaction, channel)
 
             const discordUserId: string = interaction.user.id
             const member = interaction.member as GuildMember
