@@ -31,7 +31,6 @@ export default {
 
             const { channelId, roleId, buttonName } = RoleGrantCreate.getModalId(interaction, interaction.customId)
             const channel = await getChannel(interaction, channelId)
-            RoleGrantCreate.assertMissPerms(interaction, channel)
             RoleGrantCreate.assertChannel(channel)
             const role = await getRole(interaction, roleId)
             RoleGrantCreate.assertRole(role)
@@ -58,15 +57,11 @@ export default {
                 .setCustomId(buttonCustomId)
                 .setLabel(buttonName)
                 .setStyle(ButtonStyle.Primary)
-
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button)
-            const sent = await channel.send({ embeds: [embed], components: [row] })
 
-            await sendReply(
-                interaction,
-                `✅ Posted in <#${channel.id}>. Clicking will add ${roleMention(role.id)}. [Jump](${sent.url})!`,
-                false,
-            )
+            await channel.send({ embeds: [embed], components: [row] })
+
+            await sendReply(interaction, `✅ Posted! Clicking will add ${roleMention(role.id)} role~`)
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)

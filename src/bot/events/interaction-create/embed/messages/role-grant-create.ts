@@ -9,5 +9,6 @@ export class RoleGrantCreateMessage extends DiscordAssert {
         InvalidModal: '❌ Invalid custom ID. Not our modal',
         UnexpectedModal: '❌ Something went wrong while handling the embed modal create',
         UnexpectedButton: '❌ Something went wrong while handling the embed button button',
+        UnexpectedRoleGrantCreate: '❌ Something went wrong while creating the embed role-grant message',
     }
 }
