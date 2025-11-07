@@ -31,7 +31,7 @@ export function getAttachments(interaction: ChatInputCommandInteraction, fileCou
 
 export const isMemberHasRole = (member: GuildMember, role: Role): boolean => member.roles.cache.has(role.id)
 
-export function sendReply(interaction: Interaction, content: string, ephemeral: boolean = true) {
+export async function sendReply(interaction: Interaction, content: string, ephemeral: boolean = true) {
     if (!interaction.isRepliable())
         return
 
@@ -40,9 +40,9 @@ export function sendReply(interaction: Interaction, content: string, ephemeral: 
         payloads.flags = MessageFlags.Ephemeral
 
     if (interaction.replied || interaction.deferred)
-        return interaction.followUp(payloads)
+        await interaction.followUp(payloads)
 
-    return interaction.reply(payloads)
+    await interaction.reply(payloads)
 }
 
 export * from './assert'
