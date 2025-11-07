@@ -1,5 +1,5 @@
 import type { Command } from '@commands/command'
-import type { ChatInputCommandInteraction } from 'discord.js'
+import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
 import { sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
@@ -21,6 +21,9 @@ export default {
         try {
             if (!interaction.inCachedGuild())
                 throw new PingError(Ping.ERR.NotGuild)
+
+            const channel = interaction.channel as TextChannel
+            Ping.assertMissPerms(interaction, channel)
 
             await interaction.reply('Pong!')
         }
