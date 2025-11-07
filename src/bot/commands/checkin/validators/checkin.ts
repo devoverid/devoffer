@@ -18,6 +18,7 @@ export class Checkin extends CheckinMessage {
     static async assertAllowedChannel(interaction: Interaction) {
         const channelId = CHECKIN_CHANNEL
         const channel = await getChannel(interaction, channelId)
+        Checkin.assertMissPerms(interaction, channel)
 
         if (interaction.channelId !== channelId) {
             throw new CheckinError(this.ERR.AllowedCheckinChannel(channel))
