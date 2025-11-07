@@ -1,10 +1,15 @@
 import type { Interaction } from 'discord.js'
 import { decodeSnowflakes } from '@utils/component'
+import { DiscordAssert } from '@utils/discord'
 import { EmbedRoleGrantButtonError } from '../handlers/role-grant-create-button'
 import { EmbedRoleGrantModalError } from '../handlers/role-grant-create-modal'
 import { RoleGrantCreateMessage } from '../messages/role-grant-create'
 
 export class RoleGrantCreate extends RoleGrantCreateMessage {
+    static override BASE_PERMS = [
+        ...DiscordAssert.BASE_PERMS,
+    ]
+
     static assertModal(modalId: string, id: string) {
         if (!modalId.startsWith(id))
             throw new EmbedRoleGrantModalError(this.ERR.InvalidModal)

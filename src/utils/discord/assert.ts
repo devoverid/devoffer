@@ -14,6 +14,7 @@ export class DiscordAssert extends DiscordMessage {
     static BASE_PERMS: bigint[] = [
         PermissionsBitField.Flags.SendMessages,
         PermissionsBitField.Flags.ViewChannel,
+        PermissionsBitField.Flags.ReadMessageHistory,
     ]
 
     static PERM_LABELS = new Map<bigint, string>(
