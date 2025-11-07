@@ -31,15 +31,10 @@ export class Checkin extends CheckinMessage {
     }
 
     static assertMemberGrindRoles(member: GuildMember) {
-        const grindRoles = getGrindRoles().map(r => r.id)
-
         const hasGrinderRole = member.roles.cache.has(GRINDER_ROLE)
-        const hasAnyGrindRole = grindRoles.some(roleId => member.roles.cache.has(roleId))
 
         if (!hasGrinderRole)
             throw new CheckinError(this.ERR.RoleMissing(GRINDER_ROLE))
-        if (!hasAnyGrindRole)
-            throw new CheckinError(this.ERR.RoleMissing(grindRoles[0]))
     }
 
     static getNewGrindRole(guild: Guild, user: User) {
