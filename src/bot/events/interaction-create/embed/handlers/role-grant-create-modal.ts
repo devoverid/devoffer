@@ -1,20 +1,22 @@
 import type { Event } from '@events/event'
 import type { Interaction } from 'discord.js'
-import { COMMAND_EMBED_ROLE_GRANT_CREATE_ID } from '@commands/embed/handlers/role-grant-create'
+import { EVENT_PATH } from '@events/index'
 import { parseHexColor } from '@utils/color'
-import { encodeSnowflake, getCustomId } from '@utils/component'
-import { getBot, getChannel, getRole, sendReply } from '@utils/discord'
+import { encodeSnowflake, generateCustomId, getCustomId } from '@utils/component'
+import { getBot, getChannel, getRole, sendAsBot, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, roleMention } from 'discord.js'
 import { RoleGrantCreate } from '../validators/role-grant-create'
-import { EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID } from './role-grant-create-button'
+import { EMBED_ROLE_GRANT_CREATE_BUTTON_ID } from './role-grant-create-button'
 
 export class EmbedRoleGrantModalError extends DiscordBaseError {
     constructor(message: string, options?: { cause?: unknown }) {
         super('EmbedRoleGrantModalError', message, options)
     }
 }
+
+export const EMBED_ROLE_GRANT_CREATE_MODAL_ID = generateCustomId(EVENT_PATH, __filename)
 
 export default {
     name: Events.InteractionCreate,
@@ -23,11 +25,13 @@ export default {
         if (!interaction.isModalSubmit())
             return
 
+        const isValidComponent = RoleGrantCreate.assertComponentId(interaction.customId, EMBED_ROLE_GRANT_CREATE_MODAL_ID)
+        if (!isValidComponent)
+            return
+
         try {
             if (!interaction.inCachedGuild())
                 throw new EmbedRoleGrantModalError(RoleGrantCreate.ERR.NotGuild)
-
-            RoleGrantCreate.assertModal(interaction.customId, COMMAND_EMBED_ROLE_GRANT_CREATE_ID)
 
             const { channelId, roleId, buttonName } = RoleGrantCreate.getModalId(interaction, interaction.customId)
             const channel = await getChannel(interaction, channelId)
@@ -49,7 +53,7 @@ export default {
             if (footer)
                 embed.setFooter({ text: footer })
             const buttonCustomId = getCustomId([
-                EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID,
+                EMBED_ROLE_GRANT_CREATE_BUTTON_ID,
                 encodeSnowflake(interaction.guildId),
                 encodeSnowflake(role.id),
             ])
@@ -59,14 +63,13 @@ export default {
                 .setStyle(ButtonStyle.Primary)
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button)
 
-            await channel.send({ embeds: [embed], components: [row] })
-
+            await sendAsBot(interaction, channel, { embeds: [embed], components: [row] })
             await sendReply(interaction, `✅ Posted! Clicking will add ${roleMention(role.id)} role~`)
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)
                 await sendReply(interaction, err.message)
-            else log.error(`Failed to handle ${COMMAND_EMBED_ROLE_GRANT_CREATE_ID}: ${RoleGrantCreate.ERR.UnexpectedModal}: ${err}`)
+            else log.error(`Failed to handle ${EMBED_ROLE_GRANT_CREATE_MODAL_ID}: ${RoleGrantCreate.ERR.UnexpectedModal}: ${err}`)
         }
     },
 } as Event

@@ -25,7 +25,7 @@ export default {
             const channel = interaction.channel as TextChannel
             Ping.assertMissPerms(interaction, channel)
 
-            await interaction.reply('Pong!')
+            await sendReply(interaction, 'Pong!')
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)

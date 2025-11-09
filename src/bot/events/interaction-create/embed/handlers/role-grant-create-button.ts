@@ -15,7 +15,7 @@ export class EmbedRoleGrantButtonError extends DiscordBaseError {
     }
 }
 
-export const EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID = generateCustomId(EVENT_PATH, __filename)
+export const EMBED_ROLE_GRANT_CREATE_BUTTON_ID = generateCustomId(EVENT_PATH, __filename)
 
 export default {
     name: Events.InteractionCreate,
@@ -24,11 +24,13 @@ export default {
         if (!interaction.isButton())
             return
 
+        const isValidComponent = RoleGrantCreate.assertComponentId(interaction.customId, EMBED_ROLE_GRANT_CREATE_BUTTON_ID)
+        if (!isValidComponent)
+            return
+
         try {
             if (!interaction.inCachedGuild())
                 throw new EmbedRoleGrantButtonError(RoleGrantCreate.ERR.NotGuild)
-
-            RoleGrantCreate.assertButton(interaction.customId, EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID)
 
             const channel = interaction.channel as TextChannel
             RoleGrantCreate.assertMissPerms(interaction, channel)
@@ -50,7 +52,7 @@ export default {
         catch (err: any) {
             if (err instanceof DiscordBaseError)
                 await sendReply(interaction, err.message)
-            else log.error(`Failed to handle ${EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID}: ${RoleGrantCreate.ERR.UnexpectedButton}: ${err}`)
+            else log.error(`Failed to handle ${EMBED_ROLE_GRANT_CREATE_BUTTON_ID}: ${RoleGrantCreate.ERR.UnexpectedButton}: ${err}`)
         }
     },
 } as Event

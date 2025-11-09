@@ -20,6 +20,9 @@ export class DiscordMessage {
         },
         GuildMissing: '❌ The guild could not be found',
         CannotPost: '❌ I can’t post in that channel',
+
+        UnexpectedModal: '❌ Something went wrong while handling the modal component',
+        UnexpectedButton: '❌ Something went wrong while handling the button component',
     }
 
     static readonly MSG = {

@@ -1,9 +1,9 @@
 import type { Command } from '@commands/command'
 import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
-import { COMMAND_PATH } from '@commands/index'
 import { ActionRowBuilder, ModalBuilder, TextInputBuilder } from '@discordjs/builders'
+import { EMBED_ROLE_GRANT_CREATE_MODAL_ID } from '@events/interaction-create/embed/handlers/role-grant-create-modal'
 import { RoleGrantCreate } from '@events/interaction-create/embed/validators/role-grant-create'
-import { encodeSnowflake, generateCustomId, getCustomId } from '@utils/component'
+import { encodeSnowflake, getCustomId } from '@utils/component'
 import { sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
@@ -15,8 +15,6 @@ export class EmbedRoleGrantError extends DiscordBaseError {
         super('EmbedRoleGrantError', message, options)
     }
 }
-
-export const COMMAND_EMBED_ROLE_GRANT_CREATE_ID = generateCustomId(COMMAND_PATH, __filename)
 
 export default {
     data: new SlashCommandBuilder()
@@ -38,7 +36,7 @@ export default {
             const role = interaction.options.getRole('role', true)
 
             const modalCustomId = getCustomId([
-                COMMAND_EMBED_ROLE_GRANT_CREATE_ID,
+                EMBED_ROLE_GRANT_CREATE_MODAL_ID,
                 encodeSnowflake(interaction.guildId!),
                 encodeSnowflake(channel.id),
                 encodeSnowflake(role.id),
@@ -87,7 +85,7 @@ export default {
         catch (err: any) {
             if (err instanceof DiscordBaseError)
                 sendReply(interaction, err.message)
-            else log.error(`Failed to handle ${COMMAND_EMBED_ROLE_GRANT_CREATE_ID}: ${RoleGrantCreate.ERR.UnexpectedRoleGrantCreate}: ${err}`)
+            else log.error(`Failed to handle ${EMBED_ROLE_GRANT_CREATE_MODAL_ID}: ${RoleGrantCreate.ERR.UnexpectedRoleGrantCreate}: ${err}`)
         }
     },
 } as Command
