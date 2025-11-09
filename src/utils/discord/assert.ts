@@ -28,6 +28,8 @@ export class DiscordAssert extends DiscordMessage {
         ]),
     )
 
+    static ATTACHMENT_COUNT = 10
+
     static setTempItem(items: any): string {
         const token = getTempToken()
         tempStore.set(token, items)

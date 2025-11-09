@@ -11,7 +11,7 @@ export class Send extends SendMessage {
         PermissionsBitField.Flags.AttachFiles,
     ]
 
-    static FILE_COUNT: number = 5
+    static override ATTACHMENT_COUNT: number = 5
 
     static getModalId(interaction: Interaction, customId: string) {
         const [prefix, guildId, channelId, tempToken] = decodeSnowflakes(customId)

@@ -15,17 +15,22 @@ export class SendError extends DiscordBaseError {
     }
 }
 
-export default {
-    data: new SlashCommandBuilder()
-        .setName('send-message')
-        .setDescription('Send a message (optionally with attachments) as the bot.')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
-        .addAttachmentOption(opt => opt.setName('attachment-1').setDescription('Attachment 1').setRequired(false))
-        .addAttachmentOption(opt => opt.setName('attachment-2').setDescription('Attachment 2').setRequired(false))
-        .addAttachmentOption(opt => opt.setName('attachment-3').setDescription('Attachment 3').setRequired(false))
-        .addAttachmentOption(opt => opt.setName('attachment-4').setDescription('Attachment 4').setRequired(false))
-        .addAttachmentOption(opt => opt.setName('attachment-5').setDescription('Attachment 5').setRequired(false)),
+const data = new SlashCommandBuilder()
+    .setName('send-message')
+    .setDescription('Send a message (optionally with attachments) as the bot.')
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
 
+for (let i = 1; i <= Send.ATTACHMENT_COUNT; i++) {
+    data.addAttachmentOption(opt =>
+        opt
+            .setName(`attachment-${i}`)
+            .setDescription(`Attachment ${i}`)
+            .setRequired(false),
+    )
+}
+
+export default {
+    data,
     async execute(_, interaction: ChatInputCommandInteraction) {
         try {
             if (!interaction.inCachedGuild())
@@ -34,7 +39,9 @@ export default {
             const channel = interaction.channel as TextChannel
             Send.assertMissPerms(interaction, channel)
 
-            const attachments = getAttachments(interaction, Send.FILE_COUNT)
+            console.warn(data)
+
+            const attachments = getAttachments(interaction, Send.ATTACHMENT_COUNT)
             const tempToken = Send.setTempItem(attachments)
 
             const modalCustomId = getCustomId([

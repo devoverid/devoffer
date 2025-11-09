@@ -7,7 +7,6 @@ export class DiscordMessage {
         NoMember: '❌ Couldn’t resolve your member record',
         NotGuild: '❌ This action must be used in a server',
         ChannelNotFound: '❌ Channel not found',
-        NoManageRoles: '❌ I’m missing the **Manage Roles** permission',
         RoleUneditable: '❌ I can’t manage that role (check role hierarchy/managed role/@everyone)',
         MemberAboveMe: '❌ I can’t change roles for this member (their highest role is at/above mine)',
         RoleNotFound: '❌ The role no longer exists',
