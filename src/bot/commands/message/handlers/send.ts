@@ -24,7 +24,7 @@ for (let i = 1; i <= Send.ATTACHMENT_COUNT; i++) {
     data.addAttachmentOption(opt =>
         opt
             .setName(`attachment-${i}`)
-            .setDescription(`Attachment ${i}`)
+            .setDescription(`Attachment ${i} (optional)`)
             .setRequired(false),
     )
 }
@@ -38,8 +38,6 @@ export default {
 
             const channel = interaction.channel as TextChannel
             Send.assertMissPerms(interaction, channel)
-
-            console.warn(data)
 
             const attachments = getAttachments(interaction, Send.ATTACHMENT_COUNT)
             const tempToken = Send.setTempItem(attachments)
