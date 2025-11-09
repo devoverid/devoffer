@@ -63,5 +63,28 @@ export async function sendReply(
     }
 }
 
+export async function sendAsBot(
+    interaction: Interaction,
+    channel: TextChannel,
+    payloads: InteractionReplyOptions,
+    isDeferred: boolean = false,
+    isNextMessageEphemeral: boolean = false,
+) {
+    if (!interaction.isRepliable())
+        return
+
+    const { allowedMentions, components, content, embeds, files, poll, tts } = payloads
+    const opts: MessageCreateOptions = { allowedMentions, components, content, embeds, files, poll, tts }
+    const deferOpts: InteractionDeferReplyOptions = {}
+
+    if (isNextMessageEphemeral)
+        deferOpts.flags = MessageFlags.Ephemeral
+
+    if (isDeferred)
+        await interaction.deferReply(deferOpts)
+
+    await channel.send(opts)
+}
+
 export * from './assert'
 export * from './message'
