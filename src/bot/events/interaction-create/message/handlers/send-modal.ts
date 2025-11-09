@@ -2,7 +2,7 @@ import type { Event } from '@events/event'
 import type { Attachment, Interaction } from 'discord.js'
 import { EVENT_PATH } from '@events/index'
 import { generateCustomId, tempStore } from '@utils/component'
-import { getBot, getChannel, sendAsBot, sendReply } from '@utils/discord'
+import { getChannel, sendAsBot, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { Events } from 'discord.js'
@@ -34,8 +34,6 @@ export default {
             const { channelId, tempToken } = Send.getModalId(interaction, interaction.customId)
             const channel = await getChannel(interaction, channelId)
             Send.assertChannel(channel)
-            const bot = await getBot(interaction)
-            Send.assertBotCanPost(channel, bot)
             const attachments = tempStore.get(tempToken) as Attachment[]
             Send.delTempItem(attachments, tempToken)
 

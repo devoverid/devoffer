@@ -1,6 +1,6 @@
 import type { ChatInputCommandInteraction, Guild, GuildMember, Interaction, Role, TextChannel } from 'discord.js'
 import { getTempToken, tempStore } from '@utils/component'
-import { ChannelType, PermissionFlagsBits, PermissionsBitField } from 'discord.js'
+import { ChannelType, PermissionsBitField } from 'discord.js'
 import { getBotPerms, getMissPerms, isMemberHasRole } from '.'
 import { DiscordBaseError } from './error'
 import { DiscordMessage } from './message'
@@ -46,8 +46,8 @@ export class DiscordAssert extends DiscordMessage {
     }
 
     static assertRoleManageable(guild: Guild, bot: GuildMember, role: Role) {
-        if (!bot.permissions.has(PermissionFlagsBits.ManageRoles))
-            throw new DiscordAssertError(this.ERR.NoManageRoles)
+        if (!role.editable)
+            throw new DiscordAssertError(this.ERR.RoleUneditable)
         if (role.managed || role.id === guild.roles.everyone.id)
             throw new DiscordAssertError(this.ERR.RoleUneditable)
         if (bot.roles.highest.comparePositionTo(role) <= 0)
@@ -59,21 +59,9 @@ export class DiscordAssert extends DiscordMessage {
             throw new DiscordAssertError(this.ERR.ChannelNotFound)
     }
 
-    static assertBotCanPost(channel: TextChannel, me: GuildMember) {
-        const can = channel.permissionsFor(me)?.has([
-            PermissionFlagsBits.ViewChannel,
-            PermissionFlagsBits.SendMessages,
-            PermissionFlagsBits.EmbedLinks,
-        ])
-        if (!can)
-            throw new DiscordAssertError(this.ERR.CannotPost)
-    }
-
     static assertRole(role: Role) {
         if (!role)
             throw new DiscordAssertError(this.ERR.RoleNotFound)
-        if (!role.editable)
-            throw new DiscordAssertError(this.ERR.RoleUneditable)
     }
 
     static assertMemberHasRole(member: GuildMember, role: Role) {
