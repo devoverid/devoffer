@@ -23,11 +23,13 @@ export default {
         if (!interaction.isModalSubmit())
             return
 
+        const isValidComponent = RoleGrantCreate.assertComponentId(interaction.customId, EMBED_ROLE_GRANT_CREATE_MODAL_ID)
+        if (!isValidComponent)
+            return
+
         try {
             if (!interaction.inCachedGuild())
                 throw new EmbedRoleGrantModalError(RoleGrantCreate.ERR.NotGuild)
-
-            RoleGrantCreate.assertModal(interaction.customId, COMMAND_EMBED_ROLE_GRANT_CREATE_ID)
 
             const { channelId, roleId, buttonName } = RoleGrantCreate.getModalId(interaction, interaction.customId)
             const channel = await getChannel(interaction, channelId)

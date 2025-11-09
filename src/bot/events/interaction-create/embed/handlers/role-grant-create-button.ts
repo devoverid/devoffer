@@ -24,11 +24,13 @@ export default {
         if (!interaction.isButton())
             return
 
+        const isValidComponent = RoleGrantCreate.assertComponentId(interaction.customId, EMBED_ROLE_GRANT_CREATE_BUTTON_ID)
+        if (!isValidComponent)
+            return
+
         try {
             if (!interaction.inCachedGuild())
                 throw new EmbedRoleGrantButtonError(RoleGrantCreate.ERR.NotGuild)
-
-            RoleGrantCreate.assertButton(interaction.customId, EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID)
 
             const channel = interaction.channel as TextChannel
             RoleGrantCreate.assertMissPerms(interaction, channel)

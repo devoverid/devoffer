@@ -78,4 +78,11 @@ export class DiscordAssert extends DiscordMessage {
             throw new DiscordAssertError(this.ERR.RoleMissing(missingNames))
         }
     }
+
+    static assertComponentId(modalId: string, id: string): boolean {
+        if (!modalId.startsWith(id))
+            return false
+
+        return true
+    }
 }

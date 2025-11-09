@@ -10,16 +10,6 @@ export class RoleGrantCreate extends RoleGrantCreateMessage {
         ...DiscordAssert.BASE_PERMS,
     ]
 
-    static assertModal(modalId: string, id: string) {
-        if (!modalId.startsWith(id))
-            throw new EmbedRoleGrantModalError(this.ERR.InvalidModal)
-    }
-
-    static assertButton(buttonId: string, id: string) {
-        if (!buttonId.startsWith(id))
-            throw new EmbedRoleGrantButtonError(this.ERR.InvalidButton)
-    }
-
     static getModalId(interaction: Interaction, customId: string) {
         const [prefix, guildId, channelId, roleId, buttonNameEnc] = decodeSnowflakes(customId)
         const buttonName = decodeURIComponent(buttonNameEnc)
