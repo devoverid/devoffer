@@ -1,9 +1,9 @@
 import type { Event } from '@events/event'
 import type { Interaction } from 'discord.js'
-import { COMMAND_EMBED_ROLE_GRANT_CREATE_ID } from '@commands/embed/handlers/role-grant-create'
+import { EVENT_PATH } from '@events/index'
 import { parseHexColor } from '@utils/color'
-import { encodeSnowflake, getCustomId } from '@utils/component'
-import { getBot, getChannel, getRole, sendReply } from '@utils/discord'
+import { encodeSnowflake, generateCustomId, getCustomId } from '@utils/component'
+import { getBot, getChannel, getRole, sendAsBot, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, roleMention } from 'discord.js'
@@ -63,8 +63,7 @@ export default {
                 .setStyle(ButtonStyle.Primary)
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button)
 
-            await channel.send({ embeds: [embed], components: [row] })
-
+            await sendAsBot(interaction, channel, { embeds: [embed], components: [row] })
             await sendReply(interaction, `✅ Posted! Clicking will add ${roleMention(role.id)} role~`)
         }
         catch (err: any) {
