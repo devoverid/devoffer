@@ -50,3 +50,7 @@ export function decodeSnowflake(data: string): string {
 
     return result.toString()
 }
+
+export const getTempToken = () => Math.random().toString(36).slice(2, 8)
+
+export const tempStore = new Map<string, any>()

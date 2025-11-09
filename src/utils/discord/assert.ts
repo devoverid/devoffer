@@ -1,4 +1,5 @@
 import type { ChatInputCommandInteraction, Guild, GuildMember, Interaction, Role, TextChannel } from 'discord.js'
+import { getTempToken, tempStore } from '@utils/component'
 import { ChannelType, PermissionFlagsBits, PermissionsBitField } from 'discord.js'
 import { getBotPerms, getMissPerms, isMemberHasRole } from '.'
 import { DiscordBaseError } from './error'
@@ -26,6 +27,18 @@ export class DiscordAssert extends DiscordMessage {
                 .replace(/\b\w/g, c => c.toUpperCase()),
         ]),
     )
+
+    static setTempItem(items: any): string {
+        const token = getTempToken()
+        tempStore.set(token, items)
+
+        return token
+    }
+
+    static delTempItem(items: any, token: string) {
+        if (items)
+            tempStore.delete(token)
+    }
 
     static assertMember(member: GuildMember) {
         if (!member || !('roles' in member))
