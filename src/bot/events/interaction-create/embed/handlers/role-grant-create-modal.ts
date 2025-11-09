@@ -70,7 +70,7 @@ export default {
         catch (err: any) {
             if (err instanceof DiscordBaseError)
                 await sendReply(interaction, err.message)
-            else log.error(`Failed to handle ${COMMAND_EMBED_ROLE_GRANT_CREATE_ID}: ${RoleGrantCreate.ERR.UnexpectedModal}: ${err}`)
+            else log.error(`Failed to handle ${EMBED_ROLE_GRANT_CREATE_MODAL_ID}: ${RoleGrantCreate.ERR.UnexpectedModal}: ${err}`)
         }
     },
 } as Event
