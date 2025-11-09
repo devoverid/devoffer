@@ -1,6 +1,6 @@
 import type { ChatInputCommandInteraction, Guild, GuildMember, Interaction, Role, TextChannel } from 'discord.js'
 import { getTempToken, tempStore } from '@utils/component'
-import { ChannelType, PermissionFlagsBits, PermissionsBitField } from 'discord.js'
+import { ChannelType, PermissionsBitField } from 'discord.js'
 import { getBotPerms, getMissPerms, isMemberHasRole } from '.'
 import { DiscordBaseError } from './error'
 import { DiscordMessage } from './message'
@@ -57,16 +57,6 @@ export class DiscordAssert extends DiscordMessage {
     static assertChannel(channel: TextChannel) {
         if (!channel || channel.type !== ChannelType.GuildText)
             throw new DiscordAssertError(this.ERR.ChannelNotFound)
-    }
-
-    static assertBotCanPost(channel: TextChannel, me: GuildMember) {
-        const can = channel.permissionsFor(me)?.has([
-            PermissionFlagsBits.ViewChannel,
-            PermissionFlagsBits.SendMessages,
-            PermissionFlagsBits.EmbedLinks,
-        ])
-        if (!can)
-            throw new DiscordAssertError(this.ERR.CannotPost)
     }
 
     static assertRole(role: Role) {

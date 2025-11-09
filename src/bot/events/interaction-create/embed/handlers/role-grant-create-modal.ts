@@ -3,7 +3,7 @@ import type { Interaction } from 'discord.js'
 import { EVENT_PATH } from '@events/index'
 import { parseHexColor } from '@utils/color'
 import { encodeSnowflake, generateCustomId, getCustomId } from '@utils/component'
-import { getBot, getChannel, getRole, sendAsBot, sendReply } from '@utils/discord'
+import { getChannel, getRole, sendAsBot, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, roleMention } from 'discord.js'
@@ -38,9 +38,6 @@ export default {
             RoleGrantCreate.assertChannel(channel)
             const role = await getRole(interaction, roleId)
             RoleGrantCreate.assertRole(role)
-            const bot = await getBot(interaction)
-            RoleGrantCreate.assertRoleManageable(interaction.guild, bot, role)
-            RoleGrantCreate.assertBotCanPost(channel, bot)
 
             const title = interaction.fields.getTextInputValue('title')
             const description = interaction.fields.getTextInputValue('description')

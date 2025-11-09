@@ -3,7 +3,7 @@ import type { GuildMember, Interaction, TextChannel } from 'discord.js'
 import { CHECKIN_CHANNEL } from '@config/discord'
 import { EVENT_PATH } from '@events/index'
 import { generateCustomId } from '@utils/component'
-import { getBot, getRole, sendReply } from '@utils/discord'
+import { getRole, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { Events } from 'discord.js'
@@ -38,11 +38,9 @@ export default {
             const { roleId } = RoleGrantCreate.getButtonId(interaction, interaction.customId)
             const member = interaction.member as GuildMember
             const role = await getRole(interaction, roleId)
-            const bot = await getBot(interaction)
 
-            RoleGrantCreate.assertMember(member)
             RoleGrantCreate.assertRole(role)
-            RoleGrantCreate.assertRoleManageable(interaction.guild, bot, role)
+            RoleGrantCreate.assertMember(member)
             RoleGrantCreate.assertMemberHasRole(member, role)
 
             await member.roles.add(role)
