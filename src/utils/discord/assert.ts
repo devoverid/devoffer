@@ -15,6 +15,7 @@ export class DiscordAssert extends DiscordMessage {
         PermissionsBitField.Flags.SendMessages,
         PermissionsBitField.Flags.ViewChannel,
         PermissionsBitField.Flags.ReadMessageHistory,
+        PermissionsBitField.Flags.EmbedLinks,
     ]
 
     static PERM_LABELS = new Map<bigint, string>(
