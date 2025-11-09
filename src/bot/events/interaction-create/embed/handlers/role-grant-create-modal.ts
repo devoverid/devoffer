@@ -8,13 +8,15 @@ import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, roleMention } from 'discord.js'
 import { RoleGrantCreate } from '../validators/role-grant-create'
-import { EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID } from './role-grant-create-button'
+import { EMBED_ROLE_GRANT_CREATE_BUTTON_ID } from './role-grant-create-button'
 
 export class EmbedRoleGrantModalError extends DiscordBaseError {
     constructor(message: string, options?: { cause?: unknown }) {
         super('EmbedRoleGrantModalError', message, options)
     }
 }
+
+export const EMBED_ROLE_GRANT_CREATE_MODAL_ID = generateCustomId(EVENT_PATH, __filename)
 
 export default {
     name: Events.InteractionCreate,
@@ -51,7 +53,7 @@ export default {
             if (footer)
                 embed.setFooter({ text: footer })
             const buttonCustomId = getCustomId([
-                EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID,
+                EMBED_ROLE_GRANT_CREATE_BUTTON_ID,
                 encodeSnowflake(interaction.guildId),
                 encodeSnowflake(role.id),
             ])

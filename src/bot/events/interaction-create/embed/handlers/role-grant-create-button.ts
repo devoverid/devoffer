@@ -15,7 +15,7 @@ export class EmbedRoleGrantButtonError extends DiscordBaseError {
     }
 }
 
-export const EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID = generateCustomId(EVENT_PATH, __filename)
+export const EMBED_ROLE_GRANT_CREATE_BUTTON_ID = generateCustomId(EVENT_PATH, __filename)
 
 export default {
     name: Events.InteractionCreate,
@@ -52,7 +52,7 @@ export default {
         catch (err: any) {
             if (err instanceof DiscordBaseError)
                 await sendReply(interaction, err.message)
-            else log.error(`Failed to handle ${EVENT_EMBED_ROLE_GRANT_CREATE_BUTTON_ID}: ${RoleGrantCreate.ERR.UnexpectedButton}: ${err}`)
+            else log.error(`Failed to handle ${EMBED_ROLE_GRANT_CREATE_BUTTON_ID}: ${RoleGrantCreate.ERR.UnexpectedButton}: ${err}`)
         }
     },
 } as Event
