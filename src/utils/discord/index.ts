@@ -65,7 +65,7 @@ export async function sendReply(
 
 export async function sendAsBot(
     interaction: Interaction,
-    channel: TextChannel,
+    channel: TextChannel | string,
     payloads: InteractionReplyOptions,
     isDeferred: boolean = false,
     isNextMessageEphemeral: boolean = false,
@@ -82,6 +82,9 @@ export async function sendAsBot(
 
     if (isDeferred)
         await interaction.deferReply(deferOpts)
+
+    if (typeof channel === 'string')
+        channel = await getChannel(interaction, channel)
 
     await channel.send(opts)
 }
