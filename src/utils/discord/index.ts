@@ -1,18 +1,18 @@
-import type { Attachment, ChatInputCommandInteraction, GuildMember, Interaction, InteractionDeferReplyOptions, InteractionReplyOptions, MessageCreateOptions, PermissionsBitField, Role, TextChannel } from 'discord.js'
+import type { Attachment, ChatInputCommandInteraction, Guild, GuildMember, Interaction, InteractionDeferReplyOptions, InteractionReplyOptions, MessageCreateOptions, PermissionsBitField, Role, TextChannel } from 'discord.js'
 import { MessageFlags } from 'discord.js'
 
-export async function getChannel(interaction: Interaction, id: string): Promise<TextChannel> {
-    return interaction.guild!.channels.cache.get(id) as TextChannel ?? await interaction.guild!.channels.fetch(id).then(channel => channel as TextChannel)
+export async function getChannel(guild: Guild, id: string): Promise<TextChannel> {
+    return guild!.channels.cache.get(id) as TextChannel ?? await guild!.channels.fetch(id).then(channel => channel as TextChannel)
 }
 
-export async function getRole(interaction: Interaction, id: string): Promise<Role> {
-    return interaction.guild!.roles.cache.get(id) as Role ?? await interaction.guild!.roles.fetch(id)
+export async function getRole(guild: Guild, id: string): Promise<Role> {
+    return guild!.roles.cache.get(id) as Role ?? await guild!.roles.fetch(id)
 }
 
 export const getMissPerms = (channelPerms: Readonly<PermissionsBitField>, requiredPerms: bigint[]): bigint[] => requiredPerms.filter(p => !channelPerms.has(p))
 
-export async function getBot(interaction: Interaction): Promise<GuildMember> {
-    return interaction.guild!.members.me as GuildMember ?? await interaction.guild!.members.fetchMe()
+export async function getBot(guild: Guild): Promise<GuildMember> {
+    return guild!.members.me as GuildMember ?? await guild!.members.fetchMe()
 }
 
 export const getBotPerms = (interaction: Interaction, channel: TextChannel): Readonly<PermissionsBitField> => channel.permissionsFor(interaction.client.user!)!

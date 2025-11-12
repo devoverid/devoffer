@@ -34,9 +34,9 @@ export default {
                 throw new EmbedRoleGrantModalError(RoleGrantCreate.ERR.NotGuild)
 
             const { channelId, roleId, buttonName } = RoleGrantCreate.getModalId(interaction, interaction.customId)
-            const channel = await getChannel(interaction, channelId)
+            const channel = await getChannel(interaction.guild, channelId)
             RoleGrantCreate.assertChannel(channel)
-            const role = await getRole(interaction, roleId)
+            const role = await getRole(interaction.guild, roleId)
             RoleGrantCreate.assertRole(role)
 
             const title = interaction.fields.getTextInputValue('title')

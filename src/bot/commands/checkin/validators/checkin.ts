@@ -16,11 +16,10 @@ export class Checkin extends CheckinMessage {
     ]
 
     static async assertAllowedChannel(interaction: Interaction) {
-        const channelId = CHECKIN_CHANNEL
-        const channel = await getChannel(interaction, channelId)
+        const channel = await getChannel(interaction.guild!, CHECKIN_CHANNEL)
         this.assertMissPerms(interaction, channel)
 
-        if (interaction.channelId !== channelId) {
+        if (interaction.channelId !== CHECKIN_CHANNEL) {
             throw new CheckinError(this.ERR.AllowedCheckinChannel(channel))
         }
     }
@@ -43,6 +42,8 @@ export class Checkin extends CheckinMessage {
 
     static async setMemberNewGrindRole(interaction: ChatInputCommandInteraction, member: GuildMember, newRole?: GrindRole) {
         if (newRole) {
+            const channel = await getChannel(interaction.guild!, AURA_FARMING_CHANNEL)
+
             await attachNewGrindRole(member, newRole)
             await sendAsBot(interaction, AURA_FARMING_CHANNEL, { content: `
                 **Congratulations, ${userMention(member.id)}** ${Checkin.MSG.ReachNewGrindRole(newRole)}
