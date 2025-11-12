@@ -1,7 +1,7 @@
 import type { ChatInputCommandInteraction, Guild, GuildMember, Interaction, Role, TextChannel } from 'discord.js'
 import { getTempToken, tempStore } from '@utils/component'
 import { ChannelType, PermissionsBitField } from 'discord.js'
-import { getBotPerms, getMissPerms, isMemberHasRole } from '.'
+import { getBotPerms, getMissPerms } from '.'
 import { DiscordBaseError } from './error'
 import { DiscordMessage } from './message'
 
@@ -66,9 +66,9 @@ export class DiscordAssert extends DiscordMessage {
             throw new DiscordAssertError(this.ERR.RoleNotFound)
     }
 
-    static assertMemberHasRole(member: GuildMember, role: Role) {
-        if (isMemberHasRole(member, role))
-            throw new DiscordAssertError(this.roleRevoked(role.id))
+    static assertMemberHasRole(member: GuildMember, roleId: string) {
+        if (this.isMemberHasRole(member, roleId))
+            throw new DiscordAssertError(this.roleRevoked(roleId))
     }
 
     static assertMissPerms(interaction: Interaction | ChatInputCommandInteraction, channel: TextChannel) {
@@ -87,5 +87,9 @@ export class DiscordAssert extends DiscordMessage {
             return false
 
         return true
+    }
+
+    static isMemberHasRole(member: GuildMember, roleId: string): boolean {
+        return member.roles.cache.has(roleId)
     }
 }

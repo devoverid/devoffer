@@ -31,7 +31,7 @@ export class Checkin extends CheckinMessage {
     }
 
     static assertMemberGrindRoles(member: GuildMember) {
-        const hasGrinderRole = member.roles.cache.has(GRINDER_ROLE)
+        const hasGrinderRole = this.isMemberHasRole(member, GRINDER_ROLE)
 
         if (!hasGrinderRole)
             throw new CheckinError(this.ERR.RoleMissing(GRINDER_ROLE))

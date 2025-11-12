@@ -29,8 +29,6 @@ export function getAttachments(interaction: ChatInputCommandInteraction, fileCou
     return files
 }
 
-export const isMemberHasRole = (member: GuildMember, role: Role): boolean => member.roles.cache.has(role.id)
-
 export async function sendReply(
     interaction: Interaction,
     content: string,
