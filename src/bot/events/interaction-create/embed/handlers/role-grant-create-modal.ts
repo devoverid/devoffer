@@ -1,12 +1,11 @@
 import type { Event } from '@events/event'
 import type { Interaction } from 'discord.js'
 import { EVENT_PATH } from '@events/index'
-import { parseHexColor } from '@utils/color'
-import { encodeSnowflake, generateCustomId, getCustomId } from '@utils/component'
+import { createEmbed, encodeSnowflake, generateCustomId, getCustomId } from '@utils/component'
 import { getChannel, getRole, sendAsBot, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Events, roleMention } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, roleMention } from 'discord.js'
 import { RoleGrantCreate } from '../validators/role-grant-create'
 import { EMBED_ROLE_GRANT_CREATE_BUTTON_ID } from './role-grant-create-button'
 
@@ -41,14 +40,16 @@ export default {
 
             const title = interaction.fields.getTextInputValue('title')
             const description = interaction.fields.getTextInputValue('description')
-            const color = parseHexColor(interaction.fields.getTextInputValue('color'))
+            const color = interaction.fields.getTextInputValue('color')
             const footer = interaction.fields.getTextInputValue('footer')
 
-            const embed = new EmbedBuilder().setTitle(title).setDescription(description).setTimestamp(new Date())
-            if (color)
-                embed.setColor(color)
-            if (footer)
-                embed.setFooter({ text: footer })
+            const embed = createEmbed(
+                title,
+                description,
+                color,
+                footer ? { text: footer } : null,
+            )
+
             const buttonCustomId = getCustomId([
                 EMBED_ROLE_GRANT_CREATE_BUTTON_ID,
                 encodeSnowflake(interaction.guildId),

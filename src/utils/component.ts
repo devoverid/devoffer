@@ -1,5 +1,8 @@
 import type { DiscordCustomIdMetadata } from '@type/discord-component'
+import type { EmbedFooterOptions } from 'discord.js'
 import { ALPHABETS, CUSTOM_ID_SEPARATOR, SNOWFLAKE_MARKER } from '@constants'
+import { EmbedBuilder } from 'discord.js'
+import { parseHexColor } from './color'
 import { getModuleName } from './io'
 
 const isOnlyDigitSnowflake = (id: string): boolean => /^\d+$/.test(id)
@@ -54,3 +57,28 @@ export function decodeSnowflake(data: string): string {
 export const getTempToken = () => Math.random().toString(36).slice(2, 8)
 
 export const tempStore = new Map<string, any>()
+
+export function createEmbed(
+    title?: string | null | undefined,
+    desc?: string | null | undefined,
+    color?: string | null,
+    footer?: EmbedFooterOptions | null | undefined,
+    date: boolean = true,
+): EmbedBuilder {
+    const embed = new EmbedBuilder()
+
+    const parsedColor = parseHexColor(color)
+
+    if (title)
+        embed.setTitle(title)
+    if (desc)
+        embed.setDescription(desc)
+    if (parsedColor)
+        embed.setColor(parsedColor)
+    if (date)
+        embed.setTimestamp(new Date())
+    if (footer)
+        embed.setFooter(footer)
+
+    return embed
+}
