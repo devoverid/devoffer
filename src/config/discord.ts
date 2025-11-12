@@ -1,8 +1,8 @@
 import type { RoleManager } from 'discord.js'
 
 export const CHECKIN_CHANNEL = '1405165987288059944'
-
 export const AURA_FARMING_CHANNEL = '1405162471496351794'
+export const GRIND_ASHES_CHANNEL = '1405165926600409148'
 
 export interface GrindRole {
     name?: string
