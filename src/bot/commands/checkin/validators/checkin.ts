@@ -45,7 +45,7 @@ export class Checkin extends CheckinMessage {
             const channel = await getChannel(interaction.guild!, AURA_FARMING_CHANNEL)
 
             await attachNewGrindRole(member, newRole)
-            await sendAsBot(interaction, AURA_FARMING_CHANNEL, { content: `
+            await sendAsBot(interaction, channel, { content: `
                 **Congratulations, ${userMention(member.id)}** ${Checkin.MSG.ReachNewGrindRole(newRole)}
             ` })
         }
