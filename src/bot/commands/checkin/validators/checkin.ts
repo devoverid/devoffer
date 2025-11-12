@@ -2,9 +2,9 @@ import type { GrindRole } from '@config/discord'
 import type { PrismaClient } from '@generatedDB/client'
 import type { User } from '@type/user'
 import type { ChatInputCommandInteraction, Guild, GuildMember, Interaction } from 'discord.js'
-import { CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
+import { AURA_FARMING_CHANNEL, CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
 import { isDateToday } from '@utils/date'
-import { DiscordAssert, getChannel, sendReply } from '@utils/discord'
+import { DiscordAssert, getChannel, sendAsBot } from '@utils/discord'
 import { attachNewGrindRole, getGrindRoleByStreakCount } from '@utils/discord/roles'
 import { userMention } from 'discord.js'
 import { CheckinError } from '../handlers/checkin'
@@ -16,11 +16,10 @@ export class Checkin extends CheckinMessage {
     ]
 
     static async assertAllowedChannel(interaction: Interaction) {
-        const channelId = CHECKIN_CHANNEL
-        const channel = await getChannel(interaction, channelId)
+        const channel = await getChannel(interaction.guild!, CHECKIN_CHANNEL)
         this.assertMissPerms(interaction, channel)
 
-        if (interaction.channelId !== channelId) {
+        if (interaction.channelId !== CHECKIN_CHANNEL) {
             throw new CheckinError(this.ERR.AllowedCheckinChannel(channel))
         }
     }
@@ -31,7 +30,7 @@ export class Checkin extends CheckinMessage {
     }
 
     static assertMemberGrindRoles(member: GuildMember) {
-        const hasGrinderRole = member.roles.cache.has(GRINDER_ROLE)
+        const hasGrinderRole = this.isMemberHasRole(member, GRINDER_ROLE)
 
         if (!hasGrinderRole)
             throw new CheckinError(this.ERR.RoleMissing(GRINDER_ROLE))
@@ -43,12 +42,12 @@ export class Checkin extends CheckinMessage {
 
     static async setMemberNewGrindRole(interaction: ChatInputCommandInteraction, member: GuildMember, newRole?: GrindRole) {
         if (newRole) {
+            const channel = await getChannel(interaction.guild!, AURA_FARMING_CHANNEL)
+
             await attachNewGrindRole(member, newRole)
-            await sendReply(
-                interaction,
-                `**Congratulations, ${userMention(member.id)}** ${Checkin.MSG.ReachNewGrindRole(newRole)}`,
-                false,
-            )
+            await sendAsBot(interaction, channel, { content: `
+                **Congratulations, ${userMention(member.id)}** ${Checkin.MSG.ReachNewGrindRole(newRole)}
+            ` })
         }
     }
 
