@@ -37,11 +37,11 @@ export default {
 
             const { roleId } = RoleGrantCreate.getButtonId(interaction, interaction.customId)
             const member = interaction.member as GuildMember
-            const role = await getRole(interaction, roleId)
+            const role = await getRole(interaction.guild, roleId)
 
             RoleGrantCreate.assertRole(role)
             RoleGrantCreate.assertMember(member)
-            RoleGrantCreate.assertMemberHasRole(member, role)
+            RoleGrantCreate.assertMemberHasRole(member, role.id)
 
             await member.roles.add(role)
             await sendReply(interaction, `
