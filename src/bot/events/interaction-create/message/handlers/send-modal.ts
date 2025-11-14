@@ -38,6 +38,7 @@ export default {
             Send.delTempItem(attachments, tempToken)
 
             const message = interaction.fields.getTextInputValue('message')
+            Send.assertNotEmpty(attachments, message)
 
             await sendAsBot(interaction, channel, {
                 content: message.length ? message : undefined,

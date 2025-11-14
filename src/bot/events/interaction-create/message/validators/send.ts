@@ -1,4 +1,4 @@
-import type { Interaction } from 'discord.js'
+import type { Attachment, Interaction } from 'discord.js'
 import { decodeSnowflakes } from '@utils/component'
 import { DiscordAssert } from '@utils/discord'
 import { PermissionsBitField } from 'discord.js'
@@ -22,5 +22,11 @@ export class Send extends SendMessage {
             throw new SendModalError(this.ERR.NotGuild)
 
         return { prefix, guildId, channelId, tempToken }
+    }
+
+    static assertNotEmpty(attachments: Attachment[] | undefined, message: string | undefined) {
+        if ((!attachments || attachments.length === 0) && (!message || message.trim().length === 0)) {
+            throw new SendModalError(this.ERR.EmptyMessage)
+        }
     }
 }

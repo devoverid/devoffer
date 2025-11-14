@@ -7,9 +7,9 @@ import { roleMention, userMention } from 'discord.js'
 export class CheckinMessage extends DiscordAssert {
     static override readonly ERR = {
         ...DiscordAssert.ERR,
-        UnexpectedCheckin: '❌ Something went wrong during check-in',
         AllowedCheckinChannel: (channel: TextChannel) => `❌ You can't checkin on this channel. You need to go to ${channel}`,
         AlreadyCheckinToday: '❌ You have already checked in today. Please come back tomorrow',
+        UnexpectedCheckin: '❌ Something went wrong during check-in',
     }
 
     static override readonly MSG = {
