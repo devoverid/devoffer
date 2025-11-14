@@ -30,6 +30,8 @@ export default {
             if (!interaction.inCachedGuild())
                 throw new CheckinError(Checkin.ERR.NotGuild)
 
+            await Checkin.assertAllowedChannel(interaction)
+
             const channel = interaction.channel as TextChannel
             Checkin.assertMissPerms(interaction, channel)
 

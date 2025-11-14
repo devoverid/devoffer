@@ -72,6 +72,9 @@ export class Checkin extends CheckinMessage {
                 orderBy: {
                     created_at: 'desc' as const,
                 },
+                select: {
+                    created_at: true,
+                },
             },
         }
 

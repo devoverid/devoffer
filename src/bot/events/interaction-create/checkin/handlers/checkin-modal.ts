@@ -43,13 +43,12 @@ export default {
             const member = interaction.member as GuildMember
             const user = await Checkin.getOrCreateUser(client.prisma, discordUserId)
 
-            await Checkin.assertAllowedChannel(interaction)
             Checkin.assertMember(member)
             Checkin.assertMemberGrindRoles(member)
             Checkin.assertCheckinToday(user)
 
             const [_, updatedUser] = await client.prisma.$transaction([
-                createCheckin(user.id, todo),
+                createCheckin(user.id, todo, attachments),
                 increaseUserStreak(user.id),
             ])
 

@@ -22,11 +22,30 @@ CREATE TABLE "public"."Checkin" (
     CONSTRAINT "Checkin_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "public"."Attachment" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "size" INTEGER NOT NULL,
+    "checkin_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Attachment_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_discord_id_key" ON "public"."User"("discord_id");
 
 -- CreateIndex
 CREATE INDEX "Checkin_user_id_created_at_idx" ON "public"."Checkin"("user_id", "created_at" DESC);
 
+-- CreateIndex
+CREATE INDEX "Attachment_checkin_id_created_at_idx" ON "public"."Attachment"("checkin_id", "created_at" DESC);
+
 -- AddForeignKey
 ALTER TABLE "public"."Checkin" ADD CONSTRAINT "Checkin_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."Attachment" ADD CONSTRAINT "Attachment_checkin_id_fkey" FOREIGN KEY ("checkin_id") REFERENCES "public"."Checkin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
