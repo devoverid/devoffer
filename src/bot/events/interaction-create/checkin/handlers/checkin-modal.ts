@@ -50,7 +50,7 @@ export default {
             const [_, updatedUser] = await client.prisma.$transaction([
                 createCheckin(user.id, todo, attachments),
                 increaseUserStreak(user.id),
-            ])
+            ]) as [unknown, User]
 
             const newGrindRole = Checkin.getNewGrindRole(interaction.guild, updatedUser as User)
             await Checkin.setMemberNewGrindRole(interaction, member, newGrindRole)
@@ -61,6 +61,7 @@ export default {
                     member,
                     updatedUser.streak_count,
                     todo,
+                    updatedUser.checkins[1],
                 ),
                 false,
                 { files: attachments.length ? attachments : undefined },

@@ -1,3 +1,4 @@
+import type { Checkin } from '@type/checkin'
 import type { GuildMember, TextChannel } from 'discord.js'
 import { FLAMEWARDEN_ROLE } from '@config/discord'
 import { getNow } from '@utils/date'
@@ -14,7 +15,7 @@ export class CheckinMessage extends DiscordAssert {
 
     static override readonly MSG = {
         ...DiscordAssert.MSG,
-        CheckinSuccess: (member: GuildMember, streakCount: number, todo: string) => `
+        CheckinSuccess: (member: GuildMember, streakCount: number, todo: string, lastCheckin?: Checkin) => `
 # ✅ New Check-In Detected!
 *お願いいたします、${roleMention(FLAMEWARDEN_ROLE)}さん★*
 *Notes*:
@@ -25,7 +26,7 @@ export class CheckinMessage extends DiscordAssert {
 👤 **Grinder:** ${userMention(member.id)}
 🕓 **Date:** ${getNow()}
 🔥 **Current Streak:** ${streakCount} day(s)
-🗓 **Last Check-In:** ?
+🗓 **Last Check-In:** ${lastCheckin ? lastCheckin.created_at.toLocaleString('id-ID') : '-'}
 📝 **Activity Description:**
 ${todo}
 ✰⋆｡:ﾟ･*☽:ﾟ･⋆｡✰⋆｡:ﾟ

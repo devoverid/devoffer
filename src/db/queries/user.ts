@@ -6,8 +6,13 @@ export function increaseUserStreak(user_id: number) {
             id: user_id,
         },
         data: {
-            streak_count: {
-                increment: 1,
+            streak_count: { increment: 1 },
+        },
+        include: {
+            checkins: {
+                orderBy: { created_at: 'desc' },
+                select: { created_at: true },
+                take: 2,
             },
         },
     })
