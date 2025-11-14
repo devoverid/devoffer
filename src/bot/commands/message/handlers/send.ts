@@ -44,7 +44,7 @@ export default {
 
             const modalCustomId = getCustomId([
                 MESSAGE_SEND_ID,
-                encodeSnowflake(interaction.guildId!),
+                encodeSnowflake(interaction.guildId),
                 encodeSnowflake(channel.id),
                 tempToken,
             ])

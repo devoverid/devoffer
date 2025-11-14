@@ -1,13 +1,13 @@
 import type { Command } from '@commands/command'
-import type { User } from '@type/user'
-import type { ChatInputCommandInteraction, Client, GuildMember, TextChannel } from 'discord.js'
-import { createCheckin } from '@db/queries/checkin'
-import { increaseUserStreak } from '@db/queries/user'
-import { sendReply } from '@utils/discord'
+import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
+import { CHECKIN_ID } from '@events/interaction-create/checkin/handlers/checkin-modal'
+import { encodeSnowflake, getCustomId } from '@utils/component'
+import { getAttachments, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
-import { SlashCommandBuilder } from 'discord.js'
-import { Checkin } from '../validators/checkin'
+import { DUMMY } from '@utils/placeholder'
+import { ActionRowBuilder, ModalBuilder, SlashCommandBuilder, TextInputBuilder, TextInputStyle } from 'discord.js'
+import { Checkin } from '../../../events/interaction-create/checkin/validators/checkin'
 
 export class CheckinError extends DiscordBaseError {
     constructor(message: string, options?: { cause?: unknown }) {
@@ -19,47 +19,46 @@ export default {
     data: new SlashCommandBuilder()
         .setName('checkin')
         .setDescription('Daily grind check-in.')
-        .addStringOption(option =>
-            option.setName('description')
-                .setDescription('Check in description.')
-                .setRequired(true),
+        .addAttachmentOption(opt =>
+            opt.setName(`attachment-1`)
+                .setDescription(`Attachment (optional)`)
+                .setRequired(false),
         ),
 
-    async execute(client: Client, interaction: ChatInputCommandInteraction) {
+    async execute(_, interaction: ChatInputCommandInteraction) {
         try {
             if (!interaction.inCachedGuild())
                 throw new CheckinError(Checkin.ERR.NotGuild)
 
-            const description = interaction.options.getString('description', true)
+            await Checkin.assertAllowedChannel(interaction)
+
             const channel = interaction.channel as TextChannel
             Checkin.assertMissPerms(interaction, channel)
 
-            const discordUserId: string = interaction.user.id
-            const member = interaction.member as GuildMember
-            const user = await Checkin.getOrCreateUser(client.prisma, discordUserId)
+            const attachments = getAttachments(interaction, Checkin.ATTACHMENT_COUNT)
+            const tempToken = Checkin.setTempItem(attachments)
 
-            await Checkin.assertAllowedChannel(interaction)
-            Checkin.assertMember(member)
-            Checkin.assertMemberGrindRoles(member)
-            Checkin.assertCheckinToday(user)
-
-            const [_, updatedUser] = await client.prisma.$transaction([
-                createCheckin(user.id, description),
-                increaseUserStreak(user.id),
+            const modalCustomId = getCustomId([
+                CHECKIN_ID,
+                encodeSnowflake(interaction.guildId),
+                tempToken,
             ])
 
-            const newGrindRole = Checkin.getNewGrindRole(interaction.guild, updatedUser as User)
-            await Checkin.setMemberNewGrindRole(interaction, member, newGrindRole)
+            const modal = new ModalBuilder()
+                .setCustomId(modalCustomId)
+                .setTitle('Daily Check-In')
+            const messageInput = new TextInputBuilder()
+                .setCustomId('todo')
+                .setLabel('Kindly tell us what u have done ≽ > ⩊ < ≼ ')
+                .setPlaceholder(DUMMY.DESC)
+                .setStyle(TextInputStyle.Paragraph)
+                .setRequired(true)
 
-            await sendReply(
-                interaction,
-                Checkin.MSG.CheckinSuccess(
-                    member,
-                    updatedUser.streak_count,
-                    description,
-                ),
-                false,
+            modal.addComponents(
+                new ActionRowBuilder<TextInputBuilder>().addComponents(messageInput),
             )
+
+            await interaction.showModal(modal)
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)
