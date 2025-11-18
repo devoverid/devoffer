@@ -7,25 +7,42 @@ generator client {
   output   = "generated/prisma"
 }
 
-
 model User {
     id Int @id @default(autoincrement())
     discord_id String @unique
-    streak_count Int @default(0)
-    streak_start DateTime?
-    last_streak_end DateTime?
     created_at DateTime @default(now())
     updated_at DateTime?
-    checkins Checkin[]
+
+    checkin_streaks CheckinStreak[]
+    Checkin Checkin[]
+}
+
+model CheckinStreak {
+  id Int @id @default(autoincrement())
+  user_id Int
+  first_date DateTime
+  last_date DateTime
+  count Int @default(1)
+  created_at DateTime @default(now())
+  updated_at DateTime?
+
+  user User @relation(fields: [user_id], references: [id])
+  checkins Checkin[]
+
+  @@index([user_id, first_date(sort: Desc)])
 }
 
 model Checkin {
     id Int @id @default(autoincrement())
     user_id Int
+    checkin_streak_id Int
     description String
+    status String
     created_at DateTime @default(now())
     updated_at DateTime?
+
     user User @relation(fields: [user_id], references: [id])
+    checkin_streak CheckinStreak @relation(fields: [checkin_streak_id], references: [id])
 
     @@index([user_id, created_at(sort: Desc)])
 }
@@ -38,11 +55,7 @@ model Attachment {
   size Int @default(0)
   created_at DateTime @default(now())
   module_id Int
-  module_type AttachmentModuleType
+  module_type String
 
   @@index([module_id, module_type, created_at(sort: Desc)])
-}
-
-enum AttachmentModuleType {
-  CHECKIN
 }
