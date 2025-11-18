@@ -1,5 +1,5 @@
 import type { GrindRole } from '@config/discord'
-import type { PrismaClient } from '@generatedDB/client'
+import type { Prisma, PrismaClient } from '@generatedDB/client'
 import type { User } from '@type/user'
 import type { Guild, GuildMember, Interaction } from 'discord.js'
 import { AURA_FARMING_CHANNEL, CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
@@ -66,30 +66,23 @@ export class Checkin extends CheckinMessage {
     static async getOrCreateUser(prismaClient: PrismaClient, discordUserId: string): Promise<User> {
         const select = {
             id: true,
+            discord_id: true,
             streak_count: true,
+            streak_start: true,
+            last_streak_end: true,
+            created_at: true,
+            updated_at: true,
             checkins: {
                 take: 2,
-                orderBy: {
-                    created_at: 'desc' as const,
-                },
-                select: {
-                    created_at: true,
-                },
+                orderBy: { created_at: 'desc' as const },
             },
-        }
+        } satisfies Prisma.UserSelect
 
-        let user = await prismaClient.user.findUnique({
+        return prismaClient.user.upsert({
             where: { discord_id: discordUserId },
+            create: { discord_id: discordUserId },
+            update: {},
             select,
-        }) as User
-
-        if (!user) {
-            user = await prismaClient.user.create({
-                data: { discord_id: discordUserId },
-                select,
-            }) as User
-        }
-
-        return user
+        })
     }
 }

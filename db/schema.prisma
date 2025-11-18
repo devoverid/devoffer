@@ -15,7 +15,7 @@ model User {
     streak_start DateTime?
     last_streak_end DateTime?
     created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    updated_at DateTime?
     checkins Checkin[]
 }
 
@@ -24,7 +24,7 @@ model Checkin {
     user_id Int
     description String
     created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    updated_at DateTime?
     user User @relation(fields: [user_id], references: [id])
 
     @@index([user_id, created_at(sort: Desc)])

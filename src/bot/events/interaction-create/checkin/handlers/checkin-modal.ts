@@ -2,7 +2,7 @@ import type { Event } from '@events/event'
 import type { User } from '@type/user'
 import type { Attachment, Client, GuildMember, Interaction } from 'discord.js'
 import { createCheckin } from '@db/queries/checkin'
-import { increaseUserStreak } from '@db/queries/user'
+import { increaseUserStreak, updateUserStreakStart } from '@db/queries/user'
 import { EVENT_PATH } from '@events/index'
 import { generateCustomId, tempStore } from '@utils/component'
 import { sendReply } from '@utils/discord'
@@ -48,6 +48,7 @@ export default {
             Checkin.assertCheckinToday(user)
 
             const updatedUser = await client.prisma.$transaction(async () => {
+                await updateUserStreakStart(user.id)
                 await createCheckin(user.id, todo, attachments)
                 return await increaseUserStreak(user.id)
             }) as User

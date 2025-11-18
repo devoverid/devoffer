@@ -17,3 +17,17 @@ export async function increaseUserStreak(user_id: number) {
         },
     })
 }
+
+export async function updateUserStreakStart(user_id: number) {
+    return prisma.user.findUnique({
+        where: { id: user_id },
+        select: { streak_start: true },
+    }).then(async (user) => {
+        if (user && !user.streak_start) {
+            return await prisma.user.update({
+                where: { id: user_id },
+                data: { streak_start: new Date() },
+            })
+        }
+    })
+}
