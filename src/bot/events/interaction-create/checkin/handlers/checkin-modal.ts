@@ -47,10 +47,10 @@ export default {
             Checkin.assertMemberGrindRoles(member)
             Checkin.assertCheckinToday(user)
 
-            const [_, updatedUser] = await client.prisma.$transaction([
-                createCheckin(user.id, todo, attachments),
-                increaseUserStreak(user.id),
-            ]) as [unknown, User]
+            const updatedUser = await client.prisma.$transaction(async () => {
+                await createCheckin(user.id, todo, attachments)
+                return await increaseUserStreak(user.id)
+            }) as User
 
             const newGrindRole = Checkin.getNewGrindRole(interaction.guild, updatedUser as User)
             await Checkin.setMemberNewGrindRole(interaction, member, newGrindRole)

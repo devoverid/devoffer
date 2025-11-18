@@ -6,7 +6,10 @@ export interface Attachment {
     url: string
     type: string
     size: number
-    checkin_id: number
+    module_id: number
+    module_type: AttachmentModuleType
     created_at: Date
     checkin: Checkin
 }
+
+export type AttachmentModuleType = 'CHECKIN'
