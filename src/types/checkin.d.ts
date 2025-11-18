@@ -3,5 +3,5 @@ export interface Checkin {
     user_id: number
     description: string
     created_at: Date
-    updated_at: Date
+    updated_at?: Date | null
 }
