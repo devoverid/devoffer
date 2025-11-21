@@ -65,6 +65,7 @@ export async function sendAsBot(
     interaction: Interaction | null,
     channel: TextChannel,
     payloads: InteractionReplyOptions,
+    isTempMessage: boolean = false,
     isDeferred: boolean = false,
     isNextMessageEphemeral: boolean = false,
 ) {
