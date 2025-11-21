@@ -1,3 +1,4 @@
+import type { Checkin } from './checkin'
 import type { CheckinStreak } from './checkin-streak'
 
 export interface User {
@@ -7,4 +8,5 @@ export interface User {
     updated_at?: Date | null
 
     checkin_streaks?: CheckinStreak[]
+    checkins?: Checkin[]
 }

@@ -10,10 +10,9 @@ CREATE TABLE "public"."User" (
 CREATE TABLE "public"."CheckinStreak" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "first_date" TIMESTAMP(3) NOT NULL,
-    "last_date" TIMESTAMP(3) NOT NULL,
-    "count" INTEGER NOT NULL DEFAULT 1,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "first_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "last_date" TIMESTAMP(3),
+    "streak" INTEGER NOT NULL DEFAULT 0,
     "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "CheckinStreak_pkey" PRIMARY KEY ("id")
@@ -24,6 +23,7 @@ CREATE TABLE "public"."Checkin" (
     "checkin_streak_id" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'WAITING',
+    "reviewed_by" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 

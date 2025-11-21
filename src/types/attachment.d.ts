@@ -1,3 +1,5 @@
+export type AttachmentModuleType = 'CHECKIN'
+
 export interface Attachment {
     id: number
     name: string
@@ -8,5 +10,3 @@ export interface Attachment {
     module_type: AttachmentModuleType
     created_at: Date
 }
-
-export type AttachmentModuleType = 'CHECKIN'
