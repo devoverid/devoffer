@@ -1,8 +1,5 @@
 import type { Event } from '@events/event'
-import type { User } from '@type/user'
 import type { Attachment, Client, GuildMember, Interaction } from 'discord.js'
-import { createCheckin } from '@db/queries/checkin'
-import { increaseUserStreak, updateUserStreakStart } from '@db/queries/user'
 import { EVENT_PATH } from '@events/index'
 import { generateCustomId, tempStore } from '@utils/component'
 import { sendReply } from '@utils/discord'
@@ -47,22 +44,17 @@ export default {
             Checkin.assertMemberGrindRoles(member)
             Checkin.assertCheckinToday(user)
 
-            const updatedUser = await client.prisma.$transaction(async () => {
-                await updateUserStreakStart(user.id)
-                await createCheckin(user.id, todo, attachments)
-                return await increaseUserStreak(user.id)
-            }) as User
-
-            const newGrindRole = Checkin.getNewGrindRole(interaction.guild, updatedUser as User)
-            await Checkin.setMemberNewGrindRole(interaction, member, newGrindRole)
+            const { checkinStreak, prevCheckin } = await client.prisma.$transaction(async () => {
+                return await Checkin.validateCheckinStreak(client.prisma, user.id, user.checkin_streaks?.[0], todo, attachments)
+            })
 
             await sendReply(
                 interaction,
                 Checkin.MSG.CheckinSuccess(
                     member,
-                    updatedUser.streak_count,
+                    checkinStreak.streak,
                     todo,
-                    updatedUser.checkins[1],
+                    prevCheckin,
                 ),
                 false,
                 { files: attachments.length ? attachments : undefined },

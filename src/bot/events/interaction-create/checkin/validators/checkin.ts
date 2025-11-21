@@ -1,13 +1,12 @@
-import type { GrindRole } from '@config/discord'
 import type { Prisma, PrismaClient } from '@generatedDB/client'
+import type { Checkin as CheckinType } from '@type/checkin'
+import type { CheckinStreak } from '@type/checkin-streak'
 import type { User } from '@type/user'
-import type { Guild, GuildMember, Interaction } from 'discord.js'
-import { AURA_FARMING_CHANNEL, CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
+import type { Attachment, GuildMember, Interaction } from 'discord.js'
+import { CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
 import { decodeSnowflakes } from '@utils/component'
-import { isDateToday } from '@utils/date'
-import { DiscordAssert, getChannel, sendAsBot } from '@utils/discord'
-import { attachNewGrindRole, getGrindRoleByStreakCount } from '@utils/discord/roles'
-import { userMention } from 'discord.js'
+import { isDateToday, isDateYesterday } from '@utils/date'
+import { DiscordAssert, getChannel } from '@utils/discord'
 import { CheckinModalError } from '../handlers/checkin-modal'
 import { CheckinMessage } from '../messages/checkin'
 
@@ -37,7 +36,12 @@ export class Checkin extends CheckinMessage {
     }
 
     static assertCheckinToday(user: User) {
-        if (user.checkins.length && isDateToday(user.checkins[0].created_at))
+        const checkinStreakLastDate = user.checkin_streaks?.[0]?.last_date
+        const checkinCreatedAt = user.checkins?.[0]?.created_at
+        const isLastCheckinStreakToday = user.checkin_streaks?.length && (checkinStreakLastDate && isDateToday(checkinStreakLastDate))
+        const isLastCheckinToday = user.checkins?.length && (checkinCreatedAt && isDateToday(checkinCreatedAt))
+
+        if (isLastCheckinStreakToday || isLastCheckinToday)
             throw new CheckinModalError(this.ERR.AlreadyCheckinToday)
     }
 
@@ -48,33 +52,19 @@ export class Checkin extends CheckinMessage {
             throw new CheckinModalError(this.ERR.RoleMissing(GRINDER_ROLE))
     }
 
-    static getNewGrindRole(guild: Guild, user: User) {
-        return getGrindRoleByStreakCount(guild.roles, user.streak_count)
-    }
-
-    static async setMemberNewGrindRole(interaction: Interaction, member: GuildMember, newRole?: GrindRole) {
-        if (newRole) {
-            const channel = await getChannel(interaction.guild!, AURA_FARMING_CHANNEL)
-
-            await attachNewGrindRole(member, newRole)
-            await sendAsBot(interaction, channel, { content: `
-                **Congratulations, ${userMention(member.id)}** ${Checkin.MSG.ReachNewGrindRole(newRole)}
-            ` })
-        }
-    }
-
     static async getOrCreateUser(prismaClient: PrismaClient, discordUserId: string): Promise<User> {
         const select = {
             id: true,
             discord_id: true,
-            streak_count: true,
-            streak_start: true,
-            last_streak_end: true,
             created_at: true,
             updated_at: true,
+            checkin_streaks: {
+                take: 1,
+                orderBy: { first_date: 'desc' },
+            },
             checkins: {
+                orderBy: { created_at: 'desc' },
                 take: 2,
-                orderBy: { created_at: 'desc' as const },
             },
         } satisfies Prisma.UserSelect
 
@@ -83,6 +73,118 @@ export class Checkin extends CheckinMessage {
             create: { discord_id: discordUserId },
             update: {},
             select,
+        })
+    }
+
+    static determineStreak(lastStreak: CheckinStreak | undefined) {
+        if (!lastStreak)
+            return 'new'
+
+        if (!lastStreak.last_date)
+            return 'new'
+
+        if (!isDateYesterday(lastStreak.last_date))
+            return 'new'
+
+        return 'next'
+    }
+
+    static async upsertStreak(
+        tx: Prisma.TransactionClient,
+        userId: number,
+        lastStreak: CheckinStreak | undefined,
+        decision: 'new' | 'next',
+    ): Promise<CheckinStreak> {
+        if (decision === 'new') {
+            return await tx.checkinStreak.create({
+                data: {
+                    user: {
+                        connect: {
+                            id: userId,
+                        },
+                    },
+                },
+            })
+        }
+        else {
+            return await tx.checkinStreak.update({
+                where: { id: lastStreak!.id },
+                data: { last_date: new Date() },
+            })
+        }
+    }
+
+    static async createCheckin(
+        tx: Prisma.TransactionClient,
+        userId: number,
+        streak: CheckinStreak,
+        description: string,
+    ): Promise<CheckinType> {
+        return await tx.checkin.create({
+            data: {
+                user_id: userId,
+                checkin_streak_id: streak.id,
+                description,
+                status: 'WAITING',
+            },
+        })
+    }
+
+    static async getPrevCheckin(
+        tx: Prisma.TransactionClient,
+        userId: number,
+        streak: CheckinStreak,
+        checkin: CheckinType,
+    ): Promise<CheckinType> {
+        return await tx.checkin.findFirst({
+            where: {
+                user_id: userId,
+                checkin_streak_id: streak.id,
+                id: { not: checkin.id },
+            },
+            orderBy: { created_at: 'desc' },
+        }) as CheckinType
+    }
+
+    static async createAttachments(
+        tx: Prisma.TransactionClient,
+        checkin: CheckinType,
+        attachments?: Attachment[],
+    ) {
+        if (attachments?.length) {
+            return await tx.attachment.createMany({
+                data: attachments.map(a => ({
+                    name: a.name,
+                    url: a.url,
+                    type: a.contentType ?? '',
+                    size: a.size,
+                    module_id: checkin.id,
+                    module_type: 'CHECKIN',
+                })),
+            })
+        }
+    }
+
+    static async validateCheckinStreak(
+        prisma: PrismaClient,
+        userId: number,
+        lastCheckinStreak: CheckinStreak | undefined,
+        description: string,
+        attachments?: Attachment[] | undefined,
+    ) {
+        const decision = this.determineStreak(lastCheckinStreak)
+
+        return prisma.$transaction(async (tx) => {
+            const checkinStreak = await this.upsertStreak(tx, userId, lastCheckinStreak, decision)
+            const checkin = await this.createCheckin(tx, userId, checkinStreak, description)
+            const prevCheckin = await this.getPrevCheckin(tx, userId, checkinStreak, checkin)
+
+            await this.createAttachments(tx, checkin, attachments)
+
+            return {
+                checkinStreak,
+                prevCheckin,
+            }
         })
     }
 }

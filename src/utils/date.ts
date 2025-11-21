@@ -6,12 +6,16 @@ export function isDateToday(date: Date): boolean {
         && date.getUTCDate() === today.getUTCDate()
 }
 
-export function getYesterday() {
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getUTCDate() - 1)
-    yesterday.setHours(0, 0, 0, 0)
+export function isDateYesterday(date: Date): boolean {
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setUTCDate(today.getUTCDate() - 1)
 
-    return yesterday
+    return (
+        date.getUTCFullYear() === yesterday.getUTCFullYear()
+        && date.getUTCMonth() === yesterday.getUTCMonth()
+        && date.getUTCDate() === yesterday.getUTCDate()
+    )
 }
 
 export const timestamp = (): string => new Date().toISOString()
