@@ -44,7 +44,7 @@ export default {
                 content: message.length ? message : undefined,
                 files: attachments.length ? attachments : undefined,
                 allowedMentions: { parse: [] },
-            }, true, true)
+            }, false, true, true)
             await sendReply(interaction, '✅ Message sent~')
         }
         catch (err: any) {

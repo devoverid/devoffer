@@ -65,6 +65,7 @@ export async function sendAsBot(
     interaction: Interaction | null,
     channel: TextChannel,
     payloads: InteractionReplyOptions,
+    isTempMessage: boolean = false,
     isDeferred: boolean = false,
     isNextMessageEphemeral: boolean = false,
 ) {
@@ -83,7 +84,9 @@ export async function sendAsBot(
             await interaction.deferReply(deferOpts)
     }
 
-    await channel.send(opts)
+    const msg = await channel.send(opts)
+    if (isTempMessage)
+        setTimeout(() => msg?.delete().catch(() => {}), 5000)
 }
 
 export * from './assert'
