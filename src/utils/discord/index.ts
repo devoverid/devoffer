@@ -83,7 +83,9 @@ export async function sendAsBot(
             await interaction.deferReply(deferOpts)
     }
 
-    await channel.send(opts)
+    const msg = await channel.send(opts)
+    if (isTempMessage)
+        setTimeout(() => msg?.delete().catch(() => {}), 5000)
 }
 
 export * from './assert'
