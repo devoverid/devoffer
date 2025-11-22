@@ -1,5 +1,5 @@
 import type { Attachment, ChatInputCommandInteraction, Guild, GuildMember, Interaction, InteractionDeferReplyOptions, InteractionReplyOptions, MessageCreateOptions, PermissionsBitField, Role, TextChannel } from 'discord.js'
-import { MessageFlags } from 'discord.js'
+import { MessageFlags, messageLink } from 'discord.js'
 
 export async function getChannel(guild: Guild, id: string): Promise<TextChannel> {
     return guild!.channels.cache.get(id) as TextChannel ?? await guild!.channels.fetch(id).then(channel => channel as TextChannel)
@@ -32,33 +32,34 @@ export function getAttachments(interaction: ChatInputCommandInteraction, fileCou
 export async function sendReply(
     interaction: Interaction,
     content: string,
-    ephemeral: boolean = true,
+    ephemeral = true,
     payloads?: InteractionReplyOptions,
-    isDeferred: boolean = false,
-    isDeferEphemeral: boolean = false,
+    isDeferred = false,
+    isDeferEphemeral = false,
 ) {
     if (!interaction.isRepliable())
-        return
+        return null
 
     const opts: InteractionReplyOptions = { ...payloads, content }
     const deferOpts: InteractionDeferReplyOptions = {}
 
-    if (ephemeral) {
+    if (ephemeral)
         opts.flags = MessageFlags.Ephemeral
-    }
-    if (isDeferEphemeral) {
+    if (isDeferEphemeral)
         deferOpts.flags = MessageFlags.Ephemeral
-    }
 
-    if (isDeferred)
+    if (isDeferred) {
         await interaction.deferReply(deferOpts)
+    }
 
-    if (interaction.replied || interaction.deferred) {
-        await interaction.followUp(opts)
-    }
-    else {
-        await interaction.reply(opts)
-    }
+    const msg = interaction.replied || interaction.deferred
+        ? await interaction.followUp(opts)
+        : await interaction.reply(opts)
+
+    if (ephemeral)
+        return null
+
+    return messageLink(interaction.channelId!, msg.id, interaction.guildId!)
 }
 
 export async function sendAsBot(

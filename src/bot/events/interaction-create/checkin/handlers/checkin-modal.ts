@@ -44,11 +44,13 @@ export default {
             Checkin.assertMemberGrindRoles(member)
             Checkin.assertCheckinToday(user)
 
-            const { checkinStreak, prevCheckin } = await client.prisma.$transaction(async () => {
-                return await Checkin.validateCheckinStreak(client.prisma, user.id, user.checkin_streaks?.[0], todo, attachments)
-            })
+            const {
+                checkinStreak,
+                checkin,
+                prevCheckin,
+            } = await Checkin.validateCheckinStreak(client.prisma, user.id, user.checkin_streaks?.[0], todo, attachments)
 
-            await sendReply(
+            const msgLink = await sendReply(
                 interaction,
                 Checkin.MSG.CheckinSuccess(
                     member,
@@ -60,6 +62,9 @@ export default {
                 { files: attachments.length ? attachments : undefined },
                 true,
             )
+
+            const updatedCheckin = await Checkin.updateCheckinMsgLink(client.prisma, checkin, msgLink)
+            await Checkin.sendSuccessMessageToUser(member, updatedCheckin)
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)

@@ -3,13 +3,14 @@ import type { GuildMember, TextChannel } from 'discord.js'
 import { FLAMEWARDEN_ROLE } from '@config/discord'
 import { getNow } from '@utils/date'
 import { DiscordAssert } from '@utils/discord'
+import { DUMMY } from '@utils/placeholder'
 import { roleMention, userMention } from 'discord.js'
 
 export class CheckinMessage extends DiscordAssert {
     static override readonly ERR = {
         ...DiscordAssert.ERR,
         AllowedCheckinChannel: (channel: TextChannel) => `❌ You can't checkin on this channel. You need to go to ${channel}`,
-        AlreadyCheckinToday: '❌ You already have a check-in today. Please come back tomorrow',
+        AlreadyCheckinToday: (checkinMsgLink: string) => `❌ You already have a [check-in for today](${checkinMsgLink}). Please come back tomorrow`,
         UnexpectedCheckin: '❌ Something went wrong during check-in',
     }
 
@@ -30,6 +31,14 @@ export class CheckinMessage extends DiscordAssert {
 ✰⋆｡:ﾟ･*☽:ﾟ･⋆｡✰⋆｡:ﾟ
 ${todo}
 
-> DevOffer Check-In System • Keep your flame alive`,
+> ${DUMMY.FOOTER}`,
+        CheckinSuccessToUser: (checkin: Checkin) => `
+A new [check-in](${checkin.link}) has been submitted and is now waiting for verification.
+🆔 **Check-In ID**: **\`${checkin.public_id}\`**
+🗓 **Submitted At**: ${checkin.created_at.toLocaleString('id-ID')}
+
+Status:
+> 🔎 Pending review from Flamewarden
+`,
     }
 }

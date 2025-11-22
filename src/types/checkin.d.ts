@@ -2,9 +2,11 @@ export type CheckinStatusType = 'WAITING' | 'APPROVED' | 'REJECTED'
 
 export interface Checkin {
     id: number
+    public_id: string
     user_id: number
     checkin_streak_id: number
     description: string
+    link?: string | null
     status: CheckinStatusType | string
     reviewed_by?: string | null
     created_at: Date

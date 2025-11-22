@@ -33,9 +33,11 @@ model CheckinStreak {
 
 model Checkin {
     id Int @id @default(autoincrement())
+    public_id String @unique
     user_id Int
     checkin_streak_id Int
     description String
+    link String?
     status String
     reviewed_by String?
     created_at DateTime @default(now())

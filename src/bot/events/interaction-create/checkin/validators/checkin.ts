@@ -3,10 +3,12 @@ import type { Checkin as CheckinType } from '@type/checkin'
 import type { CheckinStreak } from '@type/checkin-streak'
 import type { User } from '@type/user'
 import type { Attachment, GuildMember, Interaction } from 'discord.js'
+import crypto from 'node:crypto'
 import { CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
-import { decodeSnowflakes } from '@utils/component'
+import { createEmbed, decodeSnowflakes } from '@utils/component'
 import { isDateToday, isDateYesterday } from '@utils/date'
 import { DiscordAssert, getChannel } from '@utils/discord'
+import { DUMMY } from '@utils/placeholder'
 import { CheckinModalError } from '../handlers/checkin-modal'
 import { CheckinMessage } from '../messages/checkin'
 
@@ -17,6 +19,8 @@ export class Checkin extends CheckinMessage {
 
     static override ATTACHMENT_COUNT: number = 1
 
+    static PUBLIC_ID_PREFIX = 'CHK-'
+
     static getModalId(interaction: Interaction, customId: string) {
         const [prefix, guildId, tempToken] = decodeSnowflakes(customId)
 
@@ -24,6 +28,21 @@ export class Checkin extends CheckinMessage {
             throw new CheckinModalError(this.ERR.NotGuild)
 
         return { prefix, guildId, tempToken }
+    }
+
+    static generatePublicId(): string {
+        const random = crypto.randomBytes(3).toString('hex').toUpperCase()
+        return `${this.PUBLIC_ID_PREFIX}${random}`
+    }
+
+    static async getPublicId(tx: Prisma.TransactionClient): Promise<string> {
+        while (true) {
+            const id = this.generatePublicId()
+            const exists = await tx.checkin.findUnique({ where: { public_id: id } })
+
+            if (!exists)
+                return id
+        }
     }
 
     static async assertAllowedChannel(interaction: Interaction) {
@@ -36,13 +55,13 @@ export class Checkin extends CheckinMessage {
     }
 
     static assertCheckinToday(user: User) {
-        const checkinStreakLastDate = user.checkin_streaks?.[0]?.last_date
-        const checkinCreatedAt = user.checkins?.[0]?.created_at
-        const isLastCheckinStreakToday = user.checkin_streaks?.length && (checkinStreakLastDate && isDateToday(checkinStreakLastDate))
-        const isLastCheckinToday = user.checkins?.length && (checkinCreatedAt && isDateToday(checkinCreatedAt))
+        const checkinStreak = user.checkin_streaks?.[0]
+        const checkin = user.checkins?.[0]
+        const isLastCheckinStreakToday = user.checkin_streaks?.length && (checkinStreak?.last_date && isDateToday(checkinStreak?.last_date))
+        const isLastCheckinToday = user.checkins?.length && (checkin?.created_at && isDateToday(checkin?.created_at))
 
         if (isLastCheckinStreakToday || isLastCheckinToday)
-            throw new CheckinModalError(this.ERR.AlreadyCheckinToday)
+            throw new CheckinModalError(this.ERR.AlreadyCheckinToday(checkin!.link!))
     }
 
     static assertMemberGrindRoles(member: GuildMember) {
@@ -122,6 +141,7 @@ export class Checkin extends CheckinMessage {
     ): Promise<CheckinType> {
         return await tx.checkin.create({
             data: {
+                public_id: await this.getPublicId(tx),
                 user_id: userId,
                 checkin_streak_id: streak.id,
                 description,
@@ -183,8 +203,27 @@ export class Checkin extends CheckinMessage {
 
             return {
                 checkinStreak,
+                checkin,
                 prevCheckin,
             }
         })
+    }
+
+    static async updateCheckinMsgLink(prisma: PrismaClient, checkin: CheckinType, msgLink: string | null): Promise<CheckinType> {
+        return prisma.checkin.update({
+            where: { id: checkin.id },
+            data: { link: msgLink },
+        })
+    }
+
+    static async sendSuccessMessageToUser(member: GuildMember, checkin: CheckinType) {
+        const embed = createEmbed(
+            `🎉 Check-in Successful`,
+            this.MSG.CheckinSuccessToUser(checkin),
+            DUMMY.COLOR,
+            { text: DUMMY.FOOTER },
+        )
+
+        await member.send({ embeds: [embed] })
     }
 }
