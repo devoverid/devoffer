@@ -5,9 +5,10 @@ import type { User } from '@type/user'
 import type { Attachment, GuildMember, Interaction } from 'discord.js'
 import crypto from 'node:crypto'
 import { CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
-import { decodeSnowflakes } from '@utils/component'
+import { createEmbed, decodeSnowflakes } from '@utils/component'
 import { isDateToday, isDateYesterday } from '@utils/date'
 import { DiscordAssert, getChannel } from '@utils/discord'
+import { DUMMY } from '@utils/placeholder'
 import { CheckinModalError } from '../handlers/checkin-modal'
 import { CheckinMessage } from '../messages/checkin'
 
@@ -208,10 +209,21 @@ export class Checkin extends CheckinMessage {
         })
     }
 
-    static async updateCheckinMsgLink(prisma: PrismaClient, checkin: CheckinType, msgLink: string | null) {
+    static async updateCheckinMsgLink(prisma: PrismaClient, checkin: CheckinType, msgLink: string | null): Promise<CheckinType> {
         return prisma.checkin.update({
             where: { id: checkin.id },
             data: { link: msgLink },
         })
+    }
+
+    static async sendSuccessMessageToUser(member: GuildMember, checkin: CheckinType) {
+        const embed = createEmbed(
+            `🎉 Check-in Successful`,
+            this.MSG.CheckinSuccessToUser(checkin),
+            DUMMY.COLOR,
+            { text: DUMMY.FOOTER },
+        )
+
+        await member.send({ embeds: [embed] })
     }
 }

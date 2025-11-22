@@ -63,7 +63,8 @@ export default {
                 true,
             )
 
-            await Checkin.updateCheckinMsgLink(client.prisma, checkin, msgLink)
+            const updatedCheckin = await Checkin.updateCheckinMsgLink(client.prisma, checkin, msgLink)
+            await Checkin.sendSuccessMessageToUser(member, updatedCheckin)
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)
