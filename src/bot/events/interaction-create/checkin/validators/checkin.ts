@@ -3,6 +3,7 @@ import type { Checkin as CheckinType } from '@type/checkin'
 import type { CheckinStreak } from '@type/checkin-streak'
 import type { User } from '@type/user'
 import type { Attachment, GuildMember, Interaction } from 'discord.js'
+import crypto from 'node:crypto'
 import { CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
 import { decodeSnowflakes } from '@utils/component'
 import { isDateToday, isDateYesterday } from '@utils/date'
@@ -17,6 +18,8 @@ export class Checkin extends CheckinMessage {
 
     static override ATTACHMENT_COUNT: number = 1
 
+    static PUBLIC_ID_PREFIX = 'CHK-'
+
     static getModalId(interaction: Interaction, customId: string) {
         const [prefix, guildId, tempToken] = decodeSnowflakes(customId)
 
@@ -24,6 +27,21 @@ export class Checkin extends CheckinMessage {
             throw new CheckinModalError(this.ERR.NotGuild)
 
         return { prefix, guildId, tempToken }
+    }
+
+    static generatePublicId(): string {
+        const random = crypto.randomBytes(3).toString('hex').toUpperCase()
+        return `${this.PUBLIC_ID_PREFIX}${random}`
+    }
+
+    static async getPublicId(tx: Prisma.TransactionClient): Promise<string> {
+        while (true) {
+            const id = this.generatePublicId()
+            const exists = await tx.checkin.findUnique({ where: { public_id: id } })
+
+            if (!exists)
+                return id
+        }
     }
 
     static async assertAllowedChannel(interaction: Interaction) {
@@ -122,6 +140,7 @@ export class Checkin extends CheckinMessage {
     ): Promise<CheckinType> {
         return await tx.checkin.create({
             data: {
+                public_id: await this.getPublicId(tx),
                 user_id: userId,
                 checkin_streak_id: streak.id,
                 description,

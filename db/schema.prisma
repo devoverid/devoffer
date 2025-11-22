@@ -33,6 +33,7 @@ model CheckinStreak {
 
 model Checkin {
     id Int @id @default(autoincrement())
+    public_id String @unique
     user_id Int
     checkin_streak_id Int
     description String

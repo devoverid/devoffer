@@ -19,6 +19,7 @@ CREATE TABLE "public"."CheckinStreak" (
 );
 CREATE TABLE "public"."Checkin" (
     "id" SERIAL NOT NULL,
+    "public_id" VARCHAR(15) NOT NULL UNIQUE,
     "user_id" INTEGER NOT NULL,
     "checkin_streak_id" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
