@@ -202,8 +202,16 @@ export class Checkin extends CheckinMessage {
 
             return {
                 checkinStreak,
+                checkin,
                 prevCheckin,
             }
+        })
+    }
+
+    static async updateCheckinMsgLink(prisma: PrismaClient, checkin: CheckinType, msgLink: string | null) {
+        return prisma.checkin.update({
+            where: { id: checkin.id },
+            data: { link: msgLink },
         })
     }
 }

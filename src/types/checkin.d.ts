@@ -6,6 +6,7 @@ export interface Checkin {
     user_id: number
     checkin_streak_id: number
     description: string
+    link?: string | null
     status: CheckinStatusType | string
     reviewed_by?: string | null
     created_at: Date
