@@ -54,13 +54,13 @@ export class Checkin extends CheckinMessage {
     }
 
     static assertCheckinToday(user: User) {
-        const checkinStreakLastDate = user.checkin_streaks?.[0]?.last_date
-        const checkinCreatedAt = user.checkins?.[0]?.created_at
-        const isLastCheckinStreakToday = user.checkin_streaks?.length && (checkinStreakLastDate && isDateToday(checkinStreakLastDate))
-        const isLastCheckinToday = user.checkins?.length && (checkinCreatedAt && isDateToday(checkinCreatedAt))
+        const checkinStreak = user.checkin_streaks?.[0]
+        const checkin = user.checkins?.[0]
+        const isLastCheckinStreakToday = user.checkin_streaks?.length && (checkinStreak?.last_date && isDateToday(checkinStreak?.last_date))
+        const isLastCheckinToday = user.checkins?.length && (checkin?.created_at && isDateToday(checkin?.created_at))
 
         if (isLastCheckinStreakToday || isLastCheckinToday)
-            throw new CheckinModalError(this.ERR.AlreadyCheckinToday)
+            throw new CheckinModalError(this.ERR.AlreadyCheckinToday(checkin!.link!))
     }
 
     static assertMemberGrindRoles(member: GuildMember) {

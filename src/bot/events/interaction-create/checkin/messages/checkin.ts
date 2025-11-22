@@ -9,7 +9,7 @@ export class CheckinMessage extends DiscordAssert {
     static override readonly ERR = {
         ...DiscordAssert.ERR,
         AllowedCheckinChannel: (channel: TextChannel) => `❌ You can't checkin on this channel. You need to go to ${channel}`,
-        AlreadyCheckinToday: '❌ You already have a check-in today. Please come back tomorrow',
+        AlreadyCheckinToday: (checkinMsgLink: string) => `❌ You already have a [check-in for today](${checkinMsgLink}). Please come back tomorrow`,
         UnexpectedCheckin: '❌ Something went wrong during check-in',
     }
 
