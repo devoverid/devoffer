@@ -5,11 +5,12 @@ import type { User } from '@type/user'
 import type { Attachment, GuildMember, Interaction } from 'discord.js'
 import crypto from 'node:crypto'
 import { GRINDER_ROLE } from '@config/discord'
-import { createEmbed, decodeSnowflakes } from '@utils/component'
+import { createEmbed, decodeSnowflakes, encodeSnowflake, getCustomId } from '@utils/component'
 import { isDateToday, isDateYesterday } from '@utils/date'
 import { DiscordAssert } from '@utils/discord'
 import { DUMMY } from '@utils/placeholder'
-import { CheckinModalError } from '../handlers/checkin-modal'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
+import { CHECKIN_APPROVE_BUTTON_ID, CHECKIN_CUSTOM_BUTTON_ID, CHECKIN_REJECT_BUTTON_ID, CheckinModalError } from '../handlers/checkin-modal'
 import { CheckinMessage } from '../messages/checkin'
 
 export class Checkin extends CheckinMessage {
@@ -43,6 +44,28 @@ export class Checkin extends CheckinMessage {
             if (!exists)
                 return id
         }
+    }
+
+    static generateButtons(guildId: string, checkinId: string): ActionRowBuilder<ButtonBuilder> {
+        const approveButtonId = getCustomId([CHECKIN_APPROVE_BUTTON_ID, encodeSnowflake(guildId), encodeSnowflake(checkinId)])
+        const approveButton = new ButtonBuilder()
+            .setCustomId(approveButtonId)
+            .setLabel('🔥 Approve')
+            .setStyle(ButtonStyle.Success)
+
+        const rejectButtonId = getCustomId([CHECKIN_REJECT_BUTTON_ID, encodeSnowflake(guildId), encodeSnowflake(checkinId)])
+        const rejectButton = new ButtonBuilder()
+            .setCustomId(rejectButtonId)
+            .setLabel('🙅 Reject')
+            .setStyle(ButtonStyle.Danger)
+
+        const customButtonId = getCustomId([CHECKIN_CUSTOM_BUTTON_ID, encodeSnowflake(guildId), encodeSnowflake(checkinId)])
+        const customButton = new ButtonBuilder()
+            .setCustomId(customButtonId)
+            .setLabel('⚙️ Review')
+            .setStyle(ButtonStyle.Primary)
+
+        return new ActionRowBuilder<ButtonBuilder>().addComponents(approveButton, rejectButton, customButton)
     }
 
     static assertCheckinToday(user: User) {
