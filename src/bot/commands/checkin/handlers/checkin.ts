@@ -2,13 +2,13 @@ import type { Command } from '@commands/command'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import { CHECKIN_CHANNEL } from '@config/discord'
 import { CHECKIN_ID } from '@events/interaction-create/checkin/handlers/checkin-modal'
+import { Checkin } from '@events/interaction-create/checkin/validators/checkin'
 import { encodeSnowflake, getCustomId } from '@utils/component'
 import { getAttachments, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { DUMMY } from '@utils/placeholder'
 import { ActionRowBuilder, ModalBuilder, SlashCommandBuilder, TextInputBuilder, TextInputStyle } from 'discord.js'
-import { Checkin } from '../../../events/interaction-create/checkin/validators/checkin'
 
 export class CheckinError extends DiscordBaseError {
     constructor(message: string, options?: { cause?: unknown }) {
@@ -48,7 +48,7 @@ export default {
                 .setTitle('Daily Check-In')
             const messageInput = new TextInputBuilder()
                 .setCustomId('todo')
-                .setLabel('Kindly tell us what u have done ≽ > ⩊ < ≼ ')
+                .setLabel('Kindly tell us what you have done ≽ > ⩊ < ≼ ')
                 .setPlaceholder(DUMMY.DESC)
                 .setStyle(TextInputStyle.Paragraph)
                 .setRequired(true)

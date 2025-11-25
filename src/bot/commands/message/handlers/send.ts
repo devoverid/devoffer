@@ -1,13 +1,13 @@
 import type { Command } from '@commands/command'
 import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
 import { MESSAGE_SEND_ID } from '@events/interaction-create/message/handlers/send-modal'
+import { Send } from '@events/interaction-create/message/validators/send'
 import { encodeSnowflake, getCustomId } from '@utils/component'
 import { getAttachments, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { DUMMY } from '@utils/placeholder'
 import { ActionRowBuilder, ModalBuilder, PermissionFlagsBits, SlashCommandBuilder, TextInputBuilder, TextInputStyle } from 'discord.js'
-import { Send } from '../../../events/interaction-create/message/validators/send'
 
 export class SendError extends DiscordBaseError {
     constructor(message: string, options?: { cause?: unknown }) {
