@@ -1,4 +1,5 @@
 import type { Checkin } from './checkin'
+import type { User } from './user'
 
 export interface CheckinStreak {
     id: number

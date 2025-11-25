@@ -3,7 +3,7 @@ import { registerCommands } from '@commands/index'
 import { prisma } from '@db/client'
 import { registerEvents } from '@events/index'
 import { log } from '@utils/logger'
-import { Client, GatewayIntentBits } from 'discord.js'
+import { Client, GatewayIntentBits, Partials } from 'discord.js'
 
 async function main() {
     const client = new Client({
@@ -13,6 +13,11 @@ async function main() {
             GatewayIntentBits.GuildMembers,
             GatewayIntentBits.MessageContent,
             GatewayIntentBits.GuildMessageReactions,
+        ],
+        partials: [
+            Partials.Message,
+            Partials.Reaction,
+            Partials.Channel,
         ],
     })
     client.prisma = prisma

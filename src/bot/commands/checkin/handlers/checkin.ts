@@ -1,5 +1,6 @@
 import type { Command } from '@commands/command'
-import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
+import type { ChatInputCommandInteraction } from 'discord.js'
+import { CHECKIN_CHANNEL } from '@config/discord'
 import { CHECKIN_ID } from '@events/interaction-create/checkin/handlers/checkin-modal'
 import { encodeSnowflake, getCustomId } from '@utils/component'
 import { getAttachments, sendReply } from '@utils/discord'
@@ -30,9 +31,7 @@ export default {
             if (!interaction.inCachedGuild())
                 throw new CheckinError(Checkin.ERR.NotGuild)
 
-            await Checkin.assertAllowedChannel(interaction)
-
-            const channel = interaction.channel as TextChannel
+            const channel = await Checkin.assertAllowedChannel(interaction.guild, interaction.channelId, CHECKIN_CHANNEL)
             Checkin.assertMissPerms(interaction, channel)
 
             const attachments = getAttachments(interaction, Checkin.ATTACHMENT_COUNT)

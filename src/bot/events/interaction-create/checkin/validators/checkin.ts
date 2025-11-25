@@ -4,10 +4,10 @@ import type { CheckinStreak } from '@type/checkin-streak'
 import type { User } from '@type/user'
 import type { Attachment, GuildMember, Interaction } from 'discord.js'
 import crypto from 'node:crypto'
-import { CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
+import { GRINDER_ROLE } from '@config/discord'
 import { createEmbed, decodeSnowflakes } from '@utils/component'
 import { isDateToday, isDateYesterday } from '@utils/date'
-import { DiscordAssert, getChannel } from '@utils/discord'
+import { DiscordAssert } from '@utils/discord'
 import { DUMMY } from '@utils/placeholder'
 import { CheckinModalError } from '../handlers/checkin-modal'
 import { CheckinMessage } from '../messages/checkin'
@@ -45,23 +45,23 @@ export class Checkin extends CheckinMessage {
         }
     }
 
-    static async assertAllowedChannel(interaction: Interaction) {
-        const channel = await getChannel(interaction.guild!, CHECKIN_CHANNEL)
-        this.assertMissPerms(interaction, channel)
-
-        if (interaction.channelId !== CHECKIN_CHANNEL) {
-            throw new CheckinModalError(this.ERR.AllowedCheckinChannel(channel))
-        }
-    }
-
     static assertCheckinToday(user: User) {
-        const checkinStreak = user.checkin_streaks?.[0]
-        const checkin = user.checkins?.[0]
-        const isLastCheckinStreakToday = user.checkin_streaks?.length && (checkinStreak?.last_date && isDateToday(checkinStreak?.last_date))
-        const isLastCheckinToday = user.checkins?.length && (checkin?.created_at && isDateToday(checkin?.created_at))
+        const latestStreak = user.checkin_streaks?.[0]
+        const latestCheckin = user.checkins?.[0]
 
-        if (isLastCheckinStreakToday || isLastCheckinToday)
-            throw new CheckinModalError(this.ERR.AlreadyCheckinToday(checkin!.link!))
+        const streakWasToday = latestStreak?.last_date
+            ? isDateToday(latestStreak.last_date)
+            : false
+
+        const checkinWasToday = latestCheckin?.created_at
+            ? isDateToday(latestCheckin.created_at)
+            : false
+
+        const hasCheckedInToday = streakWasToday || checkinWasToday
+        const checkinIsNonRejected = latestCheckin?.status && latestCheckin.status !== 'REJECTED'
+
+        if (hasCheckedInToday && checkinIsNonRejected)
+            throw new CheckinModalError(this.ERR.AlreadyCheckinToday(latestCheckin!.link!))
     }
 
     static assertMemberGrindRoles(member: GuildMember) {
@@ -102,10 +102,11 @@ export class Checkin extends CheckinMessage {
         if (!lastStreak.last_date)
             return 'new'
 
-        if (!isDateYesterday(lastStreak.last_date))
-            return 'new'
+        return this.isStreakContinuing(lastStreak.last_date) ? 'next' : 'new'
+    }
 
-        return 'next'
+    static isStreakContinuing(date: Date): boolean {
+        return isDateToday(date) || isDateYesterday(date)
     }
 
     static async upsertStreak(
@@ -216,10 +217,10 @@ export class Checkin extends CheckinMessage {
         })
     }
 
-    static async sendSuccessMessageToUser(member: GuildMember, checkin: CheckinType) {
+    static async sendSuccessMessageToMember(member: GuildMember, checkin: CheckinType) {
         const embed = createEmbed(
             `🎉 Check-in Successful`,
-            this.MSG.CheckinSuccessToUser(checkin),
+            this.MSG.CheckinSuccessToMember(checkin),
             DUMMY.COLOR,
             { text: DUMMY.FOOTER },
         )

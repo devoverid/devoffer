@@ -34,9 +34,8 @@ export default {
             }
         }
         catch (err: any) {
-            if (err instanceof DiscordBaseError)
-                log.warn(err.message)
-            else log.error(`Failed to handle: ${GrinderRole.ERR.UnexpectedGrinderRole}: ${err}`)
+            if (!(err instanceof DiscordBaseError))
+                log.error(`Failed to handle: ${GrinderRole.ERR.UnexpectedGrinderRole}: ${err}`)
         }
     },
 } as Event
