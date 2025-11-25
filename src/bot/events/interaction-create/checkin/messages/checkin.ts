@@ -1,6 +1,6 @@
 import type { Checkin } from '@type/checkin'
 import type { GuildMember } from 'discord.js'
-import { FLAMEWARDEN_ROLE } from '@config/discord'
+import { FLAMEWARDEN_ROLE, WARDEN_DUTY_CHANNEL } from '@config/discord'
 import { getNow } from '@utils/date'
 import { DiscordAssert } from '@utils/discord'
 import { DUMMY } from '@utils/placeholder'
@@ -17,10 +17,7 @@ export class CheckinMessage extends DiscordAssert {
         ...DiscordAssert.MSG,
         CheckinSuccess: (member: GuildMember, streakCount: number, todo: string, lastCheckin?: Checkin) => `
 # ✅ New Check-In Detected!
-*お願いいたします、${roleMention(FLAMEWARDEN_ROLE)}さん★*
-*Notes*:
-🔹 🔥: *check-in approved*
-🔹 ❌: *check-in rejected*
+*お願いいたします、${roleMention(FLAMEWARDEN_ROLE)}さん★ (kindly take a look at <#${WARDEN_DUTY_CHANNEL}>'s pin message about how to do verification upon a check-in)*
 
 ✨─────✨/✨━━━━✨
 👤 **Grinder:** ${userMention(member.id)}
