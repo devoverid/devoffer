@@ -18,6 +18,7 @@ Your [flame](${checkin.link}) burns brighter today.
 🔥 **Current Streak**: ${checkin.checkin_streak!.streak}
 🗓 **Approved At**: ${checkin.updated_at!.toLocaleString('id-ID')}
 👀 **Approved By**: ${flamewarden.displayName} (@${flamewarden.user.username})
+✍🏻 **${flamewarden.displayName}'(s) Comment**: ${checkin.comment ?? '-'}
 
 > 🔥 Consistency fuels the fire; keep going`,
 
@@ -27,6 +28,7 @@ This [check-in](${checkin.link}) didn’t meet the requirements and has been rej
 🔥 **Current Streak**: ${checkin.checkin_streak!.streak}
 🗓 **Reviewed At**: ${checkin.updated_at!.toLocaleString('id-ID')}
 👀 **Reviewed By**: ${flamewarden.displayName} (@${flamewarden.user.username})
+✍🏻 **${flamewarden.displayName}'(s) Comment**: ${checkin.comment ?? '-'}
 
 > 🧯 Your flame flickered, but it hasn’t gone out yet; try again`,
     }
