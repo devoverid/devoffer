@@ -102,10 +102,11 @@ export class Checkin extends CheckinMessage {
         if (!lastStreak.last_date)
             return 'new'
 
-        if (!isDateYesterday(lastStreak.last_date))
-            return 'new'
+        return this.isStreakContinuing(lastStreak.last_date) ? 'next' : 'new'
+    }
 
-        return 'next'
+    static isStreakContinuing(date: Date): boolean {
+        return isDateToday(date) || isDateYesterday(date)
     }
 
     static async upsertStreak(
