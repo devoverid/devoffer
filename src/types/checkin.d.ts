@@ -1,3 +1,6 @@
+import type { CheckinStreak } from './checkin-streak'
+import type { User } from './user'
+
 export type CheckinStatusType = 'WAITING' | 'APPROVED' | 'REJECTED'
 
 export interface Checkin {
