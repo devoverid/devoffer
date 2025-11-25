@@ -32,8 +32,8 @@ export default {
             const flamewarden = await guild.members.fetch(user.id)
             const emoji = reaction.emoji.name
             SubmittedCheckin.assertFlamewardenMember(flamewarden)
-            SubmittedCheckin.assertAllowedChannel(guild, message.channel.id, CHECKIN_CHANNEL)
             SubmittedCheckin.assertEmojis(emoji)
+            await SubmittedCheckin.assertAllowedChannel(guild, message.channel.id, CHECKIN_CHANNEL)
 
             const checkin = await SubmittedCheckin.getCheckinByURL(client.prisma, message.url)
             const updatedCheckin = await SubmittedCheckin.validateCheckin(client.prisma, flamewarden, checkin, emoji) as Checkin

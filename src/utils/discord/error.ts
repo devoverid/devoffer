@@ -6,7 +6,7 @@ export class DiscordBaseError extends Error {
         this.name = name
         Object.setPrototypeOf(this, new.target.prototype)
 
-        log.warn(`${this.name}: ${message}`)
+        log.warn(`${this.name}: ${this.message}`)
     }
 
     toJSON() {
