@@ -1,4 +1,4 @@
-import { timestamp } from '@utils/date'
+import { log } from '@utils/logger'
 
 export class DiscordBaseError extends Error {
     constructor(name: string, message: string, options?: { cause?: unknown }) {
@@ -6,7 +6,7 @@ export class DiscordBaseError extends Error {
         this.name = name
         Object.setPrototypeOf(this, new.target.prototype)
 
-        console.error(`[${timestamp()}] ${this.name}: ${message}`)
+        log.warn(`${this.name}: ${message}`)
     }
 
     toJSON() {
