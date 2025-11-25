@@ -61,7 +61,7 @@ export class Checkin extends CheckinMessage {
         const checkinIsNonRejected = latestCheckin?.status && latestCheckin.status !== 'REJECTED'
 
         if (hasCheckedInToday && checkinIsNonRejected)
-            throw new CheckinModalError(this.ERR.AlreadyCheckinToday(latestCheckin!.link!))
+            throw new CheckinModalError(this.ERR.AlreadyCheckinToday(latestCheckin.link!))
     }
 
     static assertMemberGrindRoles(member: GuildMember) {

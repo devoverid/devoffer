@@ -12,6 +12,7 @@ export interface Checkin {
     link?: string | null
     status: CheckinStatusType | string
     reviewed_by?: string | null
+    comment?: string | null
     created_at: Date
     updated_at?: Date | null
 
