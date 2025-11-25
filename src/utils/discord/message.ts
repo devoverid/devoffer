@@ -17,11 +17,13 @@ export class DiscordMessage {
 
             return `❌ I’m missing **${formatList(role)}** in this channel.`
         },
+        AllowedChannel: (channelId: string) => `❌ You can't do anything on this channel. You need to go to <#${channelId}>`,
         GuildMissing: '❌ The guild could not be found',
         CannotPost: '❌ I can’t post in that channel',
 
         UnexpectedModal: '❌ Something went wrong while handling the modal component',
         UnexpectedButton: '❌ Something went wrong while handling the button component',
+        UnexpectedEmoji: '❌ You used an invalid emoji for this action',
     }
 
     static readonly MSG = {

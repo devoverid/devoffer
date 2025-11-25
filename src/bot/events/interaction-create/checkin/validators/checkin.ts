@@ -4,10 +4,10 @@ import type { CheckinStreak } from '@type/checkin-streak'
 import type { User } from '@type/user'
 import type { Attachment, GuildMember, Interaction } from 'discord.js'
 import crypto from 'node:crypto'
-import { CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
+import { GRINDER_ROLE } from '@config/discord'
 import { createEmbed, decodeSnowflakes } from '@utils/component'
 import { isDateToday, isDateYesterday } from '@utils/date'
-import { DiscordAssert, getChannel } from '@utils/discord'
+import { DiscordAssert } from '@utils/discord'
 import { DUMMY } from '@utils/placeholder'
 import { CheckinModalError } from '../handlers/checkin-modal'
 import { CheckinMessage } from '../messages/checkin'
@@ -42,15 +42,6 @@ export class Checkin extends CheckinMessage {
 
             if (!exists)
                 return id
-        }
-    }
-
-    static async assertAllowedChannel(interaction: Interaction) {
-        const channel = await getChannel(interaction.guild!, CHECKIN_CHANNEL)
-        this.assertMissPerms(interaction, channel)
-
-        if (interaction.channelId !== CHECKIN_CHANNEL) {
-            throw new CheckinModalError(this.ERR.AllowedCheckinChannel(channel))
         }
     }
 
@@ -216,10 +207,10 @@ export class Checkin extends CheckinMessage {
         })
     }
 
-    static async sendSuccessMessageToUser(member: GuildMember, checkin: CheckinType) {
+    static async sendSuccessMessageToMember(member: GuildMember, checkin: CheckinType) {
         const embed = createEmbed(
             `🎉 Check-in Successful`,
-            this.MSG.CheckinSuccessToUser(checkin),
+            this.MSG.CheckinSuccessToMember(checkin),
             DUMMY.COLOR,
             { text: DUMMY.FOOTER },
         )
