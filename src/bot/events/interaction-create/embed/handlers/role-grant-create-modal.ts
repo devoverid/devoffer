@@ -62,7 +62,7 @@ export default {
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button)
 
             await sendAsBot(interaction, channel, { embeds: [embed], components: [row] })
-            await sendReply(interaction, `✅ Posted! Clicking will add <@${role.id}> role~`)
+            await sendReply(interaction, `✅ Posted! Clicking will add <@&${role.id}> role~`)
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)

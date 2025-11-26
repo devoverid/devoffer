@@ -18,7 +18,7 @@ You’ve officially entered the Path of the Grinder.
 Here’s what to do next:
 1️⃣ Visit <#${CHECKIN_CHANNEL}> to begin your first daily grind.
 2️⃣ Type what you’re working on. Whether coding, reading, creating, or learning.
-3️⃣ Wait for a <@${FLAMEWARDEN_ROLE}> to verify your check-in.
+3️⃣ Wait for a <@&${FLAMEWARDEN_ROLE}> to verify your check-in.
 
 > Remember: your streak begins only when you check in!
 > Fail to check in before 23:59 WIB, and your flame will fade.`,

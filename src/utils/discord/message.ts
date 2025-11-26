@@ -11,7 +11,7 @@ export class DiscordMessage {
         RoleNotFound: '❌ The role no longer exists',
         RoleMissing(role: string | string[]): string {
             if (typeof role === 'string') {
-                return `❌ Missing role: <@${(role)}>`
+                return `❌ Missing role: <@&${(role)}>`
             }
 
             return `❌ I’m missing **${formatList(role)}** in this channel.`
@@ -29,15 +29,15 @@ export class DiscordMessage {
 
     static readonly MSG = {
         ReachNewGrindRole(role: GrindRole) {
-            return `🎉 You have reached a new grind role: <@${(role.id)}>~`
+            return `🎉 You have reached a new grind role: <@&${(role.id)}>~`
         },
     }
 
     static roleGranted(roleId: string): string {
-        return `✅ Granted <@${(roleId)}> to you`
+        return `✅ Granted <@&${(roleId)}> to you`
     }
 
     static roleRevoked(roleId: string): string {
-        return `❌ You already have the <@${(roleId)}? role`
+        return `❌ You already have the <@&${(roleId)}? role`
     }
 }
