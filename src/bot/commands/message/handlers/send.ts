@@ -7,7 +7,7 @@ import { getAttachments, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { DUMMY } from '@utils/placeholder'
-import { ActionRowBuilder, ModalBuilder, PermissionFlagsBits, SlashCommandBuilder, TextInputBuilder, TextInputStyle } from 'discord.js'
+import { LabelBuilder, ModalBuilder, PermissionFlagsBits, SlashCommandBuilder, TextInputBuilder, TextInputStyle } from 'discord.js'
 
 export class SendError extends DiscordBaseError {
     constructor(message: string, options?: { cause?: unknown }) {
@@ -51,16 +51,18 @@ export default {
             const modal = new ModalBuilder()
                 .setCustomId(modalCustomId)
                 .setTitle('Send a Message as Bot')
-            const messageInput = new TextInputBuilder()
-                .setCustomId('message')
-                .setLabel('Message')
-                .setPlaceholder(DUMMY.DESC)
-                .setStyle(TextInputStyle.Paragraph)
-                .setRequired(false)
-
-            modal.addComponents(
-                new ActionRowBuilder<TextInputBuilder>().addComponents(messageInput),
-            )
+                .addLabelComponents(
+                    new LabelBuilder()
+                        .setLabel('Message')
+                        .setDescription('This will be sent as the bot')
+                        .setTextInputComponent(
+                            new TextInputBuilder()
+                                .setCustomId('message')
+                                .setPlaceholder(DUMMY.DESC)
+                                .setStyle(TextInputStyle.Paragraph)
+                                .setRequired(false),
+                        ),
+                )
 
             await interaction.showModal(modal)
         }
