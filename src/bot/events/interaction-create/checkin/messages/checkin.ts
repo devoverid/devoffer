@@ -4,7 +4,6 @@ import { FLAMEWARDEN_ROLE, WARDEN_DUTY_CHANNEL } from '@config/discord'
 import { getNow } from '@utils/date'
 import { DiscordAssert } from '@utils/discord'
 import { DUMMY } from '@utils/placeholder'
-import { roleMention, userMention } from 'discord.js'
 
 export class CheckinMessage extends DiscordAssert {
     static override readonly ERR = {
@@ -21,10 +20,10 @@ export class CheckinMessage extends DiscordAssert {
         ...DiscordAssert.MSG,
         CheckinSuccess: (member: GuildMember, streakCount: number, todo: string, lastCheckin?: Checkin) => `
 # ✅ New Check-In Detected!
-*お願いいたします、${roleMention(FLAMEWARDEN_ROLE)}さん★ (kindly take a look at <#${WARDEN_DUTY_CHANNEL}>'s pin message about how to do verification upon a check-in)*
+*お願いいたします、<@${FLAMEWARDEN_ROLE}>さん★ (kindly take a look at <#${WARDEN_DUTY_CHANNEL}>'s pin message about how to do verification upon a check-in)*
 
 ✨─────✨/✨━━━━✨
-👤 **Grinder:** ${userMention(member.id)}
+👤 **Grinder:** <@${member.id}>
 🕓 **Date:** ${getNow()}
 🔥 **Current Streak:** ${++streakCount} day(s)
 🗓 **Last Check-In:** ${lastCheckin ? lastCheckin.created_at.toLocaleString('id-ID') : '-'}

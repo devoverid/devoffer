@@ -13,7 +13,7 @@ import { isDateToday, isDateYesterday } from '@utils/date'
 import { DiscordAssert, getChannel, sendAsBot } from '@utils/discord'
 import { attachNewGrindRole, getGrindRoleByStreakCount } from '@utils/discord/roles'
 import { DUMMY } from '@utils/placeholder'
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, roleMention, userMention } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
 import { CHECKIN_APPROVE_BUTTON_ID } from '../handlers/checkin-approve-button'
 import { CHECKIN_CUSTOM_BUTTON_ID, CHECKIN_REJECT_BUTTON_ID, CheckinModalError } from '../handlers/checkin-modal'
 import { CheckinMessage } from '../messages/checkin'
@@ -112,14 +112,14 @@ export class Checkin extends CheckinMessage {
         if (!alreadyHasRole) {
             await attachNewGrindRole(member, newRole)
             await sendAsBot(null, channel, {
-                content: `**Congratulations, ${userMention(member.id)}** ${Checkin.MSG.ReachNewGrindRole(newRole)}`,
+                content: `**Congratulations, <@${member.id}>** ${Checkin.MSG.ReachNewGrindRole(newRole)}`,
                 allowedMentions: { users: [member.id], roles: [] },
             })
         }
         else {
             const checkinChannel = await getChannel(guild, CHECKIN_CHANNEL)
             await sendAsBot(null, checkinChannel, {
-                content: `Hey, ${userMention(member.id)}. You already have ${roleMention(newRole.id)}`,
+                content: `Hey, <@${member.id}>. You already have <@${newRole.id}>`,
                 allowedMentions: { users: [member.id], roles: [] },
             }, true)
         }

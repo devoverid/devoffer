@@ -1,6 +1,5 @@
 import type { GrindRole } from '@config/discord'
 import { formatList } from '@utils/text'
-import { roleMention } from 'discord.js'
 
 export class DiscordMessage {
     static readonly ERR = {
@@ -12,7 +11,7 @@ export class DiscordMessage {
         RoleNotFound: '❌ The role no longer exists',
         RoleMissing(role: string | string[]): string {
             if (typeof role === 'string') {
-                return `❌ Missing role: ${roleMention(role)}`
+                return `❌ Missing role: <@${(role)}>`
             }
 
             return `❌ I’m missing **${formatList(role)}** in this channel.`
@@ -30,15 +29,15 @@ export class DiscordMessage {
 
     static readonly MSG = {
         ReachNewGrindRole(role: GrindRole) {
-            return `🎉 You have reached a new grind role: ${roleMention(role.id)}~`
+            return `🎉 You have reached a new grind role: <@${(role.id)}>~`
         },
     }
 
     static roleGranted(roleId: string): string {
-        return `✅ Granted ${roleMention(roleId)} to you`
+        return `✅ Granted <@${(roleId)}> to you`
     }
 
     static roleRevoked(roleId: string): string {
-        return `❌ You already have the ${roleMention(roleId)} role`
+        return `❌ You already have the <@${(roleId)}? role`
     }
 }
