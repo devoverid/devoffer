@@ -13,6 +13,7 @@ export class CheckinMessage extends DiscordAssert {
         CheckinIdMissing: '❌ Check-in ID is missing or invalid',
         CheckinIdInvalid: '❌ The provided check-in ID is invalid',
         UnknownCheckinStatus: '❌ The status for this check-in is unknown or unexpected.',
+        UnexpectedSubmittedCheckinMessage: '❌ Something went wrong while submitting your check-in',
         UnexpectedCheckin: '❌ Something went wrong during check-in',
     }
 

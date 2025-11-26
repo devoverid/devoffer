@@ -42,7 +42,7 @@ export default {
             const flamewarden = await interaction.guild.members.fetch(interaction.member.id)
             Checkin.assertMemberHasRole(flamewarden, FLAMEWARDEN_ROLE)
 
-            const checkin = await Checkin.getCheckinById(client.prisma, checkinId)
+            const checkin = await Checkin.getWaitingCheckin(client.prisma, 'id', checkinId)
             const updatedCheckin = await Checkin.validateCheckin(client.prisma, flamewarden, checkin, 'APPROVED') as CheckinType
 
             const member = await interaction.guild.members.fetch(checkin.user.discord_id)

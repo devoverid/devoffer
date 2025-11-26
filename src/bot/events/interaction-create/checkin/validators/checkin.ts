@@ -1,12 +1,13 @@
 import type { GrindRole } from '@config/discord'
 import type { Prisma, PrismaClient } from '@generatedDB/client'
-import type { CheckinStatusType, Checkin as CheckinType } from '@type/checkin'
+import type { CheckinAllowedEmojiType, CheckinStatusType, Checkin as CheckinType } from '@type/checkin'
 import type { CheckinStreak } from '@type/checkin-streak'
 import type { User } from '@type/user'
 import type { Attachment, EmbedBuilder, Guild, GuildMember, Interaction } from 'discord.js'
 import crypto from 'node:crypto'
 import { CheckinError } from '@commands/checkin/handlers/checkin'
 import { AURA_FARMING_CHANNEL, CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
+import { SubmittedCheckinError } from '@events/message-reaction-add/checkin/handlers/submitted-checkin'
 import { createEmbed, decodeSnowflakes, encodeSnowflake, getCustomId } from '@utils/component'
 import { isDateToday, isDateYesterday } from '@utils/date'
 import { DiscordAssert, getChannel, sendAsBot } from '@utils/discord'
@@ -25,6 +26,11 @@ export class Checkin extends CheckinMessage {
     static override ATTACHMENT_COUNT: number = 1
 
     static PUBLIC_ID_PREFIX = 'CHK-'
+
+    static EMOJI_STATUS: Record<CheckinAllowedEmojiType, CheckinStatusType> = {
+        '❌': 'REJECTED',
+        '🔥': 'APPROVED',
+    }
 
     static getModalId(interaction: Interaction, customId: string) {
         const [prefix, guildId, tempToken] = decodeSnowflakes(customId)
@@ -145,6 +151,14 @@ export class Checkin extends CheckinMessage {
             throw new CheckinModalError(this.ERR.RoleMissing(GRINDER_ROLE))
     }
 
+    static assertEmojis(emoji: string | null | undefined) {
+        if (!emoji || !(emoji in this.EMOJI_STATUS)) {
+            throw new SubmittedCheckinError(this.ERR.UnexpectedEmoji)
+        }
+
+        return emoji as CheckinAllowedEmojiType
+    }
+
     static async getOrCreateUser(prisma: PrismaClient, discordUserId: string): Promise<User> {
         const select = {
             id: true,
@@ -169,10 +183,14 @@ export class Checkin extends CheckinMessage {
         })
     }
 
-    static async getCheckinById(prisma: PrismaClient, id: number) {
+    static async getWaitingCheckin<T extends keyof Prisma.CheckinWhereInput>(
+        prisma: PrismaClient,
+        key: T,
+        value: Prisma.CheckinWhereInput[T],
+    ) {
         const checkin = await prisma.checkin.findFirst({
             where: {
-                id,
+                [key]: value,
                 status: 'WAITING',
                 reviewed_by: null,
             },

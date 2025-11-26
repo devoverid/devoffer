@@ -2,6 +2,7 @@ import type { CheckinStreak } from './checkin-streak'
 import type { User } from './user'
 
 export type CheckinStatusType = 'WAITING' | 'APPROVED' | 'REJECTED'
+export type CheckinAllowedEmojiType = '❌' | '🔥'
 
 export interface Checkin {
     id: number
