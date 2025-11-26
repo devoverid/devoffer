@@ -325,7 +325,7 @@ export class Checkin extends CheckinMessage {
         })
     }
 
-    static async sendSuccessMessageToMember(member: GuildMember, checkin: CheckinType) {
+    static async sendSuccessCheckinToMember(member: GuildMember, checkin: CheckinType) {
         const embed = createEmbed(
             `🎉 Check-in Successful`,
             this.MSG.CheckinSuccessToMember(checkin),
