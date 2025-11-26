@@ -15,7 +15,8 @@ import { attachNewGrindRole, getGrindRoleByStreakCount } from '@utils/discord/ro
 import { DUMMY } from '@utils/placeholder'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
 import { CHECKIN_APPROVE_BUTTON_ID } from '../handlers/checkin-approve-button'
-import { CHECKIN_CUSTOM_BUTTON_ID, CHECKIN_REJECT_BUTTON_ID, CheckinModalError } from '../handlers/checkin-modal'
+import { CHECKIN_CUSTOM_BUTTON_ID, CheckinModalError } from '../handlers/checkin-modal'
+import { CHECKIN_REJECT_BUTTON_ID } from '../handlers/checkin-reject-button'
 import { CheckinMessage } from '../messages/checkin'
 
 export class Checkin extends CheckinMessage {

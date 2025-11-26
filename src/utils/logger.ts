@@ -5,7 +5,7 @@ import { timestamp } from './date'
 
 export const log: Logger = {
     base: (msg: string) =>
-        console.log(`${ANSI_COLORS.white}[INFO ${timestamp()}]${ANSI_COLORS.reset} ${msg}`),
+        console.log(`${ANSI_COLORS.white}[LOG ${timestamp()}]${ANSI_COLORS.reset} ${msg}`),
 
     info: (msg: string) =>
         console.log(`${ANSI_COLORS.cyan}[INFO ${timestamp()}] ✨ ${ANSI_COLORS.reset} ${msg}`),

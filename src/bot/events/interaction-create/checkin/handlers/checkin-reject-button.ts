@@ -10,22 +10,22 @@ import { log } from '@utils/logger'
 import { Events } from 'discord.js'
 import { Checkin } from '../validators/checkin'
 
-export class CheckinApproveButtonError extends DiscordBaseError {
+export class CheckinRejectButtonError extends DiscordBaseError {
     constructor(message: string, options?: { cause?: unknown }) {
-        super('CheckinApproveButtonError', message, options)
+        super('CheckinRejectButtonError', message, options)
     }
 }
 
-export const CHECKIN_APPROVE_BUTTON_ID = `${generateCustomId(EVENT_PATH, __filename)}`
+export const CHECKIN_REJECT_BUTTON_ID = `${generateCustomId(EVENT_PATH, __filename)}`
 
 export default {
     name: Events.InteractionCreate,
-    desc: 'Handles check-in approve button interactions and approves user check-in.',
+    desc: 'Handles check-in reject button interactions and rejects user check-in.',
     async exec(client: Client, interaction: Interaction) {
         if (!interaction.isButton())
             return
 
-        const isValidComponent = Checkin.assertComponentId(interaction.customId, CHECKIN_APPROVE_BUTTON_ID)
+        const isValidComponent = Checkin.assertComponentId(interaction.customId, CHECKIN_REJECT_BUTTON_ID)
         if (!isValidComponent)
             return
 
@@ -33,7 +33,7 @@ export default {
             await interaction.deferUpdate()
 
             if (!interaction.inCachedGuild())
-                throw new CheckinApproveButtonError(Checkin.ERR.NotGuild)
+                throw new CheckinRejectButtonError(Checkin.ERR.NotGuild)
 
             const channel = interaction.channel as TextChannel
             Checkin.assertMissPerms(interaction, channel)
@@ -43,19 +43,19 @@ export default {
             Checkin.assertMemberHasRole(flamewarden, FLAMEWARDEN_ROLE)
 
             const checkin = await Checkin.getWaitingCheckin(client.prisma, 'id', checkinId)
-            const updatedCheckin = await Checkin.validateCheckin(client.prisma, flamewarden, checkin, 'APPROVED') as CheckinType
+            const updatedCheckin = await Checkin.validateCheckin(client.prisma, flamewarden, checkin, 'REJECTED') as CheckinType
 
             const member = await interaction.guild.members.fetch(checkin.user.discord_id)
             const newGrindRole = Checkin.getNewGrindRole(interaction.guild, updatedCheckin.checkin_streak!.streak)
             await Checkin.setMemberNewGrindRole(interaction.guild, member, newGrindRole)
 
             await Checkin.sendCheckinStatusToMember(flamewarden, member, updatedCheckin)
-            await interaction.message.react('🔥')
+            await interaction.message.react('❌')
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)
                 await sendReply(interaction, err.message)
-            else log.error(`Failed to handle ${CHECKIN_APPROVE_BUTTON_ID}: ${Checkin.ERR.UnexpectedButton}: ${err}`)
+            else log.error(`Failed to handle ${CHECKIN_REJECT_BUTTON_ID}: ${Checkin.ERR.UnexpectedButton}: ${err}`)
         }
     },
 } as Event
