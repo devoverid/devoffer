@@ -2,7 +2,7 @@ import type { GrindRole } from '@config/discord'
 import type { PrismaClient } from '@generatedDB/client'
 import type { Checkin, CheckinStatusType } from '@type/checkin'
 import type { EmbedBuilder, Guild, GuildMember } from 'discord.js'
-import { AURA_FARMING_CHANNEL, CHECKIN_CHANNEL, FLAMEWARDEN_ROLE } from '@config/discord'
+import { AURA_FARMING_CHANNEL, CHECKIN_CHANNEL } from '@config/discord'
 import { createEmbed } from '@utils/component'
 import { DiscordAssert, getChannel, sendAsBot } from '@utils/discord'
 import { attachNewGrindRole, getGrindRoleByStreakCount } from '@utils/discord/roles'
@@ -37,21 +37,16 @@ export class SubmittedCheckin extends SubmittedCheckinMessage {
             await attachNewGrindRole(member, newRole)
             await sendAsBot(null, channel, {
                 content: `**Congratulations, ${userMention(member.id)}** ${SubmittedCheckin.MSG.ReachNewGrindRole(newRole)}`,
+                allowedMentions: { users: [member.id], roles: [] },
             })
         }
         else {
             const checkinChannel = await getChannel(guild, CHECKIN_CHANNEL)
             await sendAsBot(null, checkinChannel, {
                 content: `Hey, ${userMention(member.id)}. You already have ${roleMention(newRole.id)}`,
+                allowedMentions: { users: [member.id], roles: [] },
             }, true)
         }
-    }
-
-    static assertFlamewardenMember(member: GuildMember) {
-        const hasFlamewardenRole = this.isMemberHasRole(member, FLAMEWARDEN_ROLE)
-
-        if (!hasFlamewardenRole)
-            throw new SubmittedCheckinError(this.ERR.RoleMissing(FLAMEWARDEN_ROLE))
     }
 
     static assertEmojis(emoji: string | null | undefined) {

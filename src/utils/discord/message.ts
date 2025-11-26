@@ -21,6 +21,8 @@ export class DiscordMessage {
         GuildMissing: '❌ The guild could not be found',
         CannotPost: '❌ I can’t post in that channel',
 
+        PlainMessage: '❌ There is nothing to do with this plain message',
+
         UnexpectedModal: '❌ Something went wrong while handling the modal component',
         UnexpectedButton: '❌ Something went wrong while handling the button component',
         UnexpectedEmoji: '❌ You used an invalid emoji for this action',

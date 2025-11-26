@@ -41,7 +41,7 @@ export default {
 
             RoleGrantCreate.assertRole(role)
             RoleGrantCreate.assertMember(member)
-            RoleGrantCreate.assertMemberHasRole(member, role.id)
+            RoleGrantCreate.assertMemberAlreadyHasRole(member, role.id)
 
             await member.roles.add(role)
             await sendReply(interaction, `

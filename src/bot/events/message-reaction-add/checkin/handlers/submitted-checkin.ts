@@ -1,7 +1,7 @@
 import type { Event } from '@events/event'
 import type { Checkin } from '@type/checkin'
 import type { Client, MessageReaction, PartialMessageReaction, User } from 'discord.js'
-import { CHECKIN_CHANNEL } from '@config/discord'
+import { CHECKIN_CHANNEL, FLAMEWARDEN_ROLE } from '@config/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { Events } from 'discord.js'
@@ -31,7 +31,7 @@ export default {
         try {
             const flamewarden = await guild.members.fetch(user.id)
             const emoji = reaction.emoji.name
-            SubmittedCheckin.assertFlamewardenMember(flamewarden)
+            SubmittedCheckin.assertMemberHasRole(flamewarden, FLAMEWARDEN_ROLE)
             SubmittedCheckin.assertEmojis(emoji)
             await SubmittedCheckin.assertAllowedChannel(guild, message.channel.id, CHECKIN_CHANNEL)
 

@@ -1,16 +1,20 @@
+import type { GrindRole } from '@config/discord'
 import type { Prisma, PrismaClient } from '@generatedDB/client'
-import type { Checkin as CheckinType } from '@type/checkin'
+import type { CheckinStatusType, Checkin as CheckinType } from '@type/checkin'
 import type { CheckinStreak } from '@type/checkin-streak'
 import type { User } from '@type/user'
-import type { Attachment, GuildMember, Interaction } from 'discord.js'
+import type { Attachment, EmbedBuilder, Guild, GuildMember, Interaction } from 'discord.js'
 import crypto from 'node:crypto'
-import { GRINDER_ROLE } from '@config/discord'
+import { CheckinError } from '@commands/checkin/handlers/checkin'
+import { AURA_FARMING_CHANNEL, CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
 import { createEmbed, decodeSnowflakes, encodeSnowflake, getCustomId } from '@utils/component'
 import { isDateToday, isDateYesterday } from '@utils/date'
-import { DiscordAssert } from '@utils/discord'
+import { DiscordAssert, getChannel, sendAsBot } from '@utils/discord'
+import { attachNewGrindRole, getGrindRoleByStreakCount } from '@utils/discord/roles'
 import { DUMMY } from '@utils/placeholder'
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
-import { CHECKIN_APPROVE_BUTTON_ID, CHECKIN_CUSTOM_BUTTON_ID, CHECKIN_REJECT_BUTTON_ID, CheckinModalError } from '../handlers/checkin-modal'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, roleMention, userMention } from 'discord.js'
+import { CHECKIN_APPROVE_BUTTON_ID } from '../handlers/checkin-approve-button'
+import { CHECKIN_CUSTOM_BUTTON_ID, CHECKIN_REJECT_BUTTON_ID, CheckinModalError } from '../handlers/checkin-modal'
 import { CheckinMessage } from '../messages/checkin'
 
 export class Checkin extends CheckinMessage {
@@ -29,6 +33,22 @@ export class Checkin extends CheckinMessage {
             throw new CheckinModalError(this.ERR.NotGuild)
 
         return { prefix, guildId, tempToken }
+    }
+
+    static getButtonId(interaction: Interaction, customId: string) {
+        const [prefix, guildId, checkinId] = decodeSnowflakes(customId)
+        const checkinIdNum = Number(checkinId)
+
+        if (!guildId)
+            throw new CheckinError(this.ERR.GuildMissing)
+        if (!checkinId)
+            throw new CheckinError(this.ERR.CheckinIdMissing)
+        if (interaction.guildId !== guildId)
+            throw new CheckinError(this.ERR.NotGuild)
+        if (Number.isNaN(checkinIdNum))
+            throw new CheckinError(this.ERR.CheckinIdInvalid)
+
+        return { prefix, guildId, checkinId: checkinIdNum }
     }
 
     static generatePublicId(): string {
@@ -68,6 +88,37 @@ export class Checkin extends CheckinMessage {
         return new ActionRowBuilder<ButtonBuilder>().addComponents(approveButton, rejectButton, customButton)
     }
 
+    static getNewGrindRole(guild: Guild, streakCount: number) {
+        return getGrindRoleByStreakCount(guild.roles, streakCount)
+    }
+
+    static async setMemberNewGrindRole(
+        guild: Guild,
+        member: GuildMember,
+        newRole?: GrindRole,
+    ) {
+        if (!newRole)
+            return
+
+        const channel = await getChannel(guild, AURA_FARMING_CHANNEL)
+        const alreadyHasRole = member.roles.cache.has(newRole.id)
+
+        if (!alreadyHasRole) {
+            await attachNewGrindRole(member, newRole)
+            await sendAsBot(null, channel, {
+                content: `**Congratulations, ${userMention(member.id)}** ${Checkin.MSG.ReachNewGrindRole(newRole)}`,
+                allowedMentions: { users: [member.id], roles: [] },
+            })
+        }
+        else {
+            const checkinChannel = await getChannel(guild, CHECKIN_CHANNEL)
+            await sendAsBot(null, checkinChannel, {
+                content: `Hey, ${userMention(member.id)}. You already have ${roleMention(newRole.id)}`,
+                allowedMentions: { users: [member.id], roles: [] },
+            }, true)
+        }
+    }
+
     static assertCheckinToday(user: User) {
         const latestStreak = user.checkin_streaks?.[0]
         const latestCheckin = user.checkins?.[0]
@@ -94,7 +145,7 @@ export class Checkin extends CheckinMessage {
             throw new CheckinModalError(this.ERR.RoleMissing(GRINDER_ROLE))
     }
 
-    static async getOrCreateUser(prismaClient: PrismaClient, discordUserId: string): Promise<User> {
+    static async getOrCreateUser(prisma: PrismaClient, discordUserId: string): Promise<User> {
         const select = {
             id: true,
             discord_id: true,
@@ -110,12 +161,28 @@ export class Checkin extends CheckinMessage {
             },
         } satisfies Prisma.UserSelect
 
-        return prismaClient.user.upsert({
+        return prisma.user.upsert({
             where: { discord_id: discordUserId },
             create: { discord_id: discordUserId },
             update: {},
             select,
         })
+    }
+
+    static async getCheckinById(prisma: PrismaClient, id: number) {
+        const checkin = await prisma.checkin.findFirst({
+            where: {
+                id,
+                status: 'WAITING',
+                reviewed_by: null,
+            },
+            include: { user: true },
+        })
+
+        if (!checkin)
+            throw new CheckinError(this.ERR.PlainMessage)
+
+        return checkin
     }
 
     static determineStreak(lastStreak: CheckinStreak | undefined) {
@@ -247,6 +314,69 @@ export class Checkin extends CheckinMessage {
             DUMMY.COLOR,
             { text: DUMMY.FOOTER },
         )
+
+        await member.send({ embeds: [embed] })
+    }
+
+    static async validateCheckin(prisma: PrismaClient, member: GuildMember, checkin: CheckinType, checkinStatus: CheckinStatusType): Promise<CheckinType | undefined> {
+        if (checkinStatus === 'APPROVED') {
+            return await Checkin.updateCheckinStatus(prisma, member, checkin, checkinStatus)
+        }
+        if (checkinStatus === 'REJECTED') {
+            return await Checkin.updateCheckinStatus(prisma, member, checkin, checkinStatus)
+        }
+    }
+
+    static async updateCheckinStatus(prisma: PrismaClient, member: GuildMember, checkin: CheckinType, checkinStatus: CheckinStatusType): Promise<CheckinType> {
+        const updatedCheckin = await prisma.checkin.update({
+            where: { id: checkin.id },
+            data: {
+                status: checkinStatus,
+                reviewed_by: member.id,
+                updated_at: new Date(),
+                checkin_streak: {
+                    update: {
+                        streak: {
+                            increment: checkinStatus === 'APPROVED' ? 1 : 0,
+                        },
+                        last_date: new Date(),
+                        updated_at: new Date(),
+                    },
+                },
+            },
+            include: {
+                checkin_streak: true,
+            },
+        })
+
+        return updatedCheckin
+    }
+
+    static async sendCheckinStatusToMember(flamewarden: GuildMember, member: GuildMember, checkin: CheckinType) {
+        let embed: EmbedBuilder
+
+        switch (checkin.status) {
+            case 'REJECTED':
+                embed = createEmbed(
+                    `⚠️ Check-In Rejected`,
+                    this.MSG.CheckinRejected(flamewarden, checkin),
+                    '#D9534F',
+                    { text: DUMMY.FOOTER },
+                )
+                break
+
+            case 'APPROVED':
+                embed = createEmbed(
+                    `🔥 Check-In Approved`,
+                    this.MSG.CheckinApproved(flamewarden, checkin),
+                    '#4CAF50',
+                    { text: DUMMY.FOOTER },
+                )
+                break
+
+            default:
+                throw new CheckinError(this.ERR.UnknownCheckinStatus)
+        }
 
         await member.send({ embeds: [embed] })
     }

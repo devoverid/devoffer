@@ -66,9 +66,16 @@ export class DiscordAssert extends DiscordMessage {
             throw new DiscordAssertError(this.ERR.RoleNotFound)
     }
 
-    static assertMemberHasRole(member: GuildMember, roleId: string) {
+    static assertMemberAlreadyHasRole(member: GuildMember, roleId: string) {
         if (this.isMemberHasRole(member, roleId))
             throw new DiscordAssertError(this.roleRevoked(roleId))
+    }
+
+    static assertMemberHasRole(member: GuildMember, roleId: string) {
+        const hasThisRole = this.isMemberHasRole(member, roleId)
+
+        if (!hasThisRole)
+            throw new DiscordAssertError(this.ERR.RoleMissing(roleId))
     }
 
     static async assertAllowedChannel(guild: Guild, currentChannelId: string, channelId: string) {

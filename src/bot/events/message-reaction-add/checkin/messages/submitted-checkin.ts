@@ -5,7 +5,6 @@ import { DiscordAssert } from '@utils/discord'
 export class SubmittedCheckinMessage extends DiscordAssert {
     static override readonly ERR = {
         ...DiscordAssert.ERR,
-        PlainMessage: '❌ There is nothing to do with this plain message',
         UnknownCheckinStatus: '❌ The status for this check-in is unknown or unexpected.',
         UnexpectedSubmittedCheckinMessage: '❌ Something went wrong while submitting your check-in',
     }

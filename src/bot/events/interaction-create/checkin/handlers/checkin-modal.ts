@@ -15,7 +15,6 @@ export class CheckinModalError extends DiscordBaseError {
 }
 
 export const CHECKIN_ID = generateCustomId(EVENT_PATH, __filename)
-export const CHECKIN_APPROVE_BUTTON_ID = `${generateCustomId(EVENT_PATH, __filename)}-A`
 export const CHECKIN_REJECT_BUTTON_ID = `${generateCustomId(EVENT_PATH, __filename)}-R`
 export const CHECKIN_CUSTOM_BUTTON_ID = `${generateCustomId(EVENT_PATH, __filename)}-C`
 
@@ -67,6 +66,7 @@ export default {
                 {
                     files: attachments.length ? attachments : undefined,
                     components: [buttons],
+                    allowedMentions: { users: [member.id], roles: [] },
                 },
                 true,
             )
