@@ -165,7 +165,7 @@ export class Checkin extends CheckinMessage {
     static assertSubmittedCheckinToday(checkin: CheckinType) {
         const isCheckinToday = this.hasCheckinToday(checkin.checkin_streak, checkin)
         if (!isCheckinToday)
-            throw new CheckinError(this.ERR.SubmittedCheckinNotToday(checkin.link!))
+            throw new SubmittedCheckinError(this.ERR.SubmittedCheckinNotToday(checkin.link!))
     }
 
     static assertMemberGrindRoles(member: GuildMember) {
@@ -223,7 +223,7 @@ export class Checkin extends CheckinMessage {
         }) as CheckinType
 
         if (!checkin)
-            throw new CheckinError(this.ERR.PlainMessage)
+            throw new SubmittedCheckinError(this.ERR.PlainMessage)
 
         return checkin
     }
@@ -451,7 +451,7 @@ export class Checkin extends CheckinMessage {
                 break
 
             default:
-                throw new CheckinError(this.ERR.UnknownCheckinStatus)
+                throw new SubmittedCheckinError(this.ERR.UnknownCheckinStatus)
         }
 
         await member.send({ embeds: [embed] })
