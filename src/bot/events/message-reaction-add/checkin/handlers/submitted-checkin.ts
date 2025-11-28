@@ -1,5 +1,4 @@
 import type { Event } from '@events/event'
-import type { Checkin as CheckinType } from '@type/checkin'
 import type { Client, MessageReaction, PartialMessageReaction, User } from 'discord.js'
 import { CHECKIN_CHANNEL, FLAMEWARDEN_ROLE } from '@config/discord'
 import { Checkin } from '@events/interaction-create/checkin/validators/checkin'
@@ -34,14 +33,14 @@ export default {
             Checkin.assertMemberHasRole(flamewarden, FLAMEWARDEN_ROLE)
             await Checkin.assertAllowedChannel(guild, message.channel.id, CHECKIN_CHANNEL)
 
-            const checkin = await Checkin.getWaitingCheckin(client.prisma, 'link', message.url)
-            const updatedCheckin = await Checkin.validateCheckin(client.prisma, flamewarden, checkin, Checkin.EMOJI_STATUS[emoji]) as CheckinType
-
-            const member = await guild.members.fetch(checkin.user.discord_id)
-            const newGrindRole = Checkin.getNewGrindRole(guild, updatedCheckin.checkin_streak!.streak)
-            await Checkin.setMemberNewGrindRole(guild, member, newGrindRole)
-
-            await Checkin.sendCheckinStatusToMember(flamewarden, member, updatedCheckin)
+            await Checkin.validateCheckin(
+                client.prisma,
+                guild,
+                flamewarden,
+                { key: 'link', value: message.url },
+                message,
+                Checkin.EMOJI_STATUS[emoji],
+            )
         }
         catch (err: any) {
             if (!(err instanceof DiscordBaseError))

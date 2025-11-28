@@ -1,3 +1,4 @@
+import type { Prisma } from '@generatedDB/client'
 import type { CheckinStreak } from './checkin-streak'
 import type { User } from './user'
 
@@ -19,4 +20,9 @@ export interface Checkin {
 
     user?: User
     checkin_streak?: CheckinStreak
+}
+
+export interface CheckinColumn<T extends keyof Prisma.CheckinWhereInput> {
+    key: T
+    value: Prisma.CheckinWhereInput[T]
 }

@@ -1,5 +1,4 @@
 import type { Event } from '@events/event'
-import type { Checkin as CheckinType } from '@type/checkin'
 import type { Client, Interaction, TextChannel } from 'discord.js'
 import { FLAMEWARDEN_ROLE } from '@config/discord'
 import { EVENT_PATH } from '@events/index'
@@ -35,22 +34,22 @@ export default {
             if (!interaction.inCachedGuild())
                 throw new CheckinRejectButtonError(Checkin.ERR.NotGuild)
 
+            const { checkinId } = Checkin.getButtonId(interaction, interaction.customId)
+
             const channel = interaction.channel as TextChannel
             Checkin.assertMissPerms(interaction, channel)
-
-            const { checkinId } = Checkin.getButtonId(interaction, interaction.customId)
             const flamewarden = await interaction.guild.members.fetch(interaction.member.id)
+            Checkin.assertMember(flamewarden)
             Checkin.assertMemberHasRole(flamewarden, FLAMEWARDEN_ROLE)
 
-            const checkin = await Checkin.getWaitingCheckin(client.prisma, 'id', checkinId)
-            const updatedCheckin = await Checkin.validateCheckin(client.prisma, flamewarden, checkin, 'REJECTED') as CheckinType
-
-            const member = await interaction.guild.members.fetch(checkin.user.discord_id)
-            const newGrindRole = Checkin.getNewGrindRole(interaction.guild, updatedCheckin.checkin_streak!.streak)
-            await Checkin.setMemberNewGrindRole(interaction.guild, member, newGrindRole)
-
-            await Checkin.sendCheckinStatusToMember(flamewarden, member, updatedCheckin)
-            await interaction.message.react('❌')
+            await Checkin.validateCheckin(
+                client.prisma,
+                interaction.guild,
+                flamewarden,
+                { key: 'id', value: checkinId },
+                interaction.message,
+                'REJECTED',
+            )
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)

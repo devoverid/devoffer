@@ -1,9 +1,9 @@
 import type { GrindRole } from '@config/discord'
 import type { Prisma, PrismaClient } from '@generatedDB/client'
-import type { CheckinAllowedEmojiType, CheckinStatusType, Checkin as CheckinType } from '@type/checkin'
+import type { CheckinAllowedEmojiType, CheckinColumn, CheckinStatusType, Checkin as CheckinType } from '@type/checkin'
 import type { CheckinStreak } from '@type/checkin-streak'
 import type { User } from '@type/user'
-import type { Attachment, EmbedBuilder, Guild, GuildMember, Interaction } from 'discord.js'
+import type { Attachment, EmbedBuilder, Guild, GuildMember, Interaction, Message } from 'discord.js'
 import crypto from 'node:crypto'
 import { CheckinError } from '@commands/checkin/handlers/checkin'
 import { AURA_FARMING_CHANNEL, CHECKIN_CHANNEL, GRINDER_ROLE } from '@config/discord'
@@ -15,7 +15,9 @@ import { attachNewGrindRole, getGrindRoleByStreakCount } from '@utils/discord/ro
 import { DUMMY } from '@utils/placeholder'
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js'
 import { CHECKIN_APPROVE_BUTTON_ID } from '../handlers/checkin-approve-button'
-import { CHECKIN_CUSTOM_BUTTON_ID, CheckinModalError } from '../handlers/checkin-modal'
+import { CHECKIN_CUSTOM_BUTTON_ID } from '../handlers/checkin-custom-button'
+import { CheckinCustomButtonModalError } from '../handlers/checkin-custom-button-modal'
+import { CheckinModalError } from '../handlers/checkin-modal'
 import { CHECKIN_REJECT_BUTTON_ID } from '../handlers/checkin-reject-button'
 import { CheckinMessage } from '../messages/checkin'
 
@@ -33,6 +35,10 @@ export class Checkin extends CheckinMessage {
         '🔥': 'APPROVED',
     }
 
+    static REVERSED_EMOJI_STATUS = Object.fromEntries(
+        Object.entries(this.EMOJI_STATUS).map(([emoji, status]) => [status, emoji]),
+    ) as Record<CheckinStatusType, CheckinAllowedEmojiType>
+
     static getModalId(interaction: Interaction, customId: string) {
         const [prefix, guildId, tempToken] = decodeSnowflakes(customId)
 
@@ -44,14 +50,28 @@ export class Checkin extends CheckinMessage {
         return { prefix, guildId, tempToken }
     }
 
+    static getModalReviewId(interaction: Interaction, customId: string) {
+        const [prefix, guildId, checkinId, messageId] = decodeSnowflakes(customId)
+        const checkinIdNum = Number(checkinId)
+
+        if (!guildId)
+            throw new CheckinCustomButtonModalError(this.ERR.GuildMissing)
+        if (interaction.guildId !== guildId)
+            throw new CheckinCustomButtonModalError(this.ERR.NotGuild)
+        if (!checkinId)
+            throw new CheckinCustomButtonModalError(this.ERR.CheckinIdMissing)
+        if (!messageId)
+            throw new CheckinCustomButtonModalError(this.ERR.MessageIdMissing)
+
+        return { prefix, guildId, checkinId: checkinIdNum, messageId }
+    }
+
     static getButtonId(interaction: Interaction, customId: string) {
         const [prefix, guildId, checkinId] = decodeSnowflakes(customId)
         const checkinIdNum = Number(checkinId)
 
         if (!guildId)
             throw new CheckinError(this.ERR.GuildMissing)
-        if (!checkinId)
-            throw new CheckinError(this.ERR.CheckinIdMissing)
         if (interaction.guildId !== guildId)
             throw new CheckinError(this.ERR.NotGuild)
         if (!checkinId)
@@ -118,7 +138,7 @@ export class Checkin extends CheckinMessage {
         if (!alreadyHasRole) {
             await attachNewGrindRole(member, newRole)
             await sendAsBot(null, channel, {
-                content: `**Congratulations, <@${member.id}>** ${Checkin.MSG.ReachNewGrindRole(newRole)}`,
+                content: `**Congratulations, <@${member.id}>** ${this.MSG.ReachNewGrindRole(newRole)}`,
                 allowedMentions: { users: [member.id], roles: [] },
             })
         }
@@ -135,19 +155,17 @@ export class Checkin extends CheckinMessage {
         const latestStreak = user.checkin_streaks?.[0]
         const latestCheckin = user.checkins?.[0]
 
-        const streakWasToday = latestStreak?.last_date
-            ? isDateToday(latestStreak.last_date)
-            : false
-
-        const checkinWasToday = latestCheckin?.created_at
-            ? isDateToday(latestCheckin.created_at)
-            : false
-
-        const hasCheckedInToday = streakWasToday || checkinWasToday
-        const checkinIsNonRejected = latestCheckin?.status && latestCheckin.status !== 'REJECTED'
+        const hasCheckedInToday = this.hasCheckinToday(latestStreak, latestCheckin)
+        const checkinIsNonRejected = this.isNotRejectedCheckin(latestCheckin)
 
         if (hasCheckedInToday && checkinIsNonRejected)
-            throw new CheckinModalError(this.ERR.AlreadyCheckinToday(latestCheckin.link!))
+            throw new CheckinModalError(this.ERR.AlreadyCheckinToday(latestCheckin!.link!))
+    }
+
+    static assertSubmittedCheckinToday(checkin: CheckinType) {
+        const isCheckinToday = this.hasCheckinToday(checkin.checkin_streak, checkin)
+        if (!isCheckinToday)
+            throw new CheckinError(this.ERR.SubmittedCheckinNotToday(checkin.link!))
     }
 
     static assertMemberGrindRoles(member: GuildMember) {
@@ -174,6 +192,7 @@ export class Checkin extends CheckinMessage {
             checkin_streaks: {
                 take: 1,
                 orderBy: { first_date: 'desc' },
+                include: { checkins: true },
             },
             checkins: {
                 orderBy: { created_at: 'desc' },
@@ -200,7 +219,7 @@ export class Checkin extends CheckinMessage {
                 status: 'WAITING',
                 reviewed_by: null,
             },
-            include: { user: true },
+            include: { user: true, checkin_streak: true },
         }) as CheckinType
 
         if (!checkin)
@@ -216,11 +235,29 @@ export class Checkin extends CheckinMessage {
         if (!lastStreak.last_date)
             return 'new'
 
+        if (lastStreak.checkins?.[0]?.status === 'WAITING')
+            return 'new'
+
         return this.isStreakContinuing(lastStreak.last_date) ? 'next' : 'new'
     }
 
     static isStreakContinuing(date: Date): boolean {
         return isDateToday(date) || isDateYesterday(date)
+    }
+
+    static isNotRejectedCheckin(checkin: CheckinType | undefined) {
+        return checkin?.status && checkin.status !== 'REJECTED'
+    }
+
+    static hasCheckinToday(checkinStreak: CheckinStreak | undefined, checkin: CheckinType | undefined) {
+        const streakWasToday = checkinStreak?.last_date
+            ? isDateToday(checkinStreak.last_date)
+            : false
+        const checkinWasToday = checkin?.created_at
+            ? isDateToday(checkin.created_at)
+            : false
+
+        return streakWasToday || checkinWasToday
     }
 
     static async upsertStreak(
@@ -324,6 +361,29 @@ export class Checkin extends CheckinMessage {
         })
     }
 
+    static async validateCheckin<K extends keyof Prisma.CheckinWhereInput>(
+        prisma: PrismaClient,
+        guild: Guild,
+        flamewarden: GuildMember,
+        opt: CheckinColumn<K>,
+        message: Message,
+        checkinStatus: CheckinStatusType,
+        comment?: string | null,
+    ) {
+        const checkin = await this.getWaitingCheckin(prisma, opt.key, opt.value)
+        this.assertSubmittedCheckinToday(checkin)
+        const updatedCheckin = await this.updateCheckinStatus(prisma, flamewarden, checkin, checkinStatus, comment) as CheckinType
+
+        const member = await guild.members.fetch(checkin.user!.discord_id)
+        this.assertMember(member)
+        const newGrindRole = this.getNewGrindRole(guild, updatedCheckin.checkin_streak!.streak)
+        await this.setMemberNewGrindRole(guild, member, newGrindRole)
+
+        await this.sendCheckinStatusToMember(flamewarden, member, updatedCheckin)
+        await this.updateSubmittedCheckin(message, updatedCheckin.checkin_streak!.streak)
+        await message.react(this.REVERSED_EMOJI_STATUS[checkinStatus])
+    }
+
     static async updateCheckinMsgLink(prisma: PrismaClient, checkin: CheckinType, msgLink: string | null): Promise<CheckinType> {
         return prisma.checkin.update({
             where: { id: checkin.id },
@@ -342,21 +402,13 @@ export class Checkin extends CheckinMessage {
         await member.send({ embeds: [embed] })
     }
 
-    static async validateCheckin(prisma: PrismaClient, member: GuildMember, checkin: CheckinType, checkinStatus: CheckinStatusType): Promise<CheckinType | undefined> {
-        if (checkinStatus === 'APPROVED') {
-            return await Checkin.updateCheckinStatus(prisma, member, checkin, checkinStatus)
-        }
-        if (checkinStatus === 'REJECTED') {
-            return await Checkin.updateCheckinStatus(prisma, member, checkin, checkinStatus)
-        }
-    }
-
-    static async updateCheckinStatus(prisma: PrismaClient, member: GuildMember, checkin: CheckinType, checkinStatus: CheckinStatusType): Promise<CheckinType> {
+    static async updateCheckinStatus(prisma: PrismaClient, member: GuildMember, checkin: CheckinType, checkinStatus: CheckinStatusType, comment?: string | null): Promise<CheckinType> {
         const updatedCheckin = await prisma.checkin.update({
             where: { id: checkin.id },
             data: {
                 status: checkinStatus,
                 reviewed_by: member.id,
+                comment,
                 updated_at: new Date(),
                 checkin_streak: {
                     update: {
@@ -403,5 +455,14 @@ export class Checkin extends CheckinMessage {
         }
 
         await member.send({ embeds: [embed] })
+    }
+
+    static async updateSubmittedCheckin(message: Message, newStreak: number) {
+        await message.edit(
+            message.content.replace(
+                /🔥\s*\*\*Current Streak:\*\*\s*\d+\s*day\(s\)/i,
+                `🔥 **Current Streak:** ${newStreak} day(s)`,
+            ),
+        )
     }
 }

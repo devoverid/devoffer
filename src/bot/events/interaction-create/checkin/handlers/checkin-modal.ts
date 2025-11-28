@@ -15,7 +15,6 @@ export class CheckinModalError extends DiscordBaseError {
 }
 
 export const CHECKIN_ID = generateCustomId(EVENT_PATH, __filename)
-export const CHECKIN_CUSTOM_BUTTON_ID = `${generateCustomId(EVENT_PATH, __filename)}`
 
 export default {
     name: Events.InteractionCreate,

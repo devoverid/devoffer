@@ -9,6 +9,7 @@ export class CheckinMessage extends DiscordAssert {
     static override readonly ERR = {
         ...DiscordAssert.ERR,
         AlreadyCheckinToday: (checkinMsgLink: string) => `❌ You already have a [check-in for today](${checkinMsgLink}). Please come back tomorrow`,
+        SubmittedCheckinNotToday: (checkinMsgLink: string) => `❌ This [submitted check-in](${checkinMsgLink})'s date should equals as today. You can't review this anymore`,
         CheckinIdMissing: '❌ Check-in ID is missing or invalid',
         CheckinIdInvalid: '❌ The provided check-in ID is invalid',
         UnknownCheckinStatus: '❌ The status for this check-in is unknown or unexpected.',
@@ -25,7 +26,7 @@ export class CheckinMessage extends DiscordAssert {
 ✨─────✨/✨━━━━✨
 👤 **Grinder:** <@${member.id}>
 🕓 **Date:** ${getNow()}
-🔥 **Current Streak:** ${++streakCount} day(s)
+🔥 **Current Streak:** ${streakCount} day(s)
 🗓 **Last Check-In:** ${lastCheckin ? lastCheckin.created_at.toLocaleString('id-ID') : '-'}
 ✰⋆｡:ﾟ･*☽:ﾟ･⋆｡✰⋆｡:ﾟ
 ${todo}
