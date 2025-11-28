@@ -19,6 +19,7 @@ export class DiscordMessage {
         AllowedChannel: (channelId: string) => `❌ You can't do anything on this channel. You need to go to <#${channelId}>`,
         GuildMissing: '❌ The guild could not be found',
         CannotPost: '❌ I can’t post in that channel',
+        MessageIdMissing: '❌ Message ID is missing or invalid',
 
         PlainMessage: '❌ There is nothing to do with this plain message',
 
@@ -38,6 +39,6 @@ export class DiscordMessage {
     }
 
     static roleRevoked(roleId: string): string {
-        return `❌ You already have the <@&${(roleId)}? role`
+        return `❌ You already have the <@&${(roleId)}> role`
     }
 }
