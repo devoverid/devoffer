@@ -1,11 +1,10 @@
 import type { Event } from '@events/event'
-import type { Checkin } from '@type/checkin'
 import type { Client, MessageReaction, PartialMessageReaction, User } from 'discord.js'
-import { CHECKIN_CHANNEL } from '@config/discord'
+import { CHECKIN_CHANNEL, FLAMEWARDEN_ROLE } from '@config/discord'
+import { Checkin } from '@events/interaction-create/checkin/validators/checkin'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
 import { Events } from 'discord.js'
-import { SubmittedCheckin } from '../validators/submitted-checkin'
 
 export class SubmittedCheckinError extends DiscordBaseError {
     constructor(message: string, options?: { cause?: unknown }) {
@@ -30,23 +29,22 @@ export default {
 
         try {
             const flamewarden = await guild.members.fetch(user.id)
-            const emoji = reaction.emoji.name
-            SubmittedCheckin.assertFlamewardenMember(flamewarden)
-            SubmittedCheckin.assertAllowedChannel(guild, message.channel.id, CHECKIN_CHANNEL)
-            SubmittedCheckin.assertEmojis(emoji)
+            const emoji = Checkin.assertEmojis(reaction.emoji.name)
+            Checkin.assertMemberHasRole(flamewarden, FLAMEWARDEN_ROLE)
+            await Checkin.assertAllowedChannel(guild, message.channel.id, CHECKIN_CHANNEL)
 
-            const checkin = await SubmittedCheckin.getCheckinByURL(client.prisma, message.url)
-            const updatedCheckin = await SubmittedCheckin.validateCheckin(client.prisma, flamewarden, checkin, emoji) as Checkin
-
-            const member = await guild.members.fetch(checkin.user.discord_id)
-            const newGrindRole = SubmittedCheckin.getNewGrindRole(guild, updatedCheckin.checkin_streak!.streak)
-            await SubmittedCheckin.setMemberNewGrindRole(guild, member, newGrindRole)
-
-            await SubmittedCheckin.sendCheckinStatusToMember(flamewarden, member, updatedCheckin)
+            await Checkin.validateCheckin(
+                client.prisma,
+                guild,
+                flamewarden,
+                { key: 'link', value: message.url },
+                message,
+                Checkin.EMOJI_STATUS[emoji],
+            )
         }
         catch (err: any) {
             if (!(err instanceof DiscordBaseError))
-                log.error(`Failed to handle: ${SubmittedCheckin.ERR.UnexpectedSubmittedCheckinMessage}: ${err}`)
+                log.error(`Failed to handle: ${Checkin.ERR.UnexpectedSubmittedCheckinMessage}: ${err}`)
         }
     },
 } as Event

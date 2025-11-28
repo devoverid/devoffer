@@ -26,6 +26,7 @@ CREATE TABLE "public"."Checkin" (
     "link" TEXT,
     "status" TEXT NOT NULL DEFAULT 'WAITING',
     "reviewed_by" TEXT,
+    "comment" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
 

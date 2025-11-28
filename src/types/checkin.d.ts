@@ -1,7 +1,9 @@
+import type { Prisma } from '@generatedDB/client'
 import type { CheckinStreak } from './checkin-streak'
 import type { User } from './user'
 
 export type CheckinStatusType = 'WAITING' | 'APPROVED' | 'REJECTED'
+export type CheckinAllowedEmojiType = '❌' | '🔥'
 
 export interface Checkin {
     id: number
@@ -12,9 +14,15 @@ export interface Checkin {
     link?: string | null
     status: CheckinStatusType | string
     reviewed_by?: string | null
+    comment?: string | null
     created_at: Date
     updated_at?: Date | null
 
     user?: User
     checkin_streak?: CheckinStreak
+}
+
+export interface CheckinColumn<T extends keyof Prisma.CheckinWhereInput> {
+    key: T
+    value: Prisma.CheckinWhereInput[T]
 }

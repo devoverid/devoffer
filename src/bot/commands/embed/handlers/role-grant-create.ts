@@ -1,6 +1,6 @@
 import type { Command } from '@commands/command'
 import type { ChatInputCommandInteraction, TextChannel } from 'discord.js'
-import { ActionRowBuilder, ModalBuilder, TextInputBuilder } from '@discordjs/builders'
+import { LabelBuilder, ModalBuilder, TextInputBuilder } from '@discordjs/builders'
 import { EMBED_ROLE_GRANT_CREATE_MODAL_ID } from '@events/interaction-create/embed/handlers/role-grant-create-modal'
 import { RoleGrantCreate } from '@events/interaction-create/embed/validators/role-grant-create'
 import { encodeSnowflake, getCustomId } from '@utils/component'
@@ -45,40 +45,54 @@ export default {
             const modal = new ModalBuilder()
                 .setCustomId(modalCustomId)
                 .setTitle('Create Embed with Role-Grant Button')
-            const titleInput = new TextInputBuilder()
-                .setCustomId('title')
-                .setLabel('Title')
-                .setPlaceholder(DUMMY.TITLE)
-                .setStyle(TextInputStyle.Short)
-                .setMaxLength(256)
-                .setRequired(true)
-            const descInput = new TextInputBuilder()
-                .setCustomId('description')
-                .setLabel('Description')
-                .setPlaceholder(DUMMY.DESC)
-                .setStyle(TextInputStyle.Paragraph)
-                .setRequired(true)
-            const colorInput = new TextInputBuilder()
-                .setCustomId('color')
-                .setLabel('Color (optional)')
-                .setPlaceholder(DUMMY.COLOR)
-                .setValue(DUMMY.COLOR)
-                .setStyle(TextInputStyle.Short)
-                .setRequired(false)
-            const footerInput = new TextInputBuilder()
-                .setCustomId('footer')
-                .setLabel('Footer (optional)')
-                .setPlaceholder(DUMMY.FOOTER)
-                .setValue(DUMMY.FOOTER)
-                .setStyle(TextInputStyle.Short)
-                .setRequired(false)
+                .addLabelComponents(
+                    new LabelBuilder()
+                        .setLabel('Title')
+                        .setDescription('The title of embed')
+                        .setTextInputComponent(
+                            new TextInputBuilder()
+                                .setCustomId('title')
+                                .setPlaceholder(DUMMY.TITLE)
+                                .setStyle(TextInputStyle.Short)
+                                .setMaxLength(256)
+                                .setRequired(true),
+                        ),
 
-            modal.addComponents(
-                new ActionRowBuilder<TextInputBuilder>().addComponents(titleInput),
-                new ActionRowBuilder<TextInputBuilder>().addComponents(descInput),
-                new ActionRowBuilder<TextInputBuilder>().addComponents(colorInput),
-                new ActionRowBuilder<TextInputBuilder>().addComponents(footerInput),
-            )
+                    new LabelBuilder()
+                        .setLabel('Description')
+                        .setDescription('Main embed content')
+                        .setTextInputComponent(
+                            new TextInputBuilder()
+                                .setCustomId('description')
+                                .setPlaceholder(DUMMY.DESC)
+                                .setStyle(TextInputStyle.Paragraph)
+                                .setRequired(true),
+                        ),
+
+                    new LabelBuilder()
+                        .setLabel('Color')
+                        .setDescription('Optional embed accent color (HEX)')
+                        .setTextInputComponent(
+                            new TextInputBuilder()
+                                .setCustomId('color')
+                                .setPlaceholder(DUMMY.COLOR)
+                                .setValue(DUMMY.COLOR)
+                                .setStyle(TextInputStyle.Short)
+                                .setRequired(false),
+                        ),
+
+                    new LabelBuilder()
+                        .setLabel('Footer')
+                        .setDescription('Optional embed footer text')
+                        .setTextInputComponent(
+                            new TextInputBuilder()
+                                .setCustomId('footer')
+                                .setPlaceholder(DUMMY.FOOTER)
+                                .setValue(DUMMY.FOOTER)
+                                .setStyle(TextInputStyle.Short)
+                                .setRequired(false),
+                        ),
+                )
 
             await interaction.showModal(modal)
         }

@@ -5,7 +5,7 @@ import { createEmbed, encodeSnowflake, generateCustomId, getCustomId } from '@ut
 import { getChannel, getRole, sendAsBot, sendReply } from '@utils/discord'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, roleMention } from 'discord.js'
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } from 'discord.js'
 import { RoleGrantCreate } from '../validators/role-grant-create'
 import { EMBED_ROLE_GRANT_CREATE_BUTTON_ID } from './role-grant-create-button'
 
@@ -35,6 +35,7 @@ export default {
             const { channelId, roleId, buttonName } = RoleGrantCreate.getModalId(interaction, interaction.customId)
             const channel = await getChannel(interaction.guild, channelId)
             RoleGrantCreate.assertChannel(channel)
+            RoleGrantCreate.assertMissPerms(interaction, channel)
             const role = await getRole(interaction.guild, roleId)
             RoleGrantCreate.assertRole(role)
 
@@ -62,7 +63,7 @@ export default {
             const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button)
 
             await sendAsBot(interaction, channel, { embeds: [embed], components: [row] })
-            await sendReply(interaction, `✅ Posted! Clicking will add ${roleMention(role.id)} role~`)
+            await sendReply(interaction, `✅ Posted! Clicking will add <@&${role.id}> role~`)
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)

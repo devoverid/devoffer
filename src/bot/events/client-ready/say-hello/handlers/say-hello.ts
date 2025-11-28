@@ -2,6 +2,7 @@ import type { Event } from '@events/event'
 import type { Client } from 'discord.js'
 import { DiscordBaseError } from '@utils/discord/error'
 import { log } from '@utils/logger'
+import { Events } from 'discord.js'
 import { SayHello } from '../validators/say-hello'
 
 export class SayHelloError extends DiscordBaseError {
@@ -11,7 +12,7 @@ export class SayHelloError extends DiscordBaseError {
 }
 
 export default {
-    name: 'ready',
+    name: Events.ClientReady,
     desc: 'Say こんにちは for the first load',
     once: true,
     exec(client: Client) {

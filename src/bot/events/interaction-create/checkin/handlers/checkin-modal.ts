@@ -50,6 +50,8 @@ export default {
                 prevCheckin,
             } = await Checkin.validateCheckinStreak(client.prisma, user.id, user.checkin_streaks?.[0], todo, attachments)
 
+            const buttons = Checkin.generateButtons(interaction.guildId, checkin.id.toString())
+
             const msgLink = await sendReply(
                 interaction,
                 Checkin.MSG.CheckinSuccess(
@@ -59,12 +61,16 @@ export default {
                     prevCheckin,
                 ),
                 false,
-                { files: attachments.length ? attachments : undefined },
+                {
+                    files: attachments.length ? attachments : undefined,
+                    components: [buttons],
+                    allowedMentions: { users: [member.id], roles: [] },
+                },
                 true,
             )
 
             const updatedCheckin = await Checkin.updateCheckinMsgLink(client.prisma, checkin, msgLink)
-            await Checkin.sendSuccessMessageToMember(member, updatedCheckin)
+            await Checkin.sendSuccessCheckinToMember(member, updatedCheckin)
         }
         catch (err: any) {
             if (err instanceof DiscordBaseError)

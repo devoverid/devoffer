@@ -14,12 +14,14 @@ export class RoleGrantCreate extends RoleGrantCreateMessage {
         const [prefix, guildId, channelId, roleId, buttonNameEnc] = decodeSnowflakes(customId)
         const buttonName = decodeURIComponent(buttonNameEnc)
 
+        if (!guildId)
+            throw new EmbedRoleGrantModalError(this.ERR.GuildMissing)
+        if (interaction.guildId !== guildId)
+            throw new EmbedRoleGrantModalError(this.ERR.NotGuild)
         if (!channelId)
             throw new EmbedRoleGrantModalError(this.ERR.ChannelNotFound)
         if (!roleId)
             throw new EmbedRoleGrantModalError(this.ERR.RoleMissing(roleId))
-        if (interaction.guildId !== guildId)
-            throw new EmbedRoleGrantModalError(this.ERR.NotGuild)
 
         return { prefix, guildId, channelId, roleId, buttonName }
     }
@@ -29,10 +31,10 @@ export class RoleGrantCreate extends RoleGrantCreateMessage {
 
         if (!guildId)
             throw new EmbedRoleGrantButtonError(this.ERR.GuildMissing)
-        if (!roleId)
-            throw new EmbedRoleGrantButtonError(this.ERR.RoleMissing(roleId))
         if (interaction.guildId !== guildId)
             throw new EmbedRoleGrantButtonError(this.ERR.NotGuild)
+        if (!roleId)
+            throw new EmbedRoleGrantButtonError(this.ERR.RoleMissing(roleId))
 
         return { prefix, guildId, roleId }
     }
