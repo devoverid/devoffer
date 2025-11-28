@@ -34,6 +34,7 @@ export default {
             const { channelId, tempToken } = Send.getModalId(interaction, interaction.customId)
             const channel = await getChannel(interaction.guild, channelId)
             Send.assertChannel(channel)
+            Send.assertMissPerms(interaction, channel)
             const attachments = tempStore.get(tempToken) as Attachment[]
             Send.delTempItem(attachments, tempToken)
 

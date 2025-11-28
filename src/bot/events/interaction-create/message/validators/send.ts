@@ -16,10 +16,12 @@ export class Send extends SendMessage {
     static getModalId(interaction: Interaction, customId: string) {
         const [prefix, guildId, channelId, tempToken] = decodeSnowflakes(customId)
 
-        if (!channelId)
-            throw new SendModalError(this.ERR.ChannelNotFound)
+        if (!guildId)
+            throw new SendModalError(this.ERR.GuildMissing)
         if (interaction.guildId !== guildId)
             throw new SendModalError(this.ERR.NotGuild)
+        if (!channelId)
+            throw new SendModalError(this.ERR.ChannelNotFound)
 
         return { prefix, guildId, channelId, tempToken }
     }

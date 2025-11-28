@@ -42,7 +42,6 @@ export default {
                 encodeSnowflake(interaction.guildId),
                 tempToken,
             ])
-
             const modal = new ModalBuilder()
                 .setCustomId(modalCustomId)
                 .setTitle('Daily Check-In')

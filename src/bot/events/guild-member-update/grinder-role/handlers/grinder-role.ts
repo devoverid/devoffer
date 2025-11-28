@@ -25,6 +25,7 @@ export default {
             const oldHasGrinderRole = GrinderRole.isMemberHasRole(oldMember, GRINDER_ROLE)
             if (newHasGrinderRole && !oldHasGrinderRole) {
                 const channel = await getChannel(newMember.guild, GRIND_ASHES_CHANNEL)
+                GrinderRole.assertChannel(channel)
 
                 await sendAsBot(
                     null,

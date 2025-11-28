@@ -84,6 +84,8 @@ export class DiscordAssert extends DiscordMessage {
         }
 
         const channel = await getChannel(guild, channelId)
+        this.assertChannel(channel)
+
         return channel
     }
 

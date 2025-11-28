@@ -36,6 +36,8 @@ export class Checkin extends CheckinMessage {
     static getModalId(interaction: Interaction, customId: string) {
         const [prefix, guildId, tempToken] = decodeSnowflakes(customId)
 
+        if (!guildId)
+            throw new CheckinModalError(this.ERR.GuildMissing)
         if (interaction.guildId !== guildId)
             throw new CheckinModalError(this.ERR.NotGuild)
 
@@ -52,6 +54,8 @@ export class Checkin extends CheckinMessage {
             throw new CheckinError(this.ERR.CheckinIdMissing)
         if (interaction.guildId !== guildId)
             throw new CheckinError(this.ERR.NotGuild)
+        if (!checkinId)
+            throw new CheckinError(this.ERR.CheckinIdMissing)
         if (Number.isNaN(checkinIdNum))
             throw new CheckinError(this.ERR.CheckinIdInvalid)
 
@@ -107,8 +111,9 @@ export class Checkin extends CheckinMessage {
         if (!newRole)
             return
 
-        const channel = await getChannel(guild, AURA_FARMING_CHANNEL)
         const alreadyHasRole = member.roles.cache.has(newRole.id)
+        const channel = await getChannel(guild, AURA_FARMING_CHANNEL)
+        this.assertChannel(channel)
 
         if (!alreadyHasRole) {
             await attachNewGrindRole(member, newRole)
@@ -120,7 +125,7 @@ export class Checkin extends CheckinMessage {
         else {
             const checkinChannel = await getChannel(guild, CHECKIN_CHANNEL)
             await sendAsBot(null, checkinChannel, {
-                content: `Hey, <@${member.id}>. You already have <@${newRole.id}>`,
+                content: `Hey, <@${member.id}>. You already have <@&${newRole.id}>`,
                 allowedMentions: { users: [member.id], roles: [] },
             }, true)
         }
@@ -196,7 +201,7 @@ export class Checkin extends CheckinMessage {
                 reviewed_by: null,
             },
             include: { user: true },
-        })
+        }) as CheckinType
 
         if (!checkin)
             throw new CheckinError(this.ERR.PlainMessage)
